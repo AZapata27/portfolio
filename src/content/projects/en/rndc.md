@@ -1,9 +1,9 @@
 ---
 title: RNDC integration for shippers and carriers
-client: Grupo Nutresa, Rápido Ochoa and other carriers (independent)
+client: Grupo Nutresa, Rápido Ochoa and other carriers
 period: 2020 – present
 domain: Logistics / Government APIs
-role: Software architect and developer
+role: Software Architect & Developer · Independent Contractor
 summary: Consignment notes, electronic cargo manifests and proof-of-delivery records filed with the Ministry of Transport's RNDC, with upfront data validation and full traceability of every submission.
 stack: [Java, Kafka, Debezium, Confluent, Oracle, Keycloak, OpenTelemetry, Grafana]
 metric: { value: "Every submission", label: "validated before filing and traceable end to end" }

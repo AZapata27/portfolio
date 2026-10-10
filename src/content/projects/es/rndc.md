@@ -1,9 +1,9 @@
 ---
 title: Integración con el RNDC para empresas de carga
-client: Grupo Nutresa, Rápido Ochoa y otros transportadores (independiente)
+client: Grupo Nutresa, Rápido Ochoa y otros transportadores
 period: 2020 – actual
 domain: Logística / APIs de gobierno
-role: Arquitecto y desarrollador
+role: Arquitecto y Desarrollador · Contratista independiente
 summary: Remesas, manifiestos electrónicos de carga y cumplidos reportados al RNDC del Ministerio de Transporte, con validación previa y trazabilidad de cada reporte.
 stack: [Java, Kafka, Debezium, Confluent, Oracle, Keycloak, OpenTelemetry, Grafana]
 metric: { value: "Cada reporte", label: "validado antes de enviarse y trazable de punta a punta" }
