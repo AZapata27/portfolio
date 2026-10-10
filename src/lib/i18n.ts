@@ -4,9 +4,10 @@
  * El contenido largo (perfil, experiencia, proyectos) vive en `src/content/`.
  * Aquí sólo van etiquetas cortas de UI que no cambian con el CV.
  */
-export const locales = ['en', 'es'] as const;
+export const locales = ['es', 'en'] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'en';
+/** Español en la raíz (`/`); inglés bajo `/en/`. Debe coincidir con `i18n` en astro.config.ts. */
+export const defaultLocale: Locale = 'es';
 
 export const ui = {
   en: {
@@ -16,6 +17,7 @@ export const ui = {
     'nav.work': 'Selected work',
     'nav.stack': 'Stack',
     'nav.contact': 'Contact',
+    'section.achievements': 'Key achievements',
     'section.experience': 'Experience',
     'section.work': 'Selected work',
     'section.stack': 'Stack',
@@ -24,7 +26,7 @@ export const ui = {
     'section.languages': 'Languages',
     'period.present': 'Present',
     'cta.email': 'Write me',
-    'cta.cv': 'Download CV (PDF, Spanish)',
+    'cta.cv': 'Download CV (PDF)',
     'cta.linkedin': 'LinkedIn',
     'cta.github': 'GitHub',
     'lang.switch': 'Leer en español',
@@ -55,6 +57,7 @@ export const ui = {
     'nav.work': 'Proyectos',
     'nav.stack': 'Stack',
     'nav.contact': 'Contacto',
+    'section.achievements': 'Logros',
     'section.experience': 'Experiencia',
     'section.work': 'Proyectos destacados',
     'section.stack': 'Stack',
@@ -105,7 +108,7 @@ export function localeOf(id: string): Locale {
   return isLocale(prefix) ? prefix : defaultLocale;
 }
 
-/** Ruta localizada: `localePath('es', '/blueprint')` da `/es/blueprint/`. */
+/** Ruta localizada: `localePath('en', '/')` da `/en/`; `localePath('es', '/')` da `/`. */
 export function localePath(locale: Locale, path = '/'): string {
   const clean = path.replace(/^\/+|\/+$/g, '');
   const prefix = locale === defaultLocale ? '' : `/${locale}`;

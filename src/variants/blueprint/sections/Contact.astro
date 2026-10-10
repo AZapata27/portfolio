@@ -1,0 +1,334 @@
+---
+/**
+ * Hoja 6 · Bloque de título completo: contacto (mailto en ámbar como acción
+ * primaria), LinkedIn, GitHub, CV, ubicación y disponibilidad; al lado, formación,
+ * idiomas, conocimiento de dominio y notas generales.
+ */
+import type { Profile } from '@/lib/content';
+import { t, type Locale } from '@/lib/i18n';
+import Icon from '@/components/Icon.astro';
+import Sheet from '../components/Sheet.astro';
+import { vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  drawingName: string;
+  total: number;
+}
+
+const { profile, locale, drawingName, total } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+---
+
+<Sheet id="contact" number={total} {total} title={v.titleBlock} {drawingName} {locale} labelledby="contact-title">
+  <h2 id="contact-title" class="sheet-title">{tr('section.contact')}</h2>
+
+  <div class="layout">
+    <table class="tb">
+      <caption class="visually-hidden">{v.titleBlock}</caption>
+      <tbody>
+        <tr class="row-contact">
+          <th scope="row">{v.contact}</th>
+          <td>
+            <a class="primary" href={`mailto:${profile.email}`}>
+              <span class="cta">{tr('cta.email')}</span>
+              <span class="addr">{profile.email}</span>
+            </a>
+          </td>
+        </tr>
+        {
+          profile.links.map((l) => (
+            <tr>
+              <th scope="row">{l.label}</th>
+              <td>
+                <a href={l.url} target="_blank" rel="noopener">
+                  {display(l.url)}
+                  <Icon name="arrow-up-right" size={14} />
+                </a>
+              </td>
+            </tr>
+          ))
+        }
+        <tr>
+          <th scope="row">{v.cv}</th>
+          <td>
+            <a href={profile.cv} download>
+              {tr('cta.cv')}
+              <Icon name="download" size={14} />
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{v.location}</th>
+          <td>{profile.location}</td>
+        </tr>
+        <tr>
+          <th scope="row">{v.availability}</th>
+          <td class="prose">{profile.availability}</td>
+        </tr>
+        <tr>
+          <th scope="row">{v.drawing}</th>
+          <td>{drawingName}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="block block--notes" aria-labelledby="extras-title">
+      <h3 id="extras-title">{v.generalNotes}</h3>
+      <dl>
+        {
+          profile.extras.map((x) => (
+            <div>
+              <dt>{x.title}</dt>
+              <dd>{x.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <div class="aside">
+      <section class="block" aria-labelledby="education-title">
+        <h3 id="education-title">{tr('section.education')}</h3>
+        <ul role="list">
+          {
+            profile.education.map((ed) => (
+              <li>
+                <strong>{ed.title}</strong>
+                <span>{ed.institution}</span>
+                <span class="mono">{ed.period}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="languages-title">
+        <h3 id="languages-title">{tr('section.languages')}</h3>
+        <ul role="list" class="langs">
+          {
+            profile.languages.map((l) => (
+              <li>
+                <span>{l.name}</span>
+                <span class="mono">{l.level}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="domain-title">
+        <h3 id="domain-title">{v.domainKnowledge}</h3>
+        <p class="mono-list">{profile.domainKnowledge.join(' · ')}</p>
+      </section>
+    </div>
+  </div>
+</Sheet>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  .tb {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--line) solid var(--ink);
+    font: 400 var(--text-mono) / 1.45 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    background: var(--paper);
+  }
+
+  .tb th,
+  .tb td {
+    padding: var(--s-3) var(--s-4);
+    border: var(--line-hair) solid var(--ink);
+    vertical-align: top;
+    text-align: left;
+  }
+
+  .tb th {
+    width: 9rem;
+    font-size: var(--text-mono-sm);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .tb td a {
+    overflow-wrap: anywhere;
+  }
+
+  .tb td a :global(svg) {
+    display: inline-block;
+    vertical-align: -0.15em;
+    margin-left: 0.25em;
+  }
+
+  .tb .prose {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.45;
+  }
+
+  .row-contact th,
+  .row-contact td {
+    padding: var(--s-4);
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  .primary {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-4) !important;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .primary .cta {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .primary .addr {
+    font-size: var(--text-mono-lg);
+  }
+
+  .primary:hover .addr,
+  .primary:focus-visible .addr {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .aside {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .block h3 {
+    padding-bottom: var(--s-2);
+    border-bottom: var(--line) solid var(--ink);
+    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .block ul {
+    display: grid;
+  }
+
+  .block li {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-3) 0;
+    border-bottom: var(--line-hair) solid var(--hair);
+  }
+
+  .block strong {
+    font-weight: 600;
+  }
+
+  .langs li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+
+  .mono {
+    font: 400 var(--text-mono) / 1.4 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  .mono-list {
+    padding-top: var(--s-3);
+    font: 400 var(--text-mono) / 1.6 var(--font-mono);
+  }
+
+  .block dl {
+    display: grid;
+    gap: var(--s-3);
+    padding-top: var(--s-3);
+  }
+
+  .block dt {
+    font-weight: 600;
+  }
+
+  .block dd {
+    margin: 0;
+    color: var(--graphite);
+    max-width: 48ch;
+  }
+
+  .block--notes {
+    margin-top: calc(-1 * var(--s-2));
+  }
+
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      gap: var(--s-6) var(--s-8);
+    }
+
+    .tb {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .block--notes {
+      grid-column: 1;
+      grid-row: 2;
+      margin-top: 0;
+    }
+
+    .aside {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .tb,
+    .tb tbody,
+    .tb tr,
+    .tb th,
+    .tb td {
+      display: block;
+    }
+
+    .tb tr {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .tb tr + tr {
+      border-top: var(--line-hair) solid var(--ink);
+    }
+
+    .tb th,
+    .tb td {
+      width: auto;
+      border: 0;
+    }
+
+    .tb th {
+      padding-bottom: 0;
+    }
+
+    .tb td {
+      padding-top: var(--s-1);
+    }
+  }
+</style>

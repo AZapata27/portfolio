@@ -1,0 +1,164 @@
+---
+/**
+ * Hoja 5 · Lista de partes. El stack como tabla ITEM / GRUPO / PARTES con los
+ * logos de simple-icons en tinta (monocromo); si un ítem no tiene logo, sólo el nombre.
+ */
+import type { SkillGroup } from '@/lib/content';
+import { t, type Locale, type UiKey } from '@/lib/i18n';
+import Icon from '@/components/Icon.astro';
+import Sheet from '../components/Sheet.astro';
+import { pad2, vocabFor } from '../labels';
+
+interface Props {
+  skills: SkillGroup[];
+  locale: Locale;
+  drawingName: string;
+  total: number;
+}
+
+const { skills, locale, drawingName, total } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+---
+
+<Sheet id="stack" number={5} {total} title={v.partsList} {drawingName} {locale} labelledby="stack-title">
+  <h2 id="stack-title" class="sheet-title">{tr('section.stack')}</h2>
+
+  <table class="tbl parts">
+    <caption>{v.partsList}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{v.item}</th>
+        <th scope="col">{v.group}</th>
+        <th scope="col">{v.parts}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        skills.map((g, i) => (
+          <tr>
+            <td class="item">{pad2(i + 1)}</td>
+            <th scope="row" class="group">
+              {tr(`skills.${g.id}` as UiKey)}
+            </th>
+            <td class="list">
+              <ul role="list">
+                {g.items.map((it) => (
+                  <li>
+                    {it.icon && <Icon brand={it.icon} size={18} title="" />}
+                    <span>{it.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</Sheet>
+
+<style>
+  .parts th,
+  .parts td {
+    padding: var(--s-4);
+  }
+
+  .item {
+    width: 4.5rem;
+    font-weight: 700;
+  }
+
+  .group {
+    width: 14rem;
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+  }
+
+  .list ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+  }
+
+  .list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font: 400 var(--text-mono) / 1.2 var(--font-mono);
+    color: var(--ink);
+  }
+
+  .list li :global(svg) {
+    flex: none;
+    color: var(--ink);
+  }
+
+  @media (max-width: 767px) {
+    .parts,
+    .parts caption,
+    .parts tbody,
+    .parts tr,
+    .parts th,
+    .parts td {
+      display: block;
+    }
+
+    .parts caption {
+      width: 100%;
+    }
+
+    .parts thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .parts tr {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--s-3) var(--s-4);
+      padding: var(--s-4);
+    }
+
+    .parts tr + tr {
+      border-top: var(--line-hair) solid var(--ink);
+    }
+
+    .parts th,
+    .parts td {
+      width: auto;
+      padding: 0;
+      border: 0;
+    }
+
+    .item {
+      grid-column: 1;
+      grid-row: 1;
+      padding: 2px 6px;
+      border: var(--line-hair) solid var(--ink);
+      align-self: center;
+    }
+
+    .group {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .list {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .list ul {
+      gap: var(--s-2) var(--s-4);
+    }
+  }
+</style>

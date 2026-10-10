@@ -5,7 +5,8 @@ Toda la información del CV vive en `src/content/`. Los esquemas están en `src/
 
 ## Perfil (`src/content/profile/{en,es}.json`)
 
-Identidad, resumen, enlaces, dominios, cifras (`metrics`), capacidades (`capabilities`: cuatro,
+Identidad, resumen, enlaces, ruta del CV (`cv`), dominios, cifras (`metrics`), logros clave del CV
+(`achievements`: cuatro, con `value` para la cifra o etiqueta corta, `title` y `body`), capacidades (`capabilities`: cuatro,
 con `id` fijo: `architecture`, `integration`, `ai-native`, `leadership`), voces (`voices`: tres, con
 `id` fijo: `architect`, `builder`, `leader`), formación, extras. Los `id` son fijos porque las
 variantes los usan para ubicar cada bloque en su composición; el texto es libre.
@@ -66,6 +67,8 @@ Etiquetas cortas (navegación, títulos de sección, botones). Agregar la clave 
 
 ## Archivos estáticos
 
-- `public/cv/Andres-Zapata-CV.pdf`: el CV descargable. Reemplazar el archivo para actualizarlo.
-- `src/assets/portrait.svg`: retrato vectorial (posterizado, tres capas). Las variantes lo importan
-  y lo colorean con `fill` sobre cada capa si lo necesitan.
+- `public/cv/Andres-Zapata-CV-es.pdf` y `public/cv/Andres-Zapata-CV-en.pdf`: el CV descargable en cada
+  idioma. La ruta se declara en `profile.cv` de cada `profile/<idioma>.json`; reemplazar el archivo
+  para actualizarlo.
+- `public/og.png`: imagen para redes (1200×630). Se regenera desde `docs/og-card.html` con
+  `npx playwright screenshot --viewport-size=1200,630 docs/og-card.html public/og.png`.

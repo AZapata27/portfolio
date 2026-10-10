@@ -6,7 +6,7 @@ Leé esos tres antes de cambiar algo.
 
 Resumen operativo:
 
-- Contenido en `src/content/` (en y es); diseño en `src/variants/<variante>/`. Nunca mezclar.
+- Contenido en `src/content/` (es y en); diseño en `src/variants/blueprint/` + `DESIGN.md`. Nunca mezclar.
 - Verificar con `npm run check` y `npm run build` antes de proponer un PR. Nunca commitear en `master`.
 - Servidor de desarrollo: `npx astro dev --background` (puerto 4321); `npx astro dev stop` para apagarlo.
 - Capturas: `npx playwright screenshot --viewport-size=1440,900 --full-page <url> <png>`.

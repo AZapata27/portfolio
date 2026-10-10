@@ -46,7 +46,7 @@ logística; conocimiento de RNDC, IP/REV, RUNT, peajes electrónicos y facturaci
 
 Una sola página por idioma con: identidad y propuesta, capacidades (arquitectura, integración,
 AI-native, liderazgo), experiencia cronológica, proyectos destacados, stack, formación e idiomas,
-contacto, descarga del CV (PDF en español) y cambio de idioma. Hoy no hay blog, formularios ni
+contacto, descarga del CV (PDF en el idioma de la página) y cambio de idioma. Hoy no hay blog, formularios ni
 analítica.
 
 ## Constraints
@@ -55,7 +55,9 @@ analítica.
   clientes se limitan a lo que ya es público en el CV; nunca datos de usuarios finales.
 - Salida estática en Vercel; sin dependencias en tiempo de ejecución. Las rutas on-demand quedan
   reservadas para funcionalidades de IA futuras (`docs/ROADMAP.md`).
-- Dos variantes visuales en evaluación (`blueprint`, `script`); sólo una se publica en `/`.
+- Mundo visual único: `blueprint` (plano de ingeniería / ruta EIP), elegido el 2026-10-10 entre dos
+  variantes. Español por defecto en `/`, inglés en `/en/`.
+- La consultora intermediaria de un contrato no se nombra: se dice "Contratista" a secas.
 - Accesibilidad: contraste AA, navegación por teclado, `prefers-reduced-motion` respetado.
 - El teléfono no se publica en HTML (el PDF del CV sí lo contiene; decisión pendiente de Andrés).
 - Idioma de la documentación y del código: español en comentarios y docs, inglés en identificadores.
@@ -72,8 +74,9 @@ electrónica.
 Cifras del CV: 700.000+ usuarios servidos; −98 % de latencia (5 s → 100 ms a 10.000 req/s) en Banco
 de la República; −40 % de time-to-market con la plataforma de Developer Experience; 200+ personas
 lideradas en cinco años; 10+ años de experiencia. Clientes y proyectos públicos: Flypass (vía Quind),
-Avianca (vía Assist), Fiscalía General de la Nación, Celsia, Ministerio de Transporte (IP/REV, RUNT
-vía OLJ Solutions), Banco de la República (vía INDRA), Grupo Nutresa y Rápido Ochoa (RNDC).
+Avianca (como contratista; no se nombra a la consultora intermediaria), Fiscalía General de la
+Nación, Celsia, Ministerio de Transporte (IP/REV, RUNT vía OLJ Solutions), Banco de la República
+(vía INDRA), Grupo Nutresa y Rápido Ochoa (RNDC).
 
 ## Voice
 
@@ -83,9 +86,10 @@ trayectoria como una ruta de integración (canal de entrada, router, ramas, agre
 
 ## Assets
 
-- Retrato vectorial posterizado (`src/assets/portrait.svg`), extraído del borrador de README.
-- Monograma AZ como favicon (`public/favicon.svg`).
-- CV en PDF (`public/cv/Andres-Zapata-CV.pdf`).
+- Monograma AZ como favicon (`public/favicon.svg`) e imagen Open Graph (`public/og.png`, generada
+  desde `docs/og-card.html`).
+- CV en PDF en español e inglés (`public/cv/Andres-Zapata-CV-es.pdf`, `-en.pdf`), ambos con el
+  teléfono.
 - SVG de los cuatro conceptos de README (`conciso`, `ruta-eip`, `git-log`, `autopista`) en las ramas
   `docs/readme-*` del repo `AZapata27/AZapata27`: referencia visual, no se publican.
 
@@ -97,6 +101,5 @@ animaciones desactivables.
 
 ## Open decisions
 
-- Qué variante se publica en `/` (Andrés elige a partir de las vistas previas).
 - Si el PDF del CV se publica con el teléfono o se genera una versión sin él.
 - Nombre público: "Andrés Zapata" (corto) en la interfaz; "Andrés Felipe Zapata" en metadatos.

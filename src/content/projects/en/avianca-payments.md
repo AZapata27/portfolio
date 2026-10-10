@@ -1,10 +1,10 @@
 ---
 title: Payments core integration for an airline
-client: Avianca (contractor via Assist)
+client: Avianca (contractor)
 period: 2026 – present
 domain: Airline / Payments
 role: Senior Red Hat integration engineer
-summary: Connecting the airline's payments core with Latin American gateways and payment methods such as DEUNA and Wompi, with Enterprise Integration Patterns on Quarkus and Apache Camel.
+summary: Connecting the airline's payments core with Latin American payment gateways and methods such as DEUNA and Wompi, with Enterprise Integration Patterns on Quarkus and Apache Camel.
 stack: [Quarkus, Apache Camel, Red Hat, Kafka]
 featured: false
 order: 5

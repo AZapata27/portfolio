@@ -1,7 +1,7 @@
 ---
 company: Avianca
 role: Senior Red Hat Integration Engineer
-client: Contratista vía Assist
+client: Contratista
 sector: Aerolínea / Pagos
 location: Remoto
 start: 2026-06

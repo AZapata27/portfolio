@@ -1,6 +1,6 @@
 ---
 title: Integración del core de pagos de una aerolínea
-client: Avianca (contratista vía Assist)
+client: Avianca (contratista)
 period: 2026 – actual
 domain: Aerolínea / Pagos
 role: Senior Red Hat integration engineer

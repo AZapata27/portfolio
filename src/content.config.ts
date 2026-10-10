@@ -35,6 +35,8 @@ const profile = defineCollection({
     location: z.string(),
     availability: z.string(),
     email: z.email(),
+    /** Ruta pública del CV en PDF de este idioma (p. ej. `/cv/Andres-Zapata-CV-en.pdf`). */
+    cv: z.string().startsWith('/'),
     links: z.array(link),
     domains: z.array(z.string()),
     domainKnowledge: z.array(z.string()),
@@ -42,6 +44,13 @@ const profile = defineCollection({
     /** Cifras comprobables del CV. `value` ya viene formateado para mostrar. */
     metrics: z.array(
       z.object({ value: z.string(), label: z.string(), context: z.string() }),
+    ),
+    /**
+     * Logros clave, en el mismo orden que el CV. `value` es la cifra (−98 %) o una
+     * etiqueta corta (IP/REV) para la columna de valor; `title` el nombre del logro.
+     */
+    achievements: z.array(
+      z.object({ value: z.string(), title: z.string(), body: z.string() }),
     ),
     /**
      * Cuatro capacidades. Las usa la variante "blueprint" como ramas de la ruta

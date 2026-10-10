@@ -1,8 +1,9 @@
 # andres-zapata.dev
 
 Portafolio de Andrés Zapata, arquitecto de software. Sitio estático construido con
-[Astro 7](https://docs.astro.build), bilingüe (inglés por defecto, español en `/es/`), desplegado en
-Vercel desde este repositorio.
+[Astro 7](https://docs.astro.build), bilingüe (español por defecto, inglés en `/en/`), desplegado en
+Vercel desde este repositorio. El diseño es un plano de ingeniería: la trayectoria dibujada como una
+ruta de integración (Enterprise Integration Patterns).
 
 ## Requisitos
 
@@ -30,14 +31,13 @@ src/
     skills.json
   content.config.ts   # esquemas (zod) de las colecciones
   lib/                # i18n.ts (idiomas, textos de UI), content.ts (acceso tipado)
-  components/         # Icon.astro, Seo.astro, Chooser.astro (temporal)
+  components/         # Icon.astro, Seo.astro
   layouts/Base.astro  # esqueleto HTML común; sin identidad visual
   styles/global.css   # reset y accesibilidad; sin colores ni fuentes
-  variants/           # una carpeta por variante visual (layout, tokens, secciones)
-    blueprint/
-    script/
-  pages/              # rutas: /, /es/, /blueprint/, /es/blueprint/, /script/, /es/script/
-public/               # favicon, robots.txt, cv/Andres-Zapata-CV.pdf
+  variants/blueprint/ # el mundo visual: Page.astro, tokens.css, components/, sections/, README.md
+  pages/              # rutas: / (es), /en/ (en), 404
+public/               # favicon, og.png, robots.txt, cv/Andres-Zapata-CV-{es,en}.pdf
+DESIGN.md             # sistema de diseño (tokens y reglas) para agentes
 docs/                 # ARCHITECTURE.md, CONTENT.md, ROADMAP.md
 PRODUCT.md            # contexto de producto (para humanos y agentes)
 AGENTS.md / CLAUDE.md # reglas para agentes de IA que mantienen el repo
@@ -46,17 +46,12 @@ AGENTS.md / CLAUDE.md # reglas para agentes de IA que mantienen el repo
 Regla central: **las variantes sólo leen contenido; el contenido nunca sabe de diseño.** Cambiar un
 dato del CV es editar un archivo en `src/content/` en los dos idiomas.
 
-## Variantes visuales
+## Diseño
 
-Hay dos variantes en evaluación, ambas construidas sobre el mismo contenido:
-
-- **Blueprint** (`/blueprint/`): plano técnico; la trayectoria dibujada como una ruta de
-  integración (Enterprise Integration Patterns).
-- **Script** (`/script/`): guion a tres voces (el arquitecto, el constructor, el líder).
-
-La raíz `/` es una página temporal para compararlas. Cuando se elija una, ver
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#promover-la-variante-ganadora) para promoverla a `/` y
-borrar la otra.
+El mundo visual vive en `src/variants/blueprint/` (ver su `README.md` para las decisiones) y se
+resume en [DESIGN.md](DESIGN.md). Se eligió entre dos variantes construidas sobre el mismo contenido
+el 2026-10-10; la alternativa ("script", guion a tres voces) se eliminó del repo y queda en el
+historial de git.
 
 ## Despliegue
 

@@ -1,9 +1,6 @@
 ---
-/**
- * PÁGINA TEMPORAL de elección de variante. Cuando se elija una, esta página
- * se reemplaza por la variante ganadora (ver docs/ARCHITECTURE.md, "Variantes").
- */
-import Chooser from '@/components/Chooser.astro';
+/** Portada en español (idioma por defecto). La versión en inglés vive en `en/index.astro`. */
+import Page from '@/variants/blueprint/Page.astro';
 ---
 
-<Chooser locale="en" />
+<Page locale="es" />

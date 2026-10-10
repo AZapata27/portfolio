@@ -6,7 +6,8 @@ Leé primero `PRODUCT.md` (qué es y para quién) y `docs/ARCHITECTURE.md` (cóm
 ## Reglas que no se negocian
 
 1. **Contenido y diseño están separados.** Datos del CV: sólo en `src/content/` (JSON y Markdown,
-   validados por `src/content.config.ts`). Identidad visual: sólo en `src/variants/<variante>/`.
+   validados por `src/content.config.ts`). Identidad visual: sólo en `src/variants/blueprint/`
+   (reglas resumidas en `DESIGN.md`).
    Un componente de variante nunca contiene texto del CV; un archivo de contenido nunca contiene
    decisiones visuales.
 2. **Todo cambio de contenido va en los dos idiomas** (`en/` y `es/`). Si falta una traducción,
@@ -34,8 +35,8 @@ npx astro dev --background   # servidor en 4321; `npx astro dev stop` para apaga
 Para capturar una página sin herramientas extra (Playwright CLI ya instalado en esta máquina):
 
 ```bash
-npx playwright screenshot --viewport-size=1440,900 --full-page http://127.0.0.1:4321/blueprint/ screenshots/blueprint-desktop.png
-npx playwright screenshot --viewport-size=390,844 --full-page http://127.0.0.1:4321/blueprint/ screenshots/blueprint-mobile.png
+npx playwright screenshot --viewport-size=1440,900 --full-page http://127.0.0.1:4321/ screenshots/desktop-es.png
+npx playwright screenshot --viewport-size=390,844 --full-page http://127.0.0.1:4321/en/ screenshots/mobile-en.png
 ```
 
 `screenshots/` está en `.gitignore`.
@@ -48,10 +49,10 @@ npx playwright screenshot --viewport-size=390,844 --full-page http://127.0.0.1:4
 | Agregar un proyecto destacado        | `src/content/projects/{en,es}/<slug>.md`                               |
 | Cambiar stack                        | `src/content/skills.json` (slugs de simple-icons en `icon`)            |
 | Cambiar un texto de interfaz         | `src/lib/i18n.ts` (`ui.en` y `ui.es`)                                  |
-| Cambiar colores / tipografía         | `src/variants/<variante>/tokens.css` y `astro.config.ts` (`fonts`)     |
-| Agregar una sección                  | `src/variants/<variante>/sections/<Nombre>.astro` + incluirla en `Page.astro` |
+| Cambiar colores / tipografía         | `src/variants/blueprint/tokens.css`, `DESIGN.md` y `astro.config.ts` (`fonts`) |
+| Agregar una hoja (sección)           | `src/variants/blueprint/sections/<Nombre>.astro` + incluirla en `Page.astro` y subir `total` |
 | Agregar una ruta on-demand (API)     | `src/pages/api/<nombre>.ts` con `export const prerender = false`       |
-| Promover la variante elegida         | `docs/ARCHITECTURE.md`, sección "Promover la variante ganadora"        |
+| Ensayar otro diseño                  | `docs/ARCHITECTURE.md`, sección "Probar una alternativa visual"        |
 
 ## Lo que NO hay que hacer
 
@@ -59,4 +60,4 @@ npx playwright screenshot --viewport-size=390,844 --full-page http://127.0.0.1:4
 - Añadir Tailwind, frameworks de UI o librerías de animación sin una razón documentada en
   `docs/ARCHITECTURE.md`.
 - Tocar `src/layouts/Base.astro` para cosas visuales: ahí sólo va lo compartido (head, SEO, slots).
-- Borrar la otra variante antes de que Andrés haya elegido.
+- Nombrar a la consultora intermediaria de un contrato: se escribe "Contratista" / "Contractor".

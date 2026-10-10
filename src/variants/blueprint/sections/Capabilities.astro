@@ -1,0 +1,241 @@
+---
+/**
+ * Hoja 2 · Notas. Las cuatro llamadas del diagrama (①–③ ramas, ④ control bus)
+ * desarrolladas, precedidas por el resumen del perfil, y la tabla de logros
+ * clave del CV (`profile.achievements`: cifra o etiqueta, logro y detalle).
+ */
+import type { Profile } from '@/lib/content';
+import { t, type Locale } from '@/lib/i18n';
+import Sheet from '../components/Sheet.astro';
+import { capabilityOrder, vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  drawingName: string;
+  total: number;
+}
+
+const { profile, locale, drawingName, total } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
+const notes = capabilityOrder.map((id) => byId.get(id)).filter((c): c is NonNullable<typeof c> => Boolean(c));
+---
+
+<Sheet id="capabilities" number={2} {total} title={v.notes} {drawingName} {locale} labelledby="capabilities-title">
+  <h2 id="capabilities-title" class="sheet-title">{v.notes}</h2>
+  <p class="summary">{profile.summary}</p>
+
+  <ol class="notes" role="list">
+    {
+      notes.map((c, i) => (
+        <li class:list={['note', { 'note--bus': c.id === 'leadership' }]} id={`capabilities-${c.id}`}>
+          <span class="num">{i + 1}</span>
+          <div class="note-body">
+            <h3>{c.name}</h3>
+            <p class="lead">{c.lead}</p>
+            <p>{c.body}</p>
+            <p class="parts">{c.parts.join(' · ')}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <table class="tbl specs" id="achievements">
+    <caption>{tr('section.achievements')}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{v.achievement}</th>
+        <th scope="col">{v.value}</th>
+        <th scope="col">{v.detail}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        profile.achievements.map((a) => (
+          <tr>
+            <th scope="row" class="spec" data-label={v.achievement}>
+              {a.title}
+            </th>
+            <td class="val" data-label={v.value}>
+              {a.value}
+            </td>
+            <td class="ctx" data-label={v.detail}>
+              {a.body}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</Sheet>
+
+<style>
+  .summary {
+    max-width: var(--measure);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    margin-bottom: var(--s-7);
+  }
+
+  .notes {
+    display: grid;
+    gap: var(--s-6) var(--s-8);
+    margin-bottom: var(--s-8);
+  }
+
+  .note {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: start;
+    scroll-margin-top: 88px;
+  }
+
+  .note:target {
+    outline: 2px solid var(--amber);
+    outline-offset: 12px;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: var(--line) solid var(--ink);
+    border-radius: 50%;
+    background: var(--amber);
+    font: 700 var(--text-mono) / 1 var(--font-mono);
+    color: var(--ink);
+  }
+
+  .note--bus .num {
+    background: var(--paper);
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    padding-top: 0.2rem;
+  }
+
+  .note--bus h3 {
+    color: var(--blue);
+  }
+
+  .lead {
+    margin-top: var(--s-3);
+    font-weight: 500;
+  }
+
+  .note-body p + p {
+    margin-top: var(--s-2);
+  }
+
+  .note-body > p:not(.lead):not(.parts) {
+    max-width: 62ch;
+  }
+
+  .parts {
+    font: 400 var(--text-mono) / 1.5 var(--font-mono);
+    color: var(--graphite);
+    margin-top: var(--s-3);
+  }
+
+  /* Logros clave */
+  .specs .spec {
+    width: 17rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .specs .val {
+    width: 9rem;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .specs .ctx {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--graphite);
+  }
+
+  @media (min-width: 768px) {
+    .notes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .specs,
+    .specs caption,
+    .specs tbody,
+    .specs tr,
+    .specs th,
+    .specs td {
+      display: block;
+    }
+
+    .specs caption {
+      width: 100%;
+    }
+
+    .specs thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .specs tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0 var(--s-4);
+      padding: var(--s-3) var(--s-4);
+    }
+
+    .specs tr + tr {
+      border-top: var(--line-hair) solid var(--ink);
+    }
+
+    .specs th,
+    .specs td {
+      width: auto;
+      padding: 0;
+      border: 0;
+    }
+
+    .specs .spec {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .specs .val {
+      grid-column: 2;
+      grid-row: 1;
+      text-align: right;
+    }
+
+    .specs .ctx {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: var(--s-1);
+    }
+  }
+</style>

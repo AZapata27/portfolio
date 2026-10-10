@@ -2,14 +2,14 @@
 import Base from '@/layouts/Base.astro';
 import { getProfile } from '@/lib/content';
 
-const profile = await getProfile('en');
+const profile = await getProfile('es');
 ---
 
-<Base locale="en" {profile} path="/404" title="Not found · Andrés Zapata" description={profile.tagline}>
+<Base locale="es" {profile} path="/404" title="No encontrado · Andrés Zapata" description={profile.tagline}>
   <main id="main" class="nf">
     <p class="nf__code">404</p>
-    <h1>This route has no outbound endpoint.</h1>
-    <p><a href="/">Back to the start</a> · <a href="/es/">Volver al inicio</a></p>
+    <h1>Esta ruta no tiene endpoint de salida.</h1>
+    <p><a href="/">Volver al inicio</a> · <a href="/en/" hreflang="en" lang="en">Back to the start</a></p>
   </main>
 </Base>
 
@@ -22,6 +22,7 @@ const profile = await getProfile('en');
     padding: 2rem 1.25rem;
     font-family: system-ui, sans-serif;
     color: #151515;
+    background: #fafaf7;
     text-align: center;
   }
   .nf__code {
@@ -31,5 +32,8 @@ const profile = await getProfile('en');
   }
   h1 {
     font-size: 1.5rem;
+  }
+  a {
+    color: #1f5fbf;
   }
 </style>

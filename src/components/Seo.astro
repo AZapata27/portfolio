@@ -3,7 +3,7 @@
  * Metadatos de la página: título, descripción, canonical, hreflang,
  * Open Graph/Twitter y JSON-LD de tipo Person.
  */
-import { locales, localePath, type Locale } from '@/lib/i18n';
+import { defaultLocale, locales, localePath, type Locale } from '@/lib/i18n';
 import type { Profile } from '@/lib/content';
 
 interface Props {
@@ -43,7 +43,7 @@ const person = {
     <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />
   ))
 }
-<link rel="alternate" hreflang="x-default" href={new URL(localePath('en', path), site).href} />
+<link rel="alternate" hreflang="x-default" href={new URL(localePath(defaultLocale, path), site).href} />
 <meta property="og:type" content="profile" />
 <meta property="og:site_name" content={profile.shortName} />
 <meta property="og:title" content={title} />

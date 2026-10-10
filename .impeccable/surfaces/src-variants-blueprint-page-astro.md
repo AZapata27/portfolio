@@ -5,7 +5,7 @@ primary_target: "src/variants/blueprint/Page.astro"
 related_targets: ["src/pages/blueprint/index.astro","src/pages/es/blueprint/index.astro"]
 ---
 
-# Surface brief: variante Blueprint (`/blueprint/`, `/es/blueprint/`)
+# Surface brief: variante Blueprint (`/` español, `/en/` inglés)
 
 ## Scope and mode
 
@@ -74,7 +74,11 @@ resalta su cable y su nota numerada. Con `prefers-reduced-motion` todo es estát
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the
 verdict, DESIGN.md, and every shipping raster carrying its provenance.
 
+## Resolved 2026-10-10
+
+- Andrés eligió esta variante; la variante Script se eliminó. Español por defecto en `/`, inglés en `/en/`.
+- Pedidos de Andrés: tabla de LOGROS (los del CV) en lugar de ESPECIFICACIONES; sin columna POR (tipo de contrato, sector, ubicación) en REVISIONES; "Contratista" sin nombrar a la consultora intermediaria.
+
 ## Unresolved
 
-- Qué variante se publica en `/` (decisión de Andrés).
 - Imagen Open Graph (`/og.png`) pendiente hasta elegir variante.

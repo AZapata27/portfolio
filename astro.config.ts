@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
  * Configuración de Astro.
  *
  * - `site`: URL canónica (se usa para sitemap, canonical y Open Graph).
- * - `i18n`: inglés sin prefijo (`/`), español bajo `/es/`.
+ * - `i18n`: español sin prefijo (`/`), inglés bajo `/en/`.
  * - `adapter`: Vercel. El sitio es estático; el adaptador queda listo para
  *   rutas on-demand (p. ej. `src/pages/api/*.ts` con `export const prerender = false`).
  * - `fonts`: tipografías autoalojadas en build (Astro Fonts API). Cada variante
@@ -20,16 +20,16 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [
     sitemap({
-      i18n: { defaultLocale: 'en', locales: { en: 'en', es: 'es' } },
+      i18n: { defaultLocale: 'es', locales: { es: 'es', en: 'en' } },
     }),
   ],
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'es'],
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
     routing: { prefixDefaultLocale: false },
   },
   fonts: [
-    // Variante "blueprint" (plano técnico)
+    // Plano técnico (variante "blueprint"): display, cuerpo y mono
     {
       provider: fontProviders.fontsource(),
       name: 'Barlow Condensed',
@@ -56,25 +56,6 @@ export default defineConfig({
       styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['Consolas', 'monospace'],
-    },
-    // Variante "script" (guion a tres voces)
-    {
-      provider: fontProviders.fontsource(),
-      name: 'Big Shoulders Display',
-      cssVariable: '--font-big-shoulders',
-      weights: [700, 800, 900],
-      styles: ['normal'],
-      subsets: ['latin'],
-      fallbacks: ['Impact', 'Arial Narrow', 'sans-serif'],
-    },
-    {
-      provider: fontProviders.fontsource(),
-      name: 'Courier Prime',
-      cssVariable: '--font-courier-prime',
-      weights: [400, 700],
-      styles: ['normal', 'italic'],
-      subsets: ['latin'],
-      fallbacks: ['Courier New', 'monospace'],
     },
   ],
 });

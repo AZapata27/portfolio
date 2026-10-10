@@ -1,0 +1,155 @@
+---
+/**
+ * Barra superior: monograma, nombre del plano, navegación por hojas y cambio de
+ * idioma. Fija en escritorio; en móvil se apila y no se fija para no robar alto.
+ */
+import type { Profile } from '@/lib/content';
+import { localePath, otherLocale, t, type Locale } from '@/lib/i18n';
+import { vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  drawingName: string;
+}
+
+const { profile, locale, drawingName } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+const other = otherLocale(locale);
+const monogram = profile.shortName
+  .split(/\s+/)
+  .map((w) => w.charAt(0))
+  .join('')
+  .slice(0, 2);
+
+const items = [
+  { href: '#route', label: tr('nav.route') },
+  { href: '#capabilities', label: v.notes },
+  { href: '#experience', label: tr('nav.experience') },
+  { href: '#work', label: tr('nav.work') },
+  { href: '#stack', label: tr('nav.stack') },
+  { href: '#contact', label: tr('nav.contact') },
+];
+---
+
+<header class="topbar">
+  <a class="brand" href="#route">
+    <span class="brand-mark" aria-hidden="true">{monogram}</span>
+    <span class="brand-name">{drawingName}</span>
+  </a>
+  <nav aria-label={v.primaryNav}>
+    <ul role="list">
+      {
+        items.map((it) => (
+          <li>
+            <a href={it.href}>{it.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <a class="lang" href={localePath(other, '/')} hreflang={other} lang={other}>
+    {tr('lang.switch')}
+  </a>
+</header>
+
+<style>
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-6);
+    padding: var(--s-3) var(--gutter);
+    background: var(--paper);
+    border-bottom: var(--line) solid var(--ink);
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    background: var(--ink);
+    color: var(--paper);
+    font: 800 15px/1 var(--font-display);
+    letter-spacing: 0;
+  }
+
+  .brand-name {
+    font-size: var(--text-mono);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  nav {
+    margin-inline: auto;
+  }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+  }
+
+  nav a {
+    display: inline-block;
+    padding: 8px 0 6px;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color var(--d-fast) var(--ease-out);
+  }
+
+  nav a:hover {
+    border-bottom-color: var(--amber);
+  }
+
+  .lang {
+    padding: 8px 12px;
+    border: var(--line-hair) solid var(--blue);
+    color: var(--blue);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .lang:hover {
+    background: var(--blue-wash);
+  }
+
+  @media (max-width: 1023px) {
+    .brand-name {
+      display: none;
+    }
+
+    .lang {
+      margin-left: auto;
+    }
+
+    nav {
+      order: 3;
+      flex-basis: 100%;
+      margin-inline: 0;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-wrap: nowrap;
+    }
+  }
+</style>

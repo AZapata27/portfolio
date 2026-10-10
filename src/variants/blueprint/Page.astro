@@ -1,11 +1,27 @@
 ---
 /**
- * PLACEHOLDER. La variante "blueprint" se implementa aquí (layout, secciones,
- * tokens). Mientras tanto vuelca el contenido para verificar la capa de datos.
+ * Variante "blueprint": la página es un plano de ingeniería de una sola ruta.
+ *
+ * Seis hojas numeradas: 1 Ruta (nombre, diagrama, DETAIL A, bloque de título),
+ * 2 Notas (capacidades y especificaciones), 3 Revisiones (experiencia),
+ * 4 Detalles (proyectos), 5 Lista de partes (stack), 6 Bloque de título (contacto,
+ * formación, idiomas). Todo el texto sale de `src/content/` y de `t(locale)`.
  */
+import { Font } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import { getProfile, getExperience, getProjects, getSkills } from '@/lib/content';
-import { t, formatPeriod, type Locale } from '@/lib/i18n';
+import { t, type Locale } from '@/lib/i18n';
+import './tokens.css';
+import EipSprite from './components/EipSprite.astro';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Capabilities from './sections/Capabilities.astro';
+import Experience from './sections/Experience.astro';
+import Work from './sections/Work.astro';
+import Stack from './sections/Stack.astro';
+import Contact from './sections/Contact.astro';
+import Footer from './sections/Footer.astro';
+import { drawingNameOf } from './labels';
 
 interface Props {
   locale: Locale;
@@ -19,20 +35,43 @@ const [profile, experience, projects, skills] = await Promise.all([
   getProjects(locale),
   getSkills(),
 ]);
+const drawingName = drawingNameOf(profile.shortName);
+const total = 6;
 ---
 
-<Base {locale} {profile} path="/blueprint" title={tr('meta.title')} description={tr('meta.description')} variant="blueprint">
-  <main id="main">
-    <h1>{profile.shortName}</h1>
-    <p>{profile.title}</p>
-    <p>{profile.tagline}</p>
-    <h2>{tr('section.experience')}</h2>
-    <ul>
-      {experience.map((e) => <li>{e.data.role} · {e.data.company} · {formatPeriod(e.data.start, e.data.end, locale)}</li>)}
-    </ul>
-    <h2>{tr('section.work')}</h2>
-    <ul>{projects.map((p) => <li>{p.data.title}</li>)}</ul>
-    <h2>{tr('section.stack')}</h2>
-    <ul>{skills.map((g) => <li>{g.id}: {g.items.map((i) => i.name).join(', ')}</li>)}</ul>
+<Base
+  {locale}
+  {profile}
+  path="/"
+  title={tr('meta.title')}
+  description={tr('meta.description')}
+  variant="blueprint"
+>
+  <Fragment slot="head">
+    <Font cssVariable="--font-barlow-condensed" preload />
+    <Font cssVariable="--font-barlow" preload />
+    <Font cssVariable="--font-jetbrains-mono" preload />
+  </Fragment>
+
+  <EipSprite />
+  <Topbar {profile} {locale} {drawingName} />
+
+  <main id="main" class="sheets">
+    <Hero {profile} {locale} {drawingName} {total} />
+    <Capabilities {profile} {locale} {drawingName} {total} />
+    <Experience {experience} {locale} {drawingName} {total} />
+    <Work {projects} {locale} {drawingName} {total} />
+    <Stack {skills} {locale} {drawingName} {total} />
+    <Contact {profile} {locale} {drawingName} {total} />
   </main>
+
+  <Footer {profile} {locale} {drawingName} />
 </Base>
+
+<style>
+  .sheets {
+    display: grid;
+    gap: var(--s-5);
+    padding: var(--s-4) var(--gutter) 0;
+  }
+</style>
