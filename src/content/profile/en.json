@@ -2,7 +2,7 @@
   "name": "Andrés Felipe Zapata",
   "shortName": "Andrés Zapata",
   "title": "Software architect · Senior full-stack engineer (Java & Node.js)",
-  "tagline": "10+ years designing and building systems that have to keep talking to each other.",
+  "tagline": "10+ years designing and building scalable systems.",
   "summary": "Full-stack software engineer with 10+ years of experience building platforms that serve 700,000+ users across Colombia and Latin America. Core stack: Java (Spring Boot, Quarkus) and Node.js / TypeScript (NestJS) on the backend; Angular, React and Vue on the frontend; Next.js for full-stack applications; deployed on AWS and Kubernetes. I design microservice, integration and Kafka event-streaming architectures, and I lead engineering teams in payments, transportation, logistics and banking.",
   "location": "Pereira, Colombia · Remote",
   "availability": "Working remotely from Colombia (UTC−5). Open to architecture, integration and AI-native projects.",

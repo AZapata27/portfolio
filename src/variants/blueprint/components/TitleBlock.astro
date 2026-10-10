@@ -1,8 +1,8 @@
 ---
 /**
- * Bloque de título del plano (hoja 1): tabla mono con el nombre del dibujo, rol,
- * experiencia, dominios y alcance; la fila CONTACT lleva el mailto en ámbar y la
- * fila LINKS los enlaces secundarios (LinkedIn, GitHub, CV).
+ * Bloque de título del plano (hoja 1): tabla mono con rol, experiencia, dominios y
+ * alcance; la fila CONTACT lleva el mailto en ámbar y la fila LINKS los enlaces
+ * secundarios (LinkedIn, GitHub, CV).
  */
 import type { Profile } from '@/lib/content';
 import { t, type Locale } from '@/lib/i18n';
@@ -11,10 +11,9 @@ import { capabilityOrder, vocabFor } from '../labels';
 interface Props {
   profile: Profile;
   locale: Locale;
-  drawingName: string;
 }
 
-const { profile, locale, drawingName } = Astro.props;
+const { profile, locale } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 
@@ -31,10 +30,6 @@ const headline = profile.metrics[0];
 <table class="tb">
   <caption class="visually-hidden">{v.titleBlock}</caption>
   <tbody>
-    <tr>
-      <th scope="row">{v.drawing}</th>
-      <td>{drawingName}</td>
-    </tr>
     <tr>
       <th scope="row">{v.role}</th>
       <td>{profile.title}</td>
