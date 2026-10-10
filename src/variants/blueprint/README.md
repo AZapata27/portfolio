@@ -19,7 +19,7 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | 3    | `experience`    | REVISIONS: experiencia como filas `REV / DATE / DESCRIPTION` (la más alta, la actual)     |
 | 4    | `work`          | DETAILS B–H: proyectos (destacados con su cifra como cota; el resto en fila compacta)     |
 | 5    | `stack`         | PARTS LIST: `ITEM / GROUP / PARTS` con logos de simple-icons en tinta                     |
-| 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, formación, idiomas, conocimiento de dominio, notas generales |
+| 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, idiomas, notas generales |
 
 `DETAIL A` es el código; por eso los proyectos empiezan en `DETAIL B`.
 

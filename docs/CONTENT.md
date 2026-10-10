@@ -8,7 +8,7 @@ Toda la información del CV vive en `src/content/`. Los esquemas están en `src/
 Identidad, resumen, enlaces, ruta del CV (`cv`), dominios, cifras (`metrics`), logros clave del CV
 (`achievements`: cuatro, con `value` para la cifra o etiqueta corta, `title` y `body`), capacidades (`capabilities`: cuatro,
 con `id` fijo: `architecture`, `integration`, `ai-native`, `leadership`), voces (`voices`: tres, con
-`id` fijo: `architect`, `builder`, `leader`), formación, extras. Los `id` son fijos porque las
+`id` fijo: `architect`, `builder`, `leader`), idiomas, extras. Los `id` son fijos porque las
 variantes los usan para ubicar cada bloque en su composición; el texto es libre.
 
 ## Experiencia (`src/content/experience/{en,es}/<slug>.md`)

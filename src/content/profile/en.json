@@ -13,17 +13,6 @@
     { "label": "LinkedIn", "url": "https://www.linkedin.com/in/andres-zapata-aristizabal/", "icon": "linkedin" }
   ],
   "domains": ["Fintech", "Banking", "Transportation & mobility", "Logistics", "Energy", "Public sector", "Airlines"],
-  "domainKnowledge": [
-    "RNDC",
-    "Electronic cargo manifests",
-    "Consignment notes",
-    "Proof of delivery",
-    "SICE-TAC",
-    "IP/REV",
-    "RUNT",
-    "Electronic tolling (TAG)",
-    "E-invoicing"
-  ],
   "languages": [
     { "name": "Spanish", "level": "Native" },
     { "name": "English", "level": "B2, upper intermediate" }
@@ -111,13 +100,6 @@
       "line": "Goals, not hours. Quality, not luck. Better each sprint.",
       "body": "I have led more than 200 people over the last five years and I coach developers into senior and architect roles. These days I also run corporate AI trainings, so a whole team can work this way, not just me.",
       "aside": "Exit. The team keeps shipping."
-    }
-  ],
-  "education": [
-    {
-      "title": "Technologist Degree in Information Systems Management",
-      "institution": "Fundación Universitaria Comfamiliar Risaralda",
-      "period": "2018 – 2021"
     }
   ],
   "extras": [

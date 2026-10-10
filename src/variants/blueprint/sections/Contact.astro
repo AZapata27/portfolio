@@ -1,8 +1,8 @@
 ---
 /**
  * Hoja 6 · Bloque de título completo: contacto (mailto en ámbar como acción
- * primaria), LinkedIn, GitHub, CV, ubicación y disponibilidad; al lado, formación,
- * idiomas, conocimiento de dominio y notas generales.
+ * primaria), LinkedIn, GitHub, CV, ubicación y disponibilidad; al lado, idiomas
+ * y notas generales.
  */
 import type { Profile } from '@/lib/content';
 import { t, type Locale } from '@/lib/i18n';
@@ -91,21 +91,6 @@ const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace
     </section>
 
     <div class="aside">
-      <section class="block" aria-labelledby="education-title">
-        <h3 id="education-title">{tr('section.education')}</h3>
-        <ul role="list">
-          {
-            profile.education.map((ed) => (
-              <li>
-                <strong>{ed.title}</strong>
-                <span>{ed.institution}</span>
-                <span class="mono">{ed.period}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
       <section class="block" aria-labelledby="languages-title">
         <h3 id="languages-title">{tr('section.languages')}</h3>
         <ul role="list" class="langs">
@@ -118,11 +103,6 @@ const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace
             ))
           }
         </ul>
-      </section>
-
-      <section class="block" aria-labelledby="domain-title">
-        <h3 id="domain-title">{v.domainKnowledge}</h3>
-        <p class="mono-list">{profile.domainKnowledge.join(' · ')}</p>
       </section>
     </div>
   </div>
@@ -248,11 +228,6 @@ const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace
   .mono {
     font: 400 var(--text-mono) / 1.4 var(--font-mono);
     color: var(--graphite);
-  }
-
-  .mono-list {
-    padding-top: var(--s-3);
-    font: 400 var(--text-mono) / 1.6 var(--font-mono);
   }
 
   .block dl {

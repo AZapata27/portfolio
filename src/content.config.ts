@@ -39,7 +39,6 @@ const profile = defineCollection({
     cv: z.string().startsWith('/'),
     links: z.array(link),
     domains: z.array(z.string()),
-    domainKnowledge: z.array(z.string()),
     languages: z.array(z.object({ name: z.string(), level: z.string() })),
     /** Cifras comprobables del CV. `value` ya viene formateado para mostrar. */
     metrics: z.array(
@@ -75,9 +74,6 @@ const profile = defineCollection({
         body: z.string(),
         aside: z.string(),
       }),
-    ),
-    education: z.array(
-      z.object({ title: z.string(), institution: z.string(), period: z.string() }),
     ),
     extras: z.array(z.object({ title: z.string(), body: z.string() })),
   }),

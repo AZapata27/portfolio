@@ -13,16 +13,6 @@
     { "label": "LinkedIn", "url": "https://www.linkedin.com/in/andres-zapata-aristizabal/", "icon": "linkedin" }
   ],
   "domains": ["Fintech", "Banca", "Transporte y movilidad", "Logística", "Energía", "Sector público", "Aerolíneas"],
-  "domainKnowledge": [
-    "RNDC",
-    "Manifiesto electrónico de carga",
-    "Remesas y cumplidos",
-    "SICE-TAC",
-    "IP/REV",
-    "RUNT",
-    "Peajes electrónicos (TAG)",
-    "Facturación electrónica"
-  ],
   "languages": [
     { "name": "Español", "level": "Nativo" },
     { "name": "Inglés", "level": "B2" }
@@ -110,13 +100,6 @@
       "line": "Metas, no horas. Calidad, no suerte. Mejor cada sprint.",
       "body": "He liderado a más de 200 personas en los últimos cinco años y acompaño a desarrolladores hacia roles senior y de arquitectura. Hoy también dicto formaciones corporativas de IA, para que todo un equipo trabaje así, no sólo yo.",
       "aside": "Sale de escena. El equipo sigue entregando."
-    }
-  ],
-  "education": [
-    {
-      "title": "Tecnología en Gestión de Sistemas",
-      "institution": "Fundación Universitaria Comfamiliar Risaralda",
-      "period": "2018 – 2021"
     }
   ],
   "extras": [
