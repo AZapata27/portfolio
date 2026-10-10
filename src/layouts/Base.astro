@@ -1,0 +1,42 @@
+---
+/**
+ * Esqueleto HTML común a todas las variantes: head, SEO, estilos globales y
+ * un slot `head` para que cada variante inyecte sus fuentes (`<Font />`) y tokens.
+ * La identidad visual NO vive aquí; vive en `src/variants/<variante>/`.
+ */
+import '@/styles/global.css';
+import Seo from '@/components/Seo.astro';
+import { t, type Locale } from '@/lib/i18n';
+import type { Profile } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  profile: Profile;
+  /** Atributo `data-variant` en <html>, para que los tokens de la variante apliquen. */
+  variant?: string;
+  bodyClass?: string;
+}
+
+const { locale, title, description, path, profile, variant, bodyClass } = Astro.props;
+const tr = t(locale);
+---
+
+<!doctype html>
+<html lang={locale} data-variant={variant}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="color-scheme" content="light" />
+    <Seo {locale} {title} {description} {path} {profile} />
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">{tr('skip')}</a>
+    <slot />
+  </body>
+</html>

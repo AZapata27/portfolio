@@ -1,0 +1,276 @@
+[
+  {
+    "id": "languages",
+    "order": 1,
+    "items": [
+      {
+        "name": "Java",
+        "icon": "openjdk"
+      },
+      {
+        "name": "Kotlin",
+        "icon": "kotlin"
+      },
+      {
+        "name": "TypeScript",
+        "icon": "typescript"
+      },
+      {
+        "name": "JavaScript",
+        "icon": "javascript"
+      },
+      {
+        "name": "Go",
+        "icon": "go"
+      }
+    ]
+  },
+  {
+    "id": "backend",
+    "order": 2,
+    "items": [
+      {
+        "name": "Spring Boot",
+        "icon": "springboot"
+      },
+      {
+        "name": "WebFlux",
+        "icon": "spring"
+      },
+      {
+        "name": "Quarkus",
+        "icon": "quarkus"
+      },
+      {
+        "name": "Apache Camel",
+        "icon": "apache"
+      },
+      {
+        "name": "Vert.x",
+        "icon": "eclipsevertdotx"
+      },
+      {
+        "name": "Node.js",
+        "icon": "nodedotjs"
+      },
+      {
+        "name": "NestJS",
+        "icon": "nestjs"
+      }
+    ]
+  },
+  {
+    "id": "frontend",
+    "order": 3,
+    "items": [
+      {
+        "name": "Angular",
+        "icon": "angular"
+      },
+      {
+        "name": "React",
+        "icon": "react"
+      },
+      {
+        "name": "Vue",
+        "icon": "vuedotjs"
+      },
+      {
+        "name": "Next.js",
+        "icon": "nextdotjs"
+      }
+    ]
+  },
+  {
+    "id": "data",
+    "order": 4,
+    "items": [
+      {
+        "name": "Kafka (Confluent)",
+        "icon": "apachekafka"
+      },
+      {
+        "name": "Debezium"
+      },
+      {
+        "name": "GCP Pub/Sub",
+        "icon": "googlecloud"
+      },
+      {
+        "name": "PostgreSQL",
+        "icon": "postgresql"
+      },
+      {
+        "name": "Oracle"
+      },
+      {
+        "name": "MongoDB",
+        "icon": "mongodb"
+      },
+      {
+        "name": "Redis",
+        "icon": "redis"
+      },
+      {
+        "name": "DynamoDB"
+      }
+    ]
+  },
+  {
+    "id": "cloud",
+    "order": 5,
+    "items": [
+      {
+        "name": "AWS"
+      },
+      {
+        "name": "GCP",
+        "icon": "googlecloud"
+      },
+      {
+        "name": "Azure"
+      },
+      {
+        "name": "OpenShift",
+        "icon": "redhatopenshift"
+      },
+      {
+        "name": "Kubernetes",
+        "icon": "kubernetes"
+      },
+      {
+        "name": "Docker",
+        "icon": "docker"
+      },
+      {
+        "name": "Terraform",
+        "icon": "terraform"
+      },
+      {
+        "name": "GitHub Actions",
+        "icon": "githubactions"
+      },
+      {
+        "name": "Keycloak",
+        "icon": "keycloak"
+      },
+      {
+        "name": "Kong",
+        "icon": "kong"
+      }
+    ]
+  },
+  {
+    "id": "observability",
+    "order": 6,
+    "items": [
+      {
+        "name": "OpenTelemetry",
+        "icon": "opentelemetry"
+      },
+      {
+        "name": "Prometheus",
+        "icon": "prometheus"
+      },
+      {
+        "name": "Grafana",
+        "icon": "grafana"
+      },
+      {
+        "name": "Loki",
+        "icon": "grafana"
+      },
+      {
+        "name": "Tempo",
+        "icon": "grafana"
+      }
+    ]
+  },
+  {
+    "id": "quality",
+    "order": 7,
+    "items": [
+      {
+        "name": "JUnit",
+        "icon": "junit5"
+      },
+      {
+        "name": "Testcontainers"
+      },
+      {
+        "name": "Cypress",
+        "icon": "cypress"
+      },
+      {
+        "name": "k6",
+        "icon": "k6"
+      },
+      {
+        "name": "Gatling",
+        "icon": "gatling"
+      },
+      {
+        "name": "Chaos engineering"
+      },
+      {
+        "name": "SonarQube"
+      }
+    ]
+  },
+  {
+    "id": "architecture",
+    "order": 8,
+    "items": [
+      {
+        "name": "Microservices"
+      },
+      {
+        "name": "Event-driven"
+      },
+      {
+        "name": "CQRS"
+      },
+      {
+        "name": "Hexagonal"
+      },
+      {
+        "name": "DDD"
+      },
+      {
+        "name": "Serverless"
+      },
+      {
+        "name": "ADRs"
+      }
+    ]
+  },
+  {
+    "id": "ai",
+    "order": 9,
+    "items": [
+      {
+        "name": "Claude Code",
+        "icon": "claude"
+      },
+      {
+        "name": "Anthropic API",
+        "icon": "anthropic"
+      },
+      {
+        "name": "OpenAI API"
+      },
+      {
+        "name": "LangChain",
+        "icon": "langchain"
+      },
+      {
+        "name": "MCP",
+        "icon": "modelcontextprotocol"
+      },
+      {
+        "name": "Hugging Face",
+        "icon": "huggingface"
+      }
+    ]
+  }
+]

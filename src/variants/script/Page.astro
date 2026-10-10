@@ -1,0 +1,37 @@
+---
+/**
+ * PLACEHOLDER. La variante "script" se implementa aquí (layout, secciones,
+ * tokens). Mientras tanto vuelca el contenido para verificar la capa de datos.
+ */
+import Base from '@/layouts/Base.astro';
+import { getProfile, getExperience, getProjects, getSkills } from '@/lib/content';
+import { t, formatPeriod, type Locale } from '@/lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tr = t(locale);
+const [profile, experience, projects, skills] = await Promise.all([
+  getProfile(locale),
+  getExperience(locale),
+  getProjects(locale),
+  getSkills(),
+]);
+---
+
+<Base {locale} {profile} path="/script" title={tr('meta.title')} description={tr('meta.description')} variant="script">
+  <main id="main">
+    <h1>{profile.shortName}</h1>
+    {profile.voices.map((v) => <section><h2>{v.name}</h2><p>{v.body}</p></section>)}
+    <h2>{tr('section.experience')}</h2>
+    <ul>
+      {experience.map((e) => <li>{e.data.role} · {e.data.company} · {formatPeriod(e.data.start, e.data.end, locale)}</li>)}
+    </ul>
+    <h2>{tr('section.work')}</h2>
+    <ul>{projects.map((p) => <li>{p.data.title}</li>)}</ul>
+    <h2>{tr('section.stack')}</h2>
+    <ul>{skills.map((g) => <li>{g.id}: {g.items.map((i) => i.name).join(', ')}</li>)}</ul>
+  </main>
+</Base>

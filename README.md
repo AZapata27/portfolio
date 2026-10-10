@@ -1,27 +1,73 @@
-# Portfolio
+# andres-zapata.dev
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.2.
+Portafolio de Andrés Zapata, arquitecto de software. Sitio estático construido con
+[Astro 7](https://docs.astro.build), bilingüe (inglés por defecto, español en `/es/`), desplegado en
+Vercel desde este repositorio.
 
-## Development server
+## Requisitos
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Node.js 22.12 o superior (`.nvmrc` fija 22.16.0; en Vercel `engines.node` pide 22.x).
+- npm 10.
 
-## Code scaffolding
+## Comandos
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+| Comando           | Qué hace                                                              |
+| ----------------- | --------------------------------------------------------------------- |
+| `npm install`     | Instala dependencias.                                                 |
+| `npm run dev`     | Servidor de desarrollo en http://localhost:4321 (`astro dev`).        |
+| `npm run check`   | Chequeo de tipos y de componentes Astro (`astro check`).              |
+| `npm run build`   | Build de producción (`.vercel/output/`, Build Output API de Vercel).  |
+| `npm run preview` | Sirve el build localmente.                                            |
 
-## Build
+## Estructura
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+src/
+  content/            # ÚNICA fuente de verdad del contenido (CV)
+    profile/{en,es}.json
+    experience/{en,es}/*.md
+    projects/{en,es}/*.md
+    skills.json
+  content.config.ts   # esquemas (zod) de las colecciones
+  lib/                # i18n.ts (idiomas, textos de UI), content.ts (acceso tipado)
+  components/         # Icon.astro, Seo.astro, Chooser.astro (temporal)
+  layouts/Base.astro  # esqueleto HTML común; sin identidad visual
+  styles/global.css   # reset y accesibilidad; sin colores ni fuentes
+  variants/           # una carpeta por variante visual (layout, tokens, secciones)
+    blueprint/
+    script/
+  pages/              # rutas: /, /es/, /blueprint/, /es/blueprint/, /script/, /es/script/
+public/               # favicon, robots.txt, cv/Andres-Zapata-CV.pdf
+docs/                 # ARCHITECTURE.md, CONTENT.md, ROADMAP.md
+PRODUCT.md            # contexto de producto (para humanos y agentes)
+AGENTS.md / CLAUDE.md # reglas para agentes de IA que mantienen el repo
+```
 
-## Running unit tests
+Regla central: **las variantes sólo leen contenido; el contenido nunca sabe de diseño.** Cambiar un
+dato del CV es editar un archivo en `src/content/` en los dos idiomas.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Variantes visuales
 
-## Running end-to-end tests
+Hay dos variantes en evaluación, ambas construidas sobre el mismo contenido:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- **Blueprint** (`/blueprint/`): plano técnico; la trayectoria dibujada como una ruta de
+  integración (Enterprise Integration Patterns).
+- **Script** (`/script/`): guion a tres voces (el arquitecto, el constructor, el líder).
 
-## Further help
+La raíz `/` es una página temporal para compararlas. Cuando se elija una, ver
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#promover-la-variante-ganadora) para promoverla a `/` y
+borrar la otra.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Despliegue
+
+Vercel está conectado al repo (`AZapata27/portfolio`): cada push a `master` despliega a producción
+(https://www.andres-zapata.dev) y cada PR genera una vista previa. La configuración vive en
+`vercel.json` y `astro.config.ts` (adaptador `@astrojs/vercel`).
+
+## Cómo agregar o cambiar contenido
+
+Ver [docs/CONTENT.md](docs/CONTENT.md). Resumen:
+
+1. Editar o crear el archivo en `src/content/<colección>/en/` **y** `src/content/<colección>/es/`.
+2. `npm run check` valida el esquema; `npm run dev` para verlo.
+3. Abrir PR hacia `master`.
