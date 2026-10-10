@@ -1,0 +1,132 @@
+---
+/**
+ * Hoja 1 · Ruta. Nombre arriba a la izquierda, el diagrama de la ruta en el
+ * centro, DETAIL A (Route.java) abajo a la izquierda y el bloque de título con el
+ * contacto abajo a la derecha. En móvil: nombre → ruta vertical → bloque de título
+ * → código con scroll horizontal.
+ *
+ * Los diagramas van envueltos en un `div` propio porque los estilos scoped de este
+ * componente no alcanzan la raíz de un componente hijo.
+ */
+import type { Profile } from '@/lib/content';
+import type { Locale } from '@/lib/i18n';
+import Sheet from '../components/Sheet.astro';
+import RouteDiagram from '../components/RouteDiagram.astro';
+import RouteFlow from '../components/RouteFlow.astro';
+import DetailA from '../components/DetailA.astro';
+import TitleBlock from '../components/TitleBlock.astro';
+import { vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  drawingName: string;
+  total: number;
+}
+
+const { profile, locale, drawingName, total } = Astro.props;
+const v = vocabFor(locale);
+---
+
+<Sheet id="route" number={1} {total} title={v.route} {drawingName} {locale} labelledby="name" hero>
+  <div class="hero">
+    <div class="hero-head">
+      <h1 id="name">{profile.shortName}</h1>
+      <p class="hero-sub">
+        <span class="hero-title">{profile.title}.</span>{' '}
+        <span class="hero-tagline">{profile.tagline}</span>
+      </p>
+    </div>
+
+    <div class="hero-diagram">
+      <RouteDiagram {profile} {locale} />
+    </div>
+    <div class="hero-flow">
+      <RouteFlow {profile} {locale} />
+    </div>
+
+    <div class="hero-foot">
+      <div class="hero-code">
+        <DetailA {profile} {locale} />
+      </div>
+      <div class="hero-tb">
+        <TitleBlock {profile} {locale} />
+      </div>
+    </div>
+  </div>
+</Sheet>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 800;
+    line-height: 0.86;
+    letter-spacing: var(--track-display);
+    text-transform: uppercase;
+  }
+
+  .hero-sub {
+    max-width: 72ch;
+    margin-top: var(--s-3);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .hero-title {
+    font-weight: 500;
+  }
+
+  .hero-tagline {
+    color: var(--graphite);
+  }
+
+  .hero-diagram {
+    display: none;
+  }
+
+  .hero-foot {
+    display: grid;
+    gap: var(--s-5);
+    align-items: start;
+  }
+
+  .hero-code,
+  .hero-tb {
+    min-width: 0;
+  }
+
+  @media (max-width: 959px) {
+    .hero-tb {
+      order: -1;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .hero-diagram {
+      display: block;
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .hero-foot {
+      margin-top: var(--s-2);
+    }
+
+    .hero-flow {
+      display: none;
+    }
+
+    .hero-foot {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+  }
+</style>

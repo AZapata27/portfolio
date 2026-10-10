@@ -1,0 +1,58 @@
+---
+/**
+ * Metadatos de la página: título, descripción, canonical, hreflang,
+ * Open Graph/Twitter y JSON-LD de tipo Person.
+ */
+import { defaultLocale, locales, localePath, type Locale } from '@/lib/i18n';
+import type { Profile } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Ruta sin idioma, p. ej. `/` o `/blueprint`. Se usa para canonical y alternates. */
+  path: string;
+  profile: Profile;
+  image?: string;
+}
+
+const { locale, title, description, path, profile, image = '/og.png' } = Astro.props;
+const site = Astro.site ?? new URL('https://www.andres-zapata.dev');
+const canonical = new URL(localePath(locale, path), site);
+const ogImage = new URL(image, site);
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: profile.shortName,
+  jobTitle: profile.title,
+  email: `mailto:${profile.email}`,
+  url: site.href,
+  sameAs: profile.links.map((l) => l.url),
+  address: { '@type': 'PostalAddress', addressLocality: 'Pereira', addressCountry: 'CO' },
+  knowsLanguage: profile.languages.map((l) => l.name),
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical.href} />
+{
+  locales.map((l) => (
+    <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />
+  ))
+}
+<link rel="alternate" hreflang="x-default" href={new URL(localePath(defaultLocale, path), site).href} />
+<meta property="og:type" content="profile" />
+<meta property="og:site_name" content={profile.shortName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical.href} />
+<meta property="og:image" content={ogImage.href} />
+<meta property="og:locale" content={locale === 'es' ? 'es_CO' : 'en_US'} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage.href} />
+<script type="application/ld+json" set:html={JSON.stringify(person)} />

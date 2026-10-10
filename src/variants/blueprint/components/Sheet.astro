@@ -1,0 +1,221 @@
+---
+/**
+ * Hoja de dibujo: marco doble (2 px + 1 px), marcas de esquina, grilla de puntos y
+ * sello con el número de hoja. La hoja 1 (`hero`) añade las reglas de columnas
+ * (1–6) arriba y abajo y las de zonas (A–D) a los lados.
+ */
+import type { Locale } from '@/lib/i18n';
+import { vocabFor } from '../labels';
+
+interface Props {
+  id: string;
+  number: number;
+  total: number;
+  /** Rótulo del sello, p. ej. "Revisions". */
+  title: string;
+  drawingName: string;
+  locale: Locale;
+  /** Id del encabezado que da nombre a la hoja (aria-labelledby). */
+  labelledby: string;
+  /** Hoja 1: con reglas de columnas y zonas. */
+  hero?: boolean;
+}
+
+const { id, number, total, title, drawingName, locale, labelledby, hero = false } = Astro.props;
+const v = vocabFor(locale);
+const cols = [1, 2, 3, 4, 5, 6];
+const zones = ['A', 'B', 'C', 'D'];
+---
+
+<section {id} class:list={['sheet', { 'sheet--hero': hero }]} aria-labelledby={labelledby}>
+  {
+    hero && (
+      <>
+        <div class="ruler ruler-x ruler-top" aria-hidden="true">
+          {cols.map((c) => (
+            <span>{c}</span>
+          ))}
+        </div>
+        <div class="ruler ruler-x ruler-bottom" aria-hidden="true">
+          {cols.map((c) => (
+            <span>{c}</span>
+          ))}
+        </div>
+        <div class="ruler ruler-y ruler-left" aria-hidden="true">
+          {zones.map((z) => (
+            <span>{z}</span>
+          ))}
+        </div>
+        <div class="ruler ruler-y ruler-right" aria-hidden="true">
+          {zones.map((z) => (
+            <span>{z}</span>
+          ))}
+        </div>
+      </>
+    )
+  }
+  <div class="sheet-inner">
+    <slot />
+    <p class="stamp">
+      <span class="stamp-sheet">{v.sheet} {number}/{total}</span>
+      <span class="stamp-title">{title}</span>
+      <span class="stamp-drawing">{drawingName}</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .sheet {
+    --band: 8px;
+    position: relative;
+    width: 100%;
+    max-width: var(--sheet-max);
+    margin: 0 auto;
+    background: var(--paper);
+    border: var(--line-strong) solid var(--ink);
+    padding: var(--band);
+    scroll-margin-top: 72px;
+  }
+
+  .sheet--hero {
+    --band: clamp(14px, 1.6vw, 22px);
+  }
+
+  .sheet-inner {
+    position: relative;
+    border: var(--line-hair) solid var(--ink);
+    padding: var(--sheet-pad) var(--sheet-pad) calc(var(--sheet-pad) + 44px);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink)),
+      radial-gradient(circle, var(--grid) 1px, transparent 1.5px);
+    background-size:
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      24px 24px;
+    background-position:
+      0 0,
+      0 0,
+      100% 0,
+      100% 0,
+      0 100%,
+      0 100%,
+      100% 100%,
+      100% 100%,
+      12px 12px;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+  }
+
+  /* Reglas de la hoja 1 */
+  .ruler {
+    position: absolute;
+    display: grid;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--graphite);
+  }
+
+  .ruler span {
+    display: grid;
+    place-items: center;
+  }
+
+  .ruler-x {
+    left: var(--band);
+    right: var(--band);
+    height: var(--band);
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .ruler-top {
+    top: 0;
+  }
+
+  .ruler-bottom {
+    bottom: 0;
+  }
+
+  .ruler-x span + span {
+    border-left: var(--line-hair) solid var(--ink);
+  }
+
+  .ruler-y {
+    top: var(--band);
+    bottom: var(--band);
+    width: var(--band);
+    grid-template-rows: repeat(4, 1fr);
+  }
+
+  .ruler-left {
+    left: 0;
+  }
+
+  .ruler-right {
+    right: 0;
+  }
+
+  .ruler-y span + span {
+    border-top: var(--line-hair) solid var(--ink);
+  }
+
+  /* Sello de hoja */
+  .stamp {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    display: flex;
+    max-width: calc(100% + 2px);
+    margin: 0;
+    background: var(--paper);
+    border-top: var(--line-hair) solid var(--ink);
+    border-left: var(--line-hair) solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+    white-space: nowrap;
+  }
+
+  .stamp span {
+    padding: 8px 12px;
+    border-right: var(--line-hair) solid var(--ink);
+  }
+
+  .stamp span:last-child {
+    border-right: 0;
+  }
+
+  .stamp-sheet {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .stamp-drawing {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  @media (max-width: 479px) {
+    .stamp-drawing {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,96 @@
+---
+/**
+ * Icono SVG inline.
+ *
+ * - `brand`: slug de simple-icons (p. ej. `apachekafka`, `quarkus`). Se renderiza
+ *   el logo oficial; si el slug no existe, no renderiza nada (y avisa en dev).
+ * - `name`: icono de interfaz propio, dibujado aquí con un solo grosor de trazo.
+ *
+ * Uso: `<Icon brand="quarkus" />`, `<Icon name="arrow-right" size={20} />`.
+ */
+import * as simpleIcons from 'simple-icons';
+
+/** Trazos a 24x24, stroke 1.75, round caps (mismo peso en todos). */
+const uiIcons = {
+  'arrow-right': '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  'arrow-up-right': '<path d="M7 17 17 7M8 7h9v9"/>',
+  'arrow-down': '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  'map-pin':
+    '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  download: '<path d="M12 4v11M7 11l5 5 5-5M4 20h16"/>',
+  globe:
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  linkedin:
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7.5 10.5v6M7.5 7.4v.1M11.5 16.5v-6M11.5 13.3c0-1.5 1.1-2.8 2.6-2.8s2.4 1.1 2.4 2.6v3.4"/>',
+  external:
+    '<path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/>',
+  check: '<path d="m5 12 5 5L20 7"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+} as const;
+
+export type UiIconName = keyof typeof uiIcons;
+
+interface Props {
+  brand?: string;
+  name?: UiIconName;
+  size?: number | string;
+  title?: string;
+  class?: string;
+  /** Para marcas: usar el color oficial del logo en vez de `currentColor`. */
+  brandColor?: boolean;
+}
+
+const { brand, name, size = 24, title, class: className, brandColor = false } = Astro.props;
+
+type SimpleIcon = { title: string; slug: string; hex: string; path: string };
+
+function findBrand(slug: string): SimpleIcon | undefined {
+  const key = `si${slug.charAt(0).toUpperCase()}${slug.slice(1)}` as keyof typeof simpleIcons;
+  const icon = simpleIcons[key] as unknown as SimpleIcon | undefined;
+  return icon && typeof icon === 'object' && 'path' in icon ? icon : undefined;
+}
+
+const brandIcon = brand ? findBrand(brand) : undefined;
+/** Si la marca no existe en simple-icons pero sí como icono propio (p. ej. `linkedin`), usar ese. */
+const uiName: UiIconName | undefined =
+  name ?? (brand && !brandIcon && brand in uiIcons ? (brand as UiIconName) : undefined);
+if (brand && !brandIcon && !uiName && import.meta.env.DEV) {
+  console.warn(`[Icon] simple-icons no tiene el slug "${brand}"`);
+}
+const label = title ?? brandIcon?.title;
+---
+
+{
+  brandIcon ? (
+    <svg
+      class={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      role={label ? 'img' : 'presentation'}
+      aria-label={label}
+      aria-hidden={label ? undefined : 'true'}
+      fill={brandColor ? `#${brandIcon.hex}` : 'currentColor'}
+    >
+      <path d={brandIcon.path} />
+    </svg>
+  ) : uiName ? (
+    <svg
+      class={className}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      role={label ? 'img' : 'presentation'}
+      aria-label={label}
+      aria-hidden={label ? undefined : 'true'}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      set:html={uiIcons[uiName]}
+    />
+  ) : null
+}

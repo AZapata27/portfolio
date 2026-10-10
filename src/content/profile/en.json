@@ -1,0 +1,115 @@
+{
+  "name": "Andrés Felipe Zapata",
+  "shortName": "Andrés Zapata",
+  "title": "Software architect · Senior full-stack engineer (Java & Node.js)",
+  "tagline": "10+ years designing and building scalable systems.",
+  "summary": "Full-stack software engineer with 10+ years of experience building platforms that serve 700,000+ users across Colombia and Latin America. Core stack: Java (Spring Boot, Quarkus) and Node.js / TypeScript (NestJS) on the backend; Angular, React and Vue on the frontend; Next.js for full-stack applications; deployed on AWS and Kubernetes. I design microservice, integration and Kafka event-streaming architectures, and I lead engineering teams in payments, transportation, logistics and banking.",
+  "location": "Pereira, Colombia · Remote",
+  "availability": "Working remotely from Colombia (UTC−5). Open to architecture, integration and AI-native projects.",
+  "email": "afzar27@gmail.com",
+  "cv": "/cv/Andres-Zapata-CV-en.pdf",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/AZapata27", "icon": "github" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/andres-zapata-aristizabal/", "icon": "linkedin" }
+  ],
+  "domains": ["Fintech", "Banking", "Transportation & mobility", "Logistics", "Energy", "Public sector", "Airlines"],
+  "languages": [
+    { "name": "Spanish", "level": "Native" },
+    { "name": "English", "level": "B2, upper intermediate" }
+  ],
+  "metrics": [
+    { "value": "10+", "label": "years building software", "context": "From service desks to software architecture." },
+    { "value": "700k+", "label": "users served", "context": "Platforms across Colombia and Latin America." },
+    { "value": "−98%", "label": "latency", "context": "5 s to 100 ms at 10,000 req/s in mission-critical microservices at Banco de la República, Colombia's central bank." },
+    { "value": "−40%", "label": "time to market", "context": "Developer Experience platform (Backstage, AWS Service Catalog, service archetypes) presented to the C-suite." },
+    { "value": "200+", "label": "people led", "context": "Over the last five years, coaching developers into senior and architect roles." }
+  ],
+  "achievements": [
+    {
+      "value": "IP/REV",
+      "title": "Electronic toll collection interoperability",
+      "body": "Member of the team that built IP/REV (Electronic Vehicle Toll Collection Interoperability) for Colombia's Ministry of Transport, on an event-driven, highly concurrent, high-throughput transaction architecture."
+    },
+    {
+      "value": "RNDC",
+      "title": "RNDC integration",
+      "body": "Integrated shippers and carriers such as Grupo Nutresa and Rápido Ochoa with the RNDC (National Cargo Dispatch Registry): consignment notes, electronic cargo manifests and proof-of-delivery records."
+    },
+    {
+      "value": "−98%",
+      "title": "Latency in mission-critical microservices",
+      "body": "From 5 s to 100 ms at 10,000 req/s in mission-critical microservices at Banco de la República (Colombia's central bank) using WebFlux, Redis and MongoDB."
+    },
+    {
+      "value": "−40%",
+      "title": "Time-to-market",
+      "body": "With a Developer Experience platform (Backstage, AWS Service Catalog, service archetypes) presented to the C-suite."
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "architecture",
+      "name": "Architecture",
+      "lead": "Cloud-native by design.",
+      "body": "Cloud-native designs on AWS, Azure and GCP. DDD, event-driven, observable from day one, load- and chaos-tested before shipping. Ten years across fintech, banking, logistics and transportation, with decisions written down as ADRs.",
+      "parts": ["AWS", "Azure", "GCP", "DDD", "CQRS", "Events", "ADRs"]
+    },
+    {
+      "id": "integration",
+      "name": "Integration",
+      "lead": "Making systems talk.",
+      "body": "My trade is making systems talk to each other: Enterprise Integration Patterns with Apache Camel on Quarkus, and Kafka with Connect, Debezium and Streams. Payment gateways, partner and government APIs, message routing and transformation.",
+      "parts": ["EIP", "Camel", "Quarkus", "Kafka", "Debezium", "Streams"]
+    },
+    {
+      "id": "ai-native",
+      "name": "AI-native developer",
+      "lead": "AI in every step.",
+      "body": "AI is in every step of how I work: spec, design, code, review, release. Lately I build the AI side too: agent harnesses, MCP servers, skills, agents, and the governance that lets a company trust them. Claude Code, the Anthropic and OpenAI APIs, LangChain, MCP and Hugging Face on the desk.",
+      "parts": ["Harness", "MCP", "Skills", "Agents", "Governance"]
+    },
+    {
+      "id": "leadership",
+      "name": "Control bus",
+      "lead": "Teams that ship.",
+      "body": "More than 200 people led over the last five years. I coach developers into senior and architect roles and run corporate AI trainings, so a whole team can work this way, not just me. Code review culture, coding dojos, pre-sales and solution design.",
+      "parts": ["Teams", "200+ people led", "AI trainings", "Pre-sales"]
+    }
+  ],
+  "voices": [
+    {
+      "id": "architect",
+      "name": "The architect",
+      "tempo": "loud",
+      "line": "Make systems talk.",
+      "body": "My trade is making systems talk to each other. Enterprise Integration Patterns with Apache Camel on Quarkus, Kafka with Debezium and Streams, cloud-native designs on AWS, Azure and GCP.",
+      "aside": "Ten years across fintech, banking, logistics and transportation. DDD, event-driven, observable from day one, load- and chaos-tested before shipping."
+    },
+    {
+      "id": "builder",
+      "name": "The builder",
+      "tempo": "fast",
+      "line": "AI in every step.",
+      "body": "AI is in every step of how I work: spec, design, code, review, release. Lately I build the AI side too: agent harnesses, MCP servers, skills, agents, and the governance that lets a company trust them.",
+      "aside": "Claude Code, the Anthropic and OpenAI APIs, LangChain, MCP and Hugging Face on the desk."
+    },
+    {
+      "id": "leader",
+      "name": "The leader",
+      "tempo": "calm",
+      "line": "Goals, not hours. Quality, not luck. Better each sprint.",
+      "body": "I have led more than 200 people over the last five years and I coach developers into senior and architect roles. These days I also run corporate AI trainings, so a whole team can work this way, not just me.",
+      "aside": "Exit. The team keeps shipping."
+    }
+  ],
+  "extras": [
+    {
+      "title": "Applied AI",
+      "body": "AI-assisted development with coding agents (Claude Code), with a strong focus on security and confidentiality."
+    },
+    {
+      "title": "Pre-sales",
+      "body": "Requirements discovery with clients, solution design and architecture decision records (ADRs)."
+    }
+  ]
+}

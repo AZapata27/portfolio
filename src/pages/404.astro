@@ -1,0 +1,39 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getProfile } from '@/lib/content';
+
+const profile = await getProfile('es');
+---
+
+<Base locale="es" {profile} path="/404" title="No encontrado · Andrés Zapata" description={profile.tagline}>
+  <main id="main" class="nf">
+    <p class="nf__code">404</p>
+    <h1>Esta ruta no tiene endpoint de salida.</h1>
+    <p><a href="/">Volver al inicio</a> · <a href="/en/" hreflang="en" lang="en">Back to the start</a></p>
+  </main>
+</Base>
+
+<style>
+  .nf {
+    min-height: 100dvh;
+    display: grid;
+    place-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1.25rem;
+    font-family: system-ui, sans-serif;
+    color: #151515;
+    background: #fafaf7;
+    text-align: center;
+  }
+  .nf__code {
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    color: #4a4f55;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  a {
+    color: #1f5fbf;
+  }
+</style>

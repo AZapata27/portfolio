@@ -1,0 +1,486 @@
+---
+/**
+ * Diagrama de la ruta (escritorio, ≥ 960 px): SVG responsivo con viewBox fijo.
+ *
+ * Geometría (unidades del viewBox 1080×318): línea principal en y=180; ramas en
+ * y=90/180/270; control bus en y=24. El sobre ámbar recorre la ruta con
+ * `offset-path` y los cables se entintan con `stroke-dashoffset` (cada path lleva
+ * `pathLength="1"`). Con `prefers-reduced-motion` nada se mueve: el dibujo está
+ * completo y el sobre descansa en el canal de entrada.
+ */
+import type { Profile } from '@/lib/content';
+import type { Locale } from '@/lib/i18n';
+import { capabilityOrder, vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  class?: string;
+}
+
+const { profile, locale, class: className } = Astro.props;
+const v = vocabFor(locale);
+
+const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
+const branches = capabilityOrder
+  .filter((id) => id !== 'leadership')
+  .map((id) => byId.get(id))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c));
+const bus = byId.get('leadership');
+
+const ROWS = [90, 180, 270];
+const BOX = { x: 312, w: 360, h: 70 };
+const splitParts = (parts: string[]): [string, string] => [
+  parts.slice(0, 4).join(' · '),
+  parts.slice(4).join(' · '),
+];
+---
+
+<svg
+  class:list={['route', className]}
+  viewBox="0 0 1080 318"
+  role="group"
+  aria-label={v.routeDiagram}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {
+    bus && (
+      <g class="bus">
+        <path class="bus-line" d="M208 24 H1032" />
+        <path class="bus-line" d="M208 24 V152" />
+        <path class="bus-line" d="M492 24 V55" />
+        <path class="bus-line" d="M772 24 V152" />
+        <text x="224" y="14" class="bus-text">
+          <tspan class="bus-label">{bus.name}</tspan>
+          <tspan dx="14">{bus.parts.join(' · ')}</tspan>
+        </text>
+        <g class="callout callout-bus" transform="translate(1050 24)">
+          <g class="stamp">
+            <circle r="13" />
+            <text y="4.5">4</text>
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  <!-- Canal de entrada -->
+  <g class="node">
+    <path class="shape" d="M22 162 H120 A10 18 0 0 1 120 198 H22 A10 18 0 0 1 22 162 Z"></path>
+    <ellipse class="shape" cx="22" cy="180" rx="10" ry="18"></ellipse>
+    <text x="22" y="146" class="lbl">{v.inbound}</text>
+    <text x="22" y="230" class="lbl-strong">{v.yourProblem}</text>
+  </g>
+  <path class="wire w-a" pathLength="1" d="M130 180 H178 M172 175 L178 180 L172 185"></path>
+
+  <!-- Content-based router -->
+  <g class="node">
+    <rect class="shape fill" x="180" y="152" width="56" height="56"></rect>
+    <use href="#eip-router" x="192" y="164" width="32" height="32"></use>
+    <text x="208" y="230" class="lbl mid">{v.routerLine1}</text>
+    <text x="208" y="245" class="lbl mid">{v.routerLine2}</text>
+  </g>
+  <path class="wire w-b" pathLength="1" d="M236 180 H276 M276 90 V270"></path>
+
+  <!-- Ramas -->
+  {
+    branches.map((c, i) => {
+      const cy = ROWS[i] ?? 180;
+      const [line1, line2] = splitParts(c.parts);
+      return (
+        <a class="branch" href={`#capabilities-${c.id}`} aria-label={c.name}>
+          <path
+            class={`wire w-c w-c${i + 1}`}
+            pathLength="1"
+            d={`M276 ${cy} H310 M304 ${cy - 5} L310 ${cy} L304 ${cy + 5}`}
+          />
+          <rect
+            class={`shape box bx${i + 1}`}
+            pathLength="1"
+            x={BOX.x}
+            y={cy - BOX.h / 2}
+            width={BOX.w}
+            height={BOX.h}
+          />
+          <use href={`#eip-${c.id}`} x="328" y={cy - 14} width="28" height="28" />
+          <text x="372" y={cy - 6} class="name">
+            {c.name}
+          </text>
+          <text x="372" y={cy + 10} class="parts">
+            {line1}
+          </text>
+          {line2 && (
+            <text x="372" y={cy + 24} class="parts">
+              {line2}
+            </text>
+          )}
+          <path class={`wire w-d w-d${i + 1}`} pathLength="1" d={`M672 ${cy} H708`} />
+          <g class={`callout callout-${i + 1}`} transform={`translate(672 ${cy - BOX.h / 2})`}>
+            <g class="stamp">
+              <circle r="13" />
+              <text y="4.5">{i + 1}</text>
+            </g>
+          </g>
+        </a>
+      );
+    })
+  }
+
+  <path class="wire w-e" pathLength="1" d="M708 90 V270 M708 180 H742 M736 175 L742 180 L736 185"></path>
+
+  <!-- Agregador -->
+  <g class="node">
+    <rect class="shape fill" x="744" y="152" width="56" height="56"></rect>
+    <use href="#eip-aggregator" x="756" y="164" width="32" height="32"></use>
+    <text x="772" y="230" class="lbl mid">{v.aggregator}</text>
+  </g>
+  <path class="wire w-f" pathLength="1" d="M800 180 H830 M824 175 L830 180 L824 185"></path>
+
+  <!-- Canal de salida -->
+  <g class="node">
+    <path class="shape" d="M842 162 H942 A10 18 0 0 1 942 198 H842 A10 18 0 0 1 842 162 Z"></path>
+    <ellipse class="shape" cx="842" cy="180" rx="10" ry="18"></ellipse>
+    <text x="842" y="146" class="lbl">{v.outbound}</text>
+    <text x="842" y="230" class="lbl-strong">{v.production}</text>
+  </g>
+  <path class="wire w-g" pathLength="1" d="M952 180 H978 M972 175 L978 180 L972 185"></path>
+
+  <g class="prod">
+    <rect x="980" y="154" width="80" height="52"></rect>
+    <text x="1020" y="187">{v.prod}</text>
+  </g>
+
+  <!-- El mensaje: en reposo dentro del canal de entrada; animado recorre la ruta -->
+  <g class="envelope" aria-hidden="true">
+    <rect x="-11" y="-7.5" width="22" height="15"></rect>
+    <path d="M-11 -7.5 L0 1 L11 -7.5"></path>
+  </g>
+</svg>
+
+<style>
+  .route {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--ink);
+    overflow: visible;
+  }
+
+  /* Trazos */
+  .wire,
+  .shape {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    transition: stroke-width var(--d-fast) var(--ease-out);
+  }
+
+  .fill,
+  .box {
+    fill: var(--paper);
+  }
+
+  .box {
+    stroke-width: 2;
+  }
+
+  .bus-line {
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Texto */
+  text {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lbl {
+    font: 500 12px/1 var(--font-mono);
+    letter-spacing: 0.02em;
+    fill: var(--graphite);
+  }
+
+  .mid {
+    text-anchor: middle;
+  }
+
+  .lbl-strong {
+    font: 600 15px/1 var(--font-body);
+    fill: var(--ink);
+  }
+
+  .name {
+    font: 700 23px/1 var(--font-display);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    fill: var(--ink);
+  }
+
+  .parts {
+    font: 400 12.5px/1 var(--font-mono);
+    fill: var(--graphite);
+  }
+
+  .bus-text {
+    font: 500 12px/1 var(--font-mono);
+    fill: var(--blue);
+  }
+
+  .bus-label {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .callout circle {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    transition: fill var(--d-fast) var(--ease-out);
+  }
+
+  .callout text {
+    font: 700 13px/1 var(--font-mono);
+    fill: var(--ink);
+    text-anchor: middle;
+  }
+
+  .callout-bus circle {
+    stroke: var(--blue);
+  }
+
+  .callout-bus text {
+    fill: var(--blue);
+  }
+
+  .prod rect {
+    fill: var(--ink);
+  }
+
+  .prod text {
+    font: 700 20px/1 var(--font-display);
+    letter-spacing: 0.06em;
+    fill: var(--white);
+    text-anchor: middle;
+  }
+
+  .envelope {
+    transform: translate(72px, 180px);
+  }
+
+  .envelope rect {
+    fill: var(--amber);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .envelope path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  /* Rama: enlace a su nota; al pasar el cursor se resalta su cable y su llamada */
+  .branch {
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+  }
+
+  .branch:hover .wire,
+  .branch:focus-visible .wire,
+  .branch:hover .box,
+  .branch:focus-visible .box {
+    stroke-width: 3;
+  }
+
+  .branch:hover .callout circle,
+  .branch:focus-visible .callout circle {
+    fill: var(--amber);
+  }
+
+  .branch:focus-visible .box {
+    stroke: var(--amber-deep);
+  }
+
+  /* Momento memorable: el sobre recorre la ruta y las ramas se entintan con retardo */
+  @media (prefers-reduced-motion: no-preference) {
+    /* El hueco (1.2) supera el largo del trazo (1): antes de entintar no asoma ni el remate redondo */
+    .wire,
+    .box {
+      stroke-dasharray: 1 1.2;
+      stroke-dashoffset: 1.1;
+      animation: ink var(--d-ink) var(--ease-out) var(--t, 0s) both;
+    }
+
+    .w-a {
+      --t: 0.15s;
+    }
+    .w-b {
+      --t: 0.7s;
+    }
+    .w-c1 {
+      --t: 1.15s;
+    }
+    .w-c2 {
+      --t: 1.25s;
+    }
+    .w-c3 {
+      --t: 1.35s;
+    }
+    .bx1 {
+      --t: 1.55s;
+    }
+    .bx2 {
+      --t: 1.65s;
+    }
+    .bx3 {
+      --t: 1.75s;
+    }
+    .w-d1 {
+      --t: 2.5s;
+    }
+    .w-d2 {
+      --t: 2.6s;
+    }
+    .w-d3 {
+      --t: 2.7s;
+    }
+    .w-e {
+      --t: 3.05s;
+    }
+    .w-f {
+      --t: 3.95s;
+    }
+    .w-g {
+      --t: 4.4s;
+    }
+
+    .callout .stamp {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: stamp 0.5s var(--ease-out) var(--t, 0s) both;
+    }
+    .callout-1 {
+      --t: 2.3s;
+    }
+    .callout-2 {
+      --t: 2.4s;
+    }
+    .callout-3 {
+      --t: 2.5s;
+    }
+    .callout-bus {
+      --t: 4.7s;
+    }
+
+    .bus {
+      animation: bus-ink 0.6s var(--ease-out) 4.4s both;
+    }
+
+    @supports (offset-path: path('M0 0 H1')) {
+      .envelope {
+        transform: none;
+        offset-path: path('M72 180 H276 V90 H708 V180 H892');
+        offset-rotate: 0deg;
+        animation:
+          travel var(--d-route) var(--ease-travel) 0.4s both,
+          absorb var(--d-route) linear 0.4s both;
+      }
+    }
+  }
+
+  @keyframes ink {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes stamp {
+    from {
+      scale: 0.6;
+    }
+    to {
+      scale: 1;
+    }
+  }
+
+  @keyframes bus-ink {
+    from {
+      opacity: 0.35;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Distancias: router 13.6 %, caja de arquitectura 33–69 %, agregador 88 % */
+  @keyframes travel {
+    0% {
+      offset-distance: 0%;
+    }
+    12% {
+      offset-distance: 13.6%;
+    }
+    20% {
+      offset-distance: 13.6%;
+    }
+    38% {
+      offset-distance: 33%;
+    }
+    46% {
+      offset-distance: 69%;
+    }
+    66% {
+      offset-distance: 88%;
+    }
+    74% {
+      offset-distance: 88%;
+    }
+    100% {
+      offset-distance: 100%;
+    }
+  }
+
+  /* El sobre "entra" en cada componente: se encoge al cruzarlo y reaparece al salir */
+  @keyframes absorb {
+    0%,
+    10% {
+      scale: 1;
+    }
+    12%,
+    20% {
+      scale: 0.15;
+    }
+    22%,
+    36% {
+      scale: 1;
+    }
+    38%,
+    45% {
+      scale: 0.15;
+    }
+    47%,
+    64% {
+      scale: 1;
+    }
+    66%,
+    74% {
+      scale: 0.15;
+    }
+    76%,
+    100% {
+      scale: 1;
+    }
+  }
+</style>

@@ -1,0 +1,164 @@
+---
+/**
+ * DETAIL A · Route.java: la misma ruta del diagrama escrita en el DSL de Camel.
+ * Los literales se construyen con los ids y `parts` de las capacidades, así el
+ * código y el dibujo nunca se desincronizan. Las llamadas ①–④ remiten a las notas.
+ */
+import type { Profile } from '@/lib/content';
+import type { Locale } from '@/lib/i18n';
+import { capabilityOrder, slugify, vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+}
+
+const { profile, locale } = Astro.props;
+const v = vocabFor(locale);
+
+const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
+const branches = capabilityOrder
+  .filter((id) => id !== 'leadership')
+  .map((id) => byId.get(id))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c));
+const bus = byId.get('leadership');
+
+type Token = { kind: 'code' | 'str'; text: string };
+type Line = { indent: number; tokens: Token[]; callout?: number; bus?: boolean };
+
+const code = (text: string): Token => ({ kind: 'code', text });
+const str = (text: string): Token => ({ kind: 'str', text: `"${text}"` });
+/** Dos `parts` por endpoint: la línea más larga cabe en la columna del código a 1280 px sin scroll. */
+const endpoint = (c: (typeof branches)[number]) =>
+  `${c.id}:${c.parts.slice(0, 2).map(slugify).join('+')}`;
+
+const lines: Line[] = [
+  { indent: 0, tokens: [code('from('), str(`inbound:${slugify(v.yourProblem)}`), code(')')] },
+  { indent: 1, tokens: [code('.choice()')] },
+  ...branches.map((c, i) => ({
+    indent: 2,
+    tokens: [code('.when(needs('), str(c.id), code(')).to('), str(endpoint(c)), code(')')],
+    callout: i + 1,
+  })),
+  { indent: 1, tokens: [code('.end()')] },
+  ...(bus
+    ? [
+        {
+          indent: 1,
+          tokens: [code('.wireTap('), str(`controlbus:${slugify(bus.parts[0] ?? bus.name)}`), code(')')],
+          callout: 4,
+          bus: true,
+        },
+      ]
+    : []),
+  {
+    indent: 1,
+    tokens: [code('.aggregate(allBranches()).to('), str(`outbound:${slugify(v.production)}`), code(');')],
+  },
+];
+---
+
+<figure class="detail-a">
+  <figcaption>
+    <span class="tag">{v.detail} A</span>
+    <span class="file">Route.java</span>
+  </figcaption>
+  <pre tabindex="0"><code>{lines.map((l) => <><span class="src">{'    '.repeat(l.indent)}{l.tokens.map((tk) => <span class={tk.kind}>{tk.text}</span>)}</span>{l.callout && <span class:list={['co', { 'co-bus': l.bus }]} aria-hidden="true">{l.callout}</span>}</>)}</code></pre>
+</figure>
+
+<style>
+  .detail-a {
+    display: grid;
+    gap: var(--s-2);
+    min-width: 0;
+    margin: 0;
+  }
+
+  figcaption {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-bottom: var(--s-2);
+    border-bottom: var(--line) solid var(--ink);
+  }
+
+  .tag {
+    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .file {
+    font: 400 var(--text-mono) / 1 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--s-2) 0 var(--s-3);
+    overflow-x: auto;
+    font: 400 var(--text-mono) / 1.65 var(--font-mono);
+    font-variant-ligatures: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink) transparent;
+  }
+
+  /* Una sola grilla para todas las líneas: las llamadas quedan alineadas en una columna */
+  code {
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) auto;
+    grid-auto-rows: 1.65em;
+    align-items: center;
+    column-gap: var(--s-4);
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .src {
+    grid-column: 1;
+    white-space: pre;
+  }
+
+  .co {
+    grid-column: 2;
+  }
+
+  @media (max-width: 639px) {
+    code {
+      grid-template-columns: auto minmax(max-content, 1fr);
+    }
+
+    .src {
+      grid-column: 2;
+    }
+
+    .co {
+      grid-column: 1;
+    }
+  }
+
+  .code {
+    color: var(--ink);
+  }
+
+  .str {
+    color: var(--amber-deep);
+  }
+
+  .co {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: var(--line) solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+    font: 700 11px/1 var(--font-mono);
+    color: var(--ink);
+  }
+
+  .co-bus {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+</style>

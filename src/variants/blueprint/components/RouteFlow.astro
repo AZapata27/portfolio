@@ -1,0 +1,274 @@
+---
+/**
+ * Diagrama de la ruta en vertical (móvil y tablet, < 960 px): cajas HTML con
+ * conectores dibujados en CSS y los mismos iconos EIP del sprite.
+ * Sin animación: en pantallas pequeñas el dibujo se lee completo y quieto.
+ */
+import type { Profile } from '@/lib/content';
+import type { Locale } from '@/lib/i18n';
+import { capabilityOrder, vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+  class?: string;
+}
+
+const { profile, locale, class: className } = Astro.props;
+const v = vocabFor(locale);
+
+const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
+const branches = capabilityOrder
+  .filter((id) => id !== 'leadership')
+  .map((id) => byId.get(id))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c));
+const bus = byId.get('leadership');
+---
+
+<ol class:list={['flow', className]} role="list" aria-label={v.routeDiagram}>
+  <li class="node">
+    <span class="glyph glyph-channel">
+      <svg width="40" height="40" aria-hidden="true"><use href="#eip-channel"></use></svg>
+      <svg class="env" width="18" height="18" aria-hidden="true"><use href="#eip-envelope"></use></svg>
+    </span>
+    <span class="txt">
+      <span class="lbl">{v.inbound}</span>
+      <strong>{v.yourProblem}</strong>
+    </span>
+  </li>
+
+  <li class="node">
+    <span class="glyph glyph-box">
+      <svg width="24" height="24" aria-hidden="true"><use href="#eip-router"></use></svg>
+    </span>
+    <span class="txt">
+      <span class="lbl">{v.routerLine1} {v.routerLine2}</span>
+    </span>
+  </li>
+
+  {
+    branches.map((c, i) => (
+      <li class="node node-branch">
+        <a class="branch" href={`#capabilities-${c.id}`}>
+          <span class="glyph glyph-box">
+            <svg width="24" height="24" aria-hidden="true">
+              <use href={`#eip-${c.id}`} />
+            </svg>
+          </span>
+          <span class="txt">
+            <span class="name">{c.name}</span>
+            <span class="parts">{c.parts.join(' · ')}</span>
+          </span>
+          <span class="callout">{i + 1}</span>
+        </a>
+      </li>
+    ))
+  }
+
+  {
+    bus && (
+      <li class="node node-bus">
+        <span class="glyph glyph-bus">
+          <svg width="24" height="24" aria-hidden="true">
+            <use href="#eip-bus" />
+          </svg>
+        </span>
+        <span class="txt">
+          <span class="name">{bus.name}</span>
+          <span class="parts">{bus.parts.join(' · ')}</span>
+        </span>
+        <span class="callout callout-bus">4</span>
+      </li>
+    )
+  }
+
+  <li class="node">
+    <span class="glyph glyph-box">
+      <svg width="24" height="24" aria-hidden="true"><use href="#eip-aggregator"></use></svg>
+    </span>
+    <span class="txt">
+      <span class="lbl">{v.aggregator}</span>
+    </span>
+  </li>
+
+  <li class="node">
+    <span class="glyph glyph-channel">
+      <svg width="40" height="40" aria-hidden="true"><use href="#eip-channel"></use></svg>
+    </span>
+    <span class="txt">
+      <span class="lbl">{v.outbound}</span>
+      <strong>{v.production}</strong>
+    </span>
+  </li>
+
+  <li class="node node-prod">
+    <span class="glyph glyph-prod">{v.prod}</span>
+    <span class="txt">
+      <svg width="24" height="24" aria-hidden="true"><use href="#eip-endpoint"></use></svg>
+    </span>
+  </li>
+</ol>
+
+<style>
+  .flow {
+    --col: 48px;
+    display: grid;
+    gap: 0;
+    color: var(--ink);
+  }
+
+  .node {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--col) minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--s-4);
+    min-height: var(--col);
+  }
+
+  .node + .node {
+    margin-top: 30px;
+  }
+
+  /* Conector: línea de 1.5 px con punta de flecha, centrado en la columna del glifo */
+  .node + .node::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: calc(var(--col) / 2 - 0.75px);
+    width: 0;
+    height: 30px;
+    border-left: var(--line) solid var(--ink);
+  }
+
+  .node + .node::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: calc(var(--col) / 2 - 4.5px);
+    width: 8px;
+    height: 8px;
+    border-right: var(--line) solid var(--ink);
+    border-bottom: var(--line) solid var(--ink);
+    transform: rotate(45deg);
+  }
+
+  .glyph {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--col);
+    height: var(--col);
+    background: var(--paper);
+  }
+
+  .glyph-box {
+    border: var(--line) solid var(--ink);
+  }
+
+  .glyph-channel .env {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+  }
+
+  .glyph-bus {
+    border: var(--line) dashed var(--blue);
+    color: var(--blue);
+  }
+
+  .glyph-prod {
+    background: var(--ink);
+    color: var(--white);
+    font: 700 1rem/1 var(--font-display);
+    letter-spacing: 0.06em;
+  }
+
+  .txt {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .lbl {
+    font: 500 var(--text-mono-sm) / 1.3 var(--font-mono);
+    letter-spacing: 0.02em;
+    color: var(--graphite);
+  }
+
+  strong {
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .name {
+    font: 700 var(--text-h4) / 1 var(--font-display);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .parts {
+    font: 400 var(--text-mono-sm) / 1.4 var(--font-mono);
+    color: var(--graphite);
+    overflow-wrap: anywhere;
+  }
+
+  .node-bus .name {
+    color: var(--blue);
+  }
+
+  .node-bus .parts {
+    color: var(--blue);
+  }
+
+  /* Ramas: toda la fila es un enlace a su nota */
+  .branch {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: var(--col) minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--s-4);
+    padding: var(--s-2) var(--s-3) var(--s-2) 0;
+    border: var(--line) solid var(--ink);
+    border-left: 0;
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--paper);
+    transition: background-color var(--d-fast) var(--ease-out);
+  }
+
+  .branch .glyph-box {
+    border-width: 0 var(--line) 0 0;
+    height: 100%;
+    min-height: var(--col);
+  }
+
+  .branch:hover {
+    background: var(--amber-wash);
+  }
+
+  .callout {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: var(--line) solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+    font: 700 var(--text-mono) / 1 var(--font-mono);
+    transition: background-color var(--d-fast) var(--ease-out);
+  }
+
+  .branch:hover .callout {
+    background: var(--amber);
+  }
+
+  .callout-bus {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .node-prod .txt {
+    color: var(--graphite);
+  }
+</style>

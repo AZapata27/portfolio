@@ -1,0 +1,184 @@
+---
+/**
+ * Bloque de título del plano (hoja 1): tabla mono con rol, experiencia, dominios y
+ * alcance; la fila CONTACT lleva el mailto en ámbar y la fila LINKS los enlaces
+ * secundarios (LinkedIn, GitHub, CV).
+ */
+import type { Profile } from '@/lib/content';
+import { t, type Locale } from '@/lib/i18n';
+import { capabilityOrder, vocabFor } from '../labels';
+
+interface Props {
+  profile: Profile;
+  locale: Locale;
+}
+
+const { profile, locale } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+
+const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
+const scope = capabilityOrder
+  .filter((id) => id !== 'leadership')
+  .map((id) => byId.get(id)?.name)
+  .filter(Boolean)
+  .join(' · ');
+/** La primera cifra del CV es la de cabecera (años de experiencia). */
+const headline = profile.metrics[0];
+---
+
+<table class="tb">
+  <caption class="visually-hidden">{v.titleBlock}</caption>
+  <tbody>
+    <tr>
+      <th scope="row">{v.role}</th>
+      <td>{profile.title}</td>
+    </tr>
+    {
+      headline && (
+        <tr>
+          <th scope="row">{v.experience}</th>
+          <td>
+            {headline.value} {headline.label}
+          </td>
+        </tr>
+      )
+    }
+    <tr>
+      <th scope="row">{v.domains}</th>
+      <td>{profile.domains.join(' · ')}</td>
+    </tr>
+    <tr>
+      <th scope="row">{v.scope}</th>
+      <td>{scope}</td>
+    </tr>
+    <tr class="row-contact">
+      <th scope="row">{v.contact}</th>
+      <td>
+        <a href={`mailto:${profile.email}`}>
+          <span class="cta">{tr('cta.email')}</span>
+          <span class="addr">{profile.email}</span>
+        </a>
+      </td>
+    </tr>
+    <tr class="row-links">
+      <th scope="row">{v.links}</th>
+      <td>
+        <ul role="list">
+          {
+            profile.links.map((l) => (
+              <li>
+                <a href={l.url} target="_blank" rel="noopener">
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a href={profile.cv} download>{tr('cta.cv')}</a>
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<style>
+  .tb {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--line) solid var(--ink);
+    font: 400 var(--text-mono) / 1.4 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    background: var(--paper);
+  }
+
+  th,
+  td {
+    padding: 7px 12px;
+    border: var(--line-hair) solid var(--ink);
+    vertical-align: top;
+    text-align: left;
+  }
+
+  th {
+    width: 8.5rem;
+    font-size: var(--text-mono-sm);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+    white-space: nowrap;
+  }
+
+  .row-contact th,
+  .row-contact td {
+    background: var(--amber);
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .row-contact a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 0.75em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .row-contact .cta {
+    font: 700 var(--text-h4) / 1.1 var(--font-display);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .row-contact a:hover .addr,
+  .row-contact a:focus-visible .addr {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .row-links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-5);
+  }
+
+  .row-links a {
+    color: var(--blue);
+  }
+
+  @media (max-width: 639px) {
+    .tb,
+    tbody,
+    tr,
+    th,
+    td {
+      display: block;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    tr + tr {
+      border-top: var(--line-hair) solid var(--ink);
+    }
+
+    th,
+    td {
+      width: auto;
+      border: 0;
+    }
+
+    th {
+      padding-bottom: 0;
+    }
+
+    td {
+      padding-top: 2px;
+    }
+  }
+</style>
