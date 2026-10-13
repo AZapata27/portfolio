@@ -14,7 +14,8 @@ valor/esfuerzo; cada una cabe en un PR.
 2. **Servidor MCP del portafolio.** Un endpoint MCP (`/api/mcp`) que expone `get_profile`,
    `list_experience`, `list_projects`, `search_skills` leyendo las colecciones. Muy en línea con el
    posicionamiento AI-native: un reclutador con un agente puede "preguntarle" al sitio.
-3. **CV en PDF generado desde el contenido.** Hoy el PDF es un archivo subido a mano. Generarlo en
+3. **CV en PDF generado desde el contenido.** Desde el 2026-10-13 existe `/cv/` en HTML con estilos de
+   impresión (misma fuente de verdad, sin teléfono); falta generar el PDF en build. Hoy el PDF es un archivo subido a mano. Generarlo en
    build (p. ej. con `@react-pdf/renderer` o Playwright `page.pdf()`) desde `src/content/` elimina la
    deriva entre sitio y CV, y permite una versión sin teléfono.
 4. **Imagen Open Graph generada.** `src/pages/og.png.ts` con `satori` + `resvg` usando los tokens de

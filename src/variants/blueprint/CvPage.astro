@@ -1,0 +1,512 @@
+---
+/**
+ * Hoja de vida en HTML (`/cv/`, `/en/cv/`): la misma fuente de verdad que el resto
+ * del sitio (`src/content/`), en una sola hoja del plano, pensada para dos lectores:
+ * el reclutador que copia texto a un ATS y la impresora (Ctrl+P o el botón) que la
+ * convierte en PDF. El teléfono no se publica (regla del producto); el PDF original
+ * sigue disponible como descarga.
+ *
+ * En pantalla conserva el marco, la grilla y el sello de las demás hojas; al
+ * imprimir se quitan barra, pie, marco y fondo, y cada puesto evita cortarse entre páginas.
+ */
+import { Font } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import { getExperience, getProfile, getSkills, slugOf } from '@/lib/content';
+import { formatDuration, formatPeriod, t, type Locale, type UiKey } from '@/lib/i18n';
+import './tokens.css';
+import EipSprite from './components/EipSprite.astro';
+import Topbar from './sections/Topbar.astro';
+import Footer from './sections/Footer.astro';
+import Sheet from './components/Sheet.astro';
+import { vocabFor } from './labels';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+const [profile, experience, skills] = await Promise.all([getProfile(locale), getExperience(locale), getSkills()]);
+/* La cifra del logro se omite cuando ya está en el título ("Integración con el RNDC" · RNDC). */
+const jobs = await Promise.all(experience.map(async (e) => ({ e, Content: (await render(e)).Content })));
+const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+const site = (Astro.site ?? new URL('https://www.andres-zapata.dev')).host;
+const updated = new Date().toISOString().slice(0, 10);
+---
+
+<Base
+  {locale}
+  {profile}
+  path="/cv"
+  title={`${tr('cv.title')} · ${profile.shortName}`}
+  description={profile.summary}
+  variant="blueprint"
+  bodyClass="cv-body"
+>
+  <Fragment slot="head">
+    <Font cssVariable="--font-barlow-condensed" preload />
+    <Font cssVariable="--font-barlow" preload />
+    <Font cssVariable="--font-jetbrains-mono" />
+  </Fragment>
+
+  <EipSprite />
+  <Topbar {profile} {locale} />
+
+  <main id="main" class="sheets">
+    <Sheet id="cv" label={v.cv} title={tr('cv.title')} {locale} labelledby="cv-title">
+      <div class="actions" aria-label={v.cv}>
+        <a class="pdf" href={profile.cv} download>
+          {tr('cv.pdf')}
+          <Icon name="download" size={14} />
+        </a>
+        <button type="button" class="print" hidden>{tr('cv.print')}</button>
+      </div>
+
+      <header class="head">
+        <h1 id="cv-title">{profile.name}</h1>
+        <p class="role">{profile.title}</p>
+        <ul class="contact" role="list">
+          <li>{profile.location}</li>
+          <li>
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          </li>
+          <li>
+            <a href={`https://${site}/`}>{site}</a>
+          </li>
+          {
+            profile.links.map((l) => (
+              <li>
+                <a href={l.url} target="_blank" rel="noopener">
+                  {display(l.url)}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </header>
+
+      <section class="block" aria-labelledby="cv-summary">
+        <h2 id="cv-summary">{tr('cv.summary')}</h2>
+        <p class="summary">{profile.summary}</p>
+        <ul class="metrics" role="list">
+          {
+            profile.metrics.map((m) => (
+              <li>
+                <strong>{m.value}</strong> {m.label}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="cv-experience">
+        <h2 id="cv-experience">{tr('cv.experience')}</h2>
+        <ol class="jobs" role="list">
+          {
+            jobs.map(({ e, Content }) => (
+              <li class="job" id={`cv-${slugOf(e)}`}>
+                <div class="when">
+                  <time>{formatPeriod(e.data.start, e.data.end, locale)}</time>
+                  <span class="dur">{formatDuration(e.data.start, e.data.end, locale)}</span>
+                </div>
+                <div class="what">
+                  <h3>{e.data.role}</h3>
+                  <p class="org">
+                    <span class="company">{e.data.company}</span>
+                    {e.data.client && <span class="client"> · {e.data.client}</span>}
+                    <span class="client"> · {e.data.sector}</span>
+                  </p>
+                  <p class="sum">{e.data.summary}</p>
+                  <div class="ach">
+                    <Content />
+                  </div>
+                  {e.data.stack.length > 0 && <p class="stack">{e.data.stack.join(' · ')}</p>}
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="block" aria-labelledby="cv-achievements">
+        <h2 id="cv-achievements">{tr('section.achievements')}</h2>
+        <ul class="achievements" role="list">
+          {
+            profile.achievements.map((a) => (
+              <li>
+                <strong>{a.title}</strong>
+                {!a.title.toLowerCase().includes(a.value.toLowerCase()) && <span class="val"> {a.value}</span>}: {a.body}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="block" aria-labelledby="cv-skills">
+        <h2 id="cv-skills">{tr('section.stack')}</h2>
+        <dl class="skills">
+          {
+            skills.map((g) => (
+              <div>
+                <dt>{tr(`skills.${g.id}` as UiKey)}</dt>
+                <dd>{g.items.map((it) => it.name).join(' · ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <section class="block block--grid" aria-labelledby="cv-languages">
+        <div>
+          <h2 id="cv-languages">{tr('section.languages')}</h2>
+          <dl class="pairs">
+            {
+              profile.languages.map((l) => (
+                <div>
+                  <dt>{l.name}</dt>
+                  <dd>{l.level}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+        <div>
+          <h2>{tr('cv.extras')}</h2>
+          <dl class="pairs">
+            {
+              profile.extras.map((x) => (
+                <div>
+                  <dt>{x.title}</dt>
+                  <dd>{x.body}</dd>
+                </div>
+              ))
+            }
+            <div>
+              <dt>{v.availability}</dt>
+              <dd>{profile.availability}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <p class="updated">
+        {tr('cv.updated')} <time datetime={updated}>{updated}</time> · {site}/cv
+      </p>
+    </Sheet>
+  </main>
+
+  <Footer {profile} {locale} />
+</Base>
+
+<script>
+  // Mejora progresiva: el botón de imprimir sólo aparece si hay JavaScript (sin él, Ctrl+P hace lo mismo).
+  const button = document.querySelector<HTMLButtonElement>('.print');
+  if (button) {
+    button.hidden = false;
+    button.addEventListener('click', () => window.print());
+  }
+</script>
+
+<style>
+  .sheets {
+    display: grid;
+    gap: var(--s-5);
+    padding: var(--s-4) var(--gutter) 0;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-bottom: var(--s-6);
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .pdf,
+  .print {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 10px 12px;
+    border: var(--line) solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--d-fast) var(--ease-out);
+  }
+
+  .pdf {
+    background: var(--amber);
+  }
+
+  .pdf:hover,
+  .print:hover {
+    background: var(--amber-wash);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+
+  .role {
+    margin-top: var(--s-2);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    max-width: 62ch;
+  }
+
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-4);
+    margin-top: var(--s-3);
+    font: 400 var(--text-mono) / 1.5 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  .head {
+    padding-bottom: var(--s-5);
+    border-bottom: var(--line) solid var(--ink);
+  }
+
+  .block {
+    padding-top: var(--s-6);
+  }
+
+  .block + .block {
+    margin-top: var(--s-2);
+    border-top: var(--line-hair) solid var(--hair);
+  }
+
+  .block h2 {
+    margin-bottom: var(--s-4);
+    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .summary {
+    max-width: 70ch;
+  }
+
+  .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+    margin-top: var(--s-4);
+    font: 400 var(--text-mono-sm) / 1.5 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  .metrics strong {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  /* Puestos: columna de fechas en mono a la izquierda, contenido a la derecha */
+  .jobs {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .job {
+    display: grid;
+    gap: var(--s-2) var(--s-5);
+    break-inside: avoid;
+  }
+
+  .when {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    font: 500 var(--text-mono-sm) / 1.3 var(--font-mono);
+    color: var(--graphite);
+    white-space: nowrap;
+  }
+
+  .what h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+  }
+
+  .org {
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  .client {
+    color: var(--graphite);
+    font-weight: 400;
+  }
+
+  .sum {
+    margin-top: var(--s-2);
+    max-width: 66ch;
+  }
+
+  .ach {
+    margin-top: var(--s-2);
+    max-width: 70ch;
+    font-size: var(--text-sm);
+  }
+
+  .ach :global(ul) {
+    margin: 0;
+    padding-left: 1.1em;
+    list-style: square;
+  }
+
+  .ach :global(li + li) {
+    margin-top: 2px;
+  }
+
+  .ach :global(li::marker) {
+    color: var(--ink);
+  }
+
+  .ach :global(p) {
+    margin: 0;
+  }
+
+  .stack {
+    margin-top: var(--s-2);
+    font: 400 var(--text-mono-sm) / 1.5 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  .achievements {
+    display: grid;
+    gap: var(--s-2);
+    max-width: 70ch;
+    font-size: var(--text-sm);
+  }
+
+  .achievements .val {
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+
+  .skills,
+  .pairs {
+    display: grid;
+    gap: var(--s-2);
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+
+  .skills > div,
+  .pairs > div {
+    display: grid;
+    gap: var(--s-1) var(--s-4);
+  }
+
+  .skills dt,
+  .pairs dt {
+    font: 500 var(--text-mono-sm) / 1.5 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .block--grid {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .updated {
+    margin-top: var(--s-7);
+    font: 400 var(--text-mono-sm) / 1.5 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  @media (min-width: 720px) {
+    .job {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+
+    .skills > div,
+    .pairs > div {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+
+    .block--grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* ---------- Impresión: papel blanco, sin marco ni barra, texto en tinta ---------- */
+  @media print {
+    @page {
+      margin: 14mm;
+    }
+
+    :global(html[data-variant='blueprint']),
+    :global(html[data-variant='blueprint'] body) {
+      background: #fff;
+    }
+
+    :global(.topbar),
+    :global(.foot),
+    :global(.stamp),
+    :global(.skip-link),
+    .actions,
+    .updated {
+      display: none !important;
+    }
+
+    .sheets {
+      padding: 0;
+    }
+
+    /* Los estilos de Sheet tienen más especificidad (atributo de ámbito): aquí manda la impresión */
+    :global(.sheet) {
+      border: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+    }
+
+    :global(.sheet-inner) {
+      border: 0 !important;
+      padding: 0 !important;
+      background: none !important;
+    }
+
+    .block {
+      padding-top: 6mm;
+    }
+
+    .job,
+    .block--grid,
+    .achievements li {
+      break-inside: avoid;
+    }
+
+    a {
+      color: inherit !important;
+      text-decoration: none !important;
+    }
+  }
+</style>

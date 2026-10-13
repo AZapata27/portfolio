@@ -5,7 +5,7 @@
  * y notas generales.
  */
 import type { Profile } from '@/lib/content';
-import { t, type Locale } from '@/lib/i18n';
+import { localePath, t, type Locale } from '@/lib/i18n';
 import Icon from '@/components/Icon.astro';
 import Sheet from '../components/Sheet.astro';
 import { vocabFor } from '../labels';
@@ -53,7 +53,11 @@ const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace
         }
         <tr>
           <th scope="row">{v.cv}</th>
-          <td>
+          <td class="cv-links">
+            <a href={localePath(locale, '/cv')}>
+              {tr('cta.cvWeb')}
+              <Icon name="arrow-right" size={14} />
+            </a>
             <a href={profile.cv} download>
               {tr('cta.cv')}
               <Icon name="download" size={14} />

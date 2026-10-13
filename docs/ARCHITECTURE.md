@@ -30,7 +30,9 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
   - `README.md`: decisiones de diseño; `DESIGN.md` en la raíz las resume en formato de tokens.
 - **Páginas** (`src/pages/`): sólo deciden idioma: `index.astro` (es) y `en/index.astro` (en), más
   las páginas de proyecto `proyectos/[slug].astro` y `en/work/[slug].astro` (estáticas, una por
-  entrada de `projects`; `projectPath()` en `i18n.ts` da la ruta por idioma).
+  entrada de `projects`; `projectPath()` en `i18n.ts` da la ruta por idioma) y la hoja de vida en HTML
+  `cv.astro` / `en/cv.astro` (`CvPage.astro`: mismo contenido que el sitio, con hoja de estilos de
+  impresión para guardarla como PDF; el teléfono no se publica).
 - **Iconos**: `src/components/Icon.astro`. Logos de marcas desde `simple-icons` (en build, sin coste
   en cliente) y un set propio de iconos de interfaz con un único grosor de trazo.
 - **Fuentes**: Astro Fonts API (`fonts` en `astro.config.ts`, proveedor Fontsource). Se descargan
