@@ -151,7 +151,7 @@ semánticas con `caption`, `th scope` y, en móvil, cada fila se apila con `disp
 
 - `< 640`: bloques de título y detalles en una columna; etiqueta `DETAIL x` sobre el título.
 - `< 640`: galería de proyectos en una columna; 2 columnas desde 640 y 3 desde 1024. La página de
-  proyecto apila lámina, cota, tabla y notas por debajo de 960 px.
+  proyecto apila lámina, cota, tabla y notas por debajo de 960 px; el esquema escala al ancho (sin scroll).
 - `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: contacto en una columna.
 - `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código; la línea de
   tiempo pasa de horizontal a vertical.
