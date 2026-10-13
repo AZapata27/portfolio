@@ -8,6 +8,7 @@ summary: "Consolidación de los procesos ETL, de pronóstico (e-forecasting) y a
 stack: [Spark, Java, PL/SQL, Maven, JUnit]
 featured: false
 order: 16
+url: https://emtelco.com.co/extranet/index.php/productos-y-soluciones/por-servicio/analytics/e-forecasting
 plate:
   src: ../../../assets/work/emtelco-etl.png
   alt: "Página del producto e-forecasting de Emtelco, pronóstico de demanda sobre analítica"

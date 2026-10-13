@@ -17,7 +17,7 @@ import Topbar from './sections/Topbar.astro';
 import Footer from './sections/Footer.astro';
 import Sheet from './components/Sheet.astro';
 import Plate from './components/Plate.astro';
-import { vocabFor } from './labels';
+import { slugify, vocabFor } from './labels';
 import { render } from 'astro:content';
 
 interface Props {
@@ -68,7 +68,7 @@ const hasSchematic = Boolean(d.schematic);
           <Icon name="arrow-left" size={16} />
           {tr('work.back')}
         </a>
-        <span class="domain">{d.domain}</span>
+        <a class="domain" href={`${back}-${slugify(d.domain)}`}>{d.domain}</a>
       </nav>
 
       <header class="head">
@@ -203,6 +203,12 @@ const hasSchematic = Boolean(d.schematic);
 
   .domain {
     color: var(--graphite);
+    text-decoration: none;
+  }
+
+  .domain:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
   }
 
   h1 {
