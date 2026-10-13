@@ -16,9 +16,11 @@ interface Props {
   image?: string;
   /** Rutas ya localizadas cuando el segmento cambia por idioma (p. ej. `/proyectos/x/` y `/en/work/x/`). */
   paths?: Partial<Record<Locale, string>>;
+  /** Bloques JSON-LD adicionales (p. ej. `BreadcrumbList` en las páginas de proyecto). */
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { locale, title, description, path, profile, image = '/og.png', paths = {} } = Astro.props;
+const { locale, title, description, path, profile, image = '/og.png', paths = {}, jsonLd = [] } = Astro.props;
 const site = Astro.site ?? new URL('https://www.andres-zapata.dev');
 const pathFor = (l: Locale) => paths[l] ?? localePath(l, path);
 const canonical = new URL(pathFor(locale), site);
@@ -59,3 +61,4 @@ const person = {
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage.href} />
 <script type="application/ld+json" set:html={JSON.stringify(person)} />
+{jsonLd.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}

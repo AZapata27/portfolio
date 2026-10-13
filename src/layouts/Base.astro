@@ -24,9 +24,11 @@ interface Props {
   image?: string;
   /** Rutas localizadas cuando el segmento cambia por idioma (ver `Seo.astro`). */
   paths?: Partial<Record<Locale, string>>;
+  /** Bloques JSON-LD adicionales (ver `Seo.astro`). */
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { locale, title, description, path, profile, variant, bodyClass, image, paths } = Astro.props;
+const { locale, title, description, path, profile, variant, bodyClass, image, paths, jsonLd } = Astro.props;
 const tr = t(locale);
 ---
 
@@ -38,7 +40,7 @@ const tr = t(locale);
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="color-scheme" content="light" />
-    <Seo {locale} {title} {description} {path} {profile} {image} {paths} />
+    <Seo {locale} {title} {description} {path} {profile} {image} {paths} {jsonLd} />
     <slot name="head" />
     {/* Analítica sin cookies de Vercel (vistas de página) y Speed Insights (experiencia real); ver docs/ANALITICA.md */}
     <Analytics />
