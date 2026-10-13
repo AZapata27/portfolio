@@ -82,6 +82,12 @@ la otra. Así se hizo el 2026-10-10 entre `blueprint` (elegida) y `script`.
   lo más legible para un agente y no añade build steps.
 - **Dos idiomas desde el día uno, español por defecto.** Decisión de Andrés (2026-10-10): el CV y el
   mercado principal son en español; el inglés vive en `/en/` con `hreflang` y `x-default` al español.
+- **Idioma automático (2026-10-13).** `vercel.json` redirige `/` a `/en/` (307) cuando `Accept-Language`
+  empieza por `en`, salvo que la URL traiga `?lang=es` o el user-agent sea un bot (Google, Bing, LinkedIn,
+  WhatsApp, Lighthouse…), para que el español siga indexado y las vistas previas de enlaces no cambien.
+  `homePath()` en `i18n.ts` genera `/?lang=es` para el conmutador y los enlaces de vuelta; dentro de la
+  portada se usan anclas. Probar: `curl -sI -H "Accept-Language: en-US" https://www.andres-zapata.dev/`
+  debe dar 307 a `/en/`; con `es-CO` o con `?lang=es`, 200.
 - **Variantes como carpetas, no como ramas.** Una sola rama y una sola URL de vista previa permitieron
   comparar en igualdad de condiciones; la descartada se borró con un commit.
 - **Analítica**: `@vercel/analytics` y `@vercel/speed-insights` montados una vez en `Base.astro`

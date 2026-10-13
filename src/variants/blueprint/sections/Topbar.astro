@@ -4,15 +4,17 @@
  * idioma. Fija en escritorio; en móvil se apila y no se fija para no robar alto.
  */
 import type { Profile } from '@/lib/content';
-import { localePath, otherLocale, t, type Locale } from '@/lib/i18n';
+import { homePath, otherLocale, t, type Locale } from '@/lib/i18n';
 import { vocabFor } from '../labels';
 
 interface Props {
   profile: Profile;
   locale: Locale;
+  /** En la portada los enlaces son anclas de la misma página; en otras páginas llevan a la portada. */
+  onHome?: boolean;
 }
 
-const { profile, locale } = Astro.props;
+const { profile, locale, onHome = false } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 const other = otherLocale(locale);
@@ -22,8 +24,8 @@ const monogram = profile.shortName
   .join('')
   .slice(0, 2);
 
-/** Rutas absolutas a la portada: la barra también vive en las páginas de proyecto. */
-const home = localePath(locale, '/');
+/** Anclas en la portada; rutas a la portada (con la salida de la redirección de idioma) en las demás páginas. */
+const home = onHome ? '' : homePath(locale);
 const items = [
   { href: `${home}#route`, label: tr('nav.route') },
   { href: `${home}#capabilities`, label: v.notes },
@@ -50,7 +52,7 @@ const items = [
       }
     </ul>
   </nav>
-  <a class="lang" href={localePath(other, '/')} hreflang={other} lang={other}>
+  <a class="lang" href={homePath(other)} hreflang={other} lang={other}>
     {tr('lang.switch')}
   </a>
 </header>

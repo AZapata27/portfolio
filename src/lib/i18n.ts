@@ -132,6 +132,16 @@ export function localePath(locale: Locale, path = '/'): string {
   return url.endsWith('/') ? url : `${url}/`;
 }
 
+/**
+ * Enlace a la portada de un idioma. En español lleva `?lang=es` porque Vercel redirige `/` a `/en/`
+ * cuando el navegador prefiere inglés (`vercel.json`): el parámetro es la salida explícita de esa
+ * redirección, así el conmutador y los enlaces de vuelta desde otras páginas respetan la elección.
+ * Dentro de la propia portada se usan anclas (`#work`), nunca este enlace.
+ */
+export function homePath(locale: Locale): string {
+  return locale === defaultLocale ? '/?lang=es' : localePath(locale, '/');
+}
+
 /** Segmento de la ruta de proyectos por idioma: `/proyectos/<slug>/` y `/en/work/<slug>/`. */
 export const projectSegment: Record<Locale, string> = { es: 'proyectos', en: 'work' };
 
