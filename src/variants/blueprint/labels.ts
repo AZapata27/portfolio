@@ -37,7 +37,7 @@ const vocab = {
     production: 'production',
     prod: 'PROD',
     routeDiagram:
-      'Integration route: your problem comes in through a channel, a content-based router sends it to architecture, integration or AI-native development, an aggregator joins the branches and production receives the result. Leadership runs alongside as the control bus.',
+      'Integration route: your problem comes in through a channel, a content-based router sends it to architecture, integration or AI-native development, an aggregator joins the branches and production receives the result. Technical leadership runs alongside the whole route as a control line.',
     // Bloque de título
     role: 'Role',
     experience: 'Experience',
@@ -89,7 +89,7 @@ const vocab = {
     production: 'producción',
     prod: 'PROD',
     routeDiagram:
-      'Ruta de integración: tu problema entra por un canal, un enrutador por contenido lo manda a arquitectura, integración o desarrollo AI-native, un agregador junta las ramas y producción recibe el resultado. El liderazgo corre al lado como control bus.',
+      'Ruta de integración: tu problema entra por un canal, un enrutador por contenido lo manda a arquitectura, integración o desarrollo AI-native, un agregador junta las ramas y producción recibe el resultado. El liderazgo técnico corre al lado de toda la ruta como línea de control.',
     role: 'Rol',
     experience: 'Experiencia',
     domains: 'Dominios',
@@ -137,5 +137,5 @@ export function pad2(n: number): string {
   return String(n).padStart(2, '0');
 }
 
-/** Orden fijo de las capacidades en la ruta: tres ramas y el control bus al final. */
+/** Orden fijo de las capacidades en la ruta: tres ramas y el liderazgo técnico (línea de control) al final. */
 export const capabilityOrder = ['architecture', 'integration', 'ai-native', 'leadership'] as const;

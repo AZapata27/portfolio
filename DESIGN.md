@@ -105,7 +105,8 @@ components:
 **Norte creativo: "la hoja de dibujo"**. El portafolio es un plano de ingeniería de una sola ruta
 de integración (Enterprise Integration Patterns): el problema del visitante entra por un canal, un
 *content-based router* lo manda a Arquitectura, Integración o Desarrollo AI-native, un agregador
-junta las ramas y sale a producción; el liderazgo corre por encima como *control bus*. Todo lo que
+junta las ramas y sale a producción; el liderazgo técnico corre por encima como línea de control
+(el *control bus* de EIP, rotulado "Liderazgo técnico" en el sitio). Todo lo que
 se agregue debe poder existir en una hoja de dibujo técnico: marcos, reglas, tablas, cotas, llamadas
 numeradas, bloques de título. Nada de tarjetas, sombras, degradados ni radios.
 
@@ -124,7 +125,7 @@ reglas para que un agente pueda añadir una hoja o un componente sin romper el m
   mensaje, llamadas ①–③, fila CONTACT, REV actual, selección de texto, anillo de foco.
   **Ámbar profundo** `#8A5A00` sólo para strings de código (5,7:1). **Ámbar lavado** `#F8EAC6` para
   hover de las ramas en móvil.
-- **Azul de dibujo** `#1F5FBF` para el control bus (línea punteada), la llamada ④ y todos los enlaces
+- **Azul de dibujo** `#1F5FBF` para la línea de control del liderazgo técnico (punteada), la llamada ④ y todos los enlaces
   (5,8:1). **Azul lavado** `#E4EAF1` para el hover del conmutador de idioma.
 - Estrategia: restringida (neutros + un acento + un secundario funcional). No introducir más colores;
   si un estado nuevo necesita énfasis, usar grosor de línea o relleno ámbar.
@@ -181,7 +182,7 @@ como chevrones del propio trazo (`stroke-linecap: round`). Iconos EIP y de inter
 - **Bloque de título** (`TitleBlock`, hoja 1 y hoja 6): tabla mono; fila CONTACT en ámbar con el
   mailto como acción primaria; LinkedIn, GitHub y CV como enlaces azules.
 - **Llamadas** (`.num`): círculo de 2 rem, borde de tinta, relleno ámbar (①–③) o papel con borde y
-  número azul (④, control bus).
+  número azul (④, liderazgo técnico).
 - **Enlaces**: azul de dibujo, subrayado de 1 px con offset 0,18 em; 2 px en hover.
 - **Foco**: contorno ámbar de 2 px con offset 2 px más anillo interior de tinta. **Selección**: ámbar
   sobre tinta. **Scrollbar**: fina, tinta sobre mesa.

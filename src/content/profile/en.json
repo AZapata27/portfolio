@@ -70,7 +70,7 @@
     },
     {
       "id": "leadership",
-      "name": "Control bus",
+      "name": "Technical leadership",
       "lead": "Teams that ship.",
       "body": "More than 200 people led over the last five years. I coach developers into senior and architect roles and run corporate AI trainings, so a whole team can work this way, not just me. Code review culture, coding dojos, pre-sales and solution design.",
       "parts": ["Teams", "200+ people led", "AI trainings", "Pre-sales"]

@@ -8,7 +8,9 @@ el 2026-10-10 (la alternativa "script" se eliminó).
 
 La página **es un plano de ingeniería** de una sola ruta EIP: el problema del visitante entra por un
 canal, un *content-based router* lo manda a Arquitectura, Integración o Desarrollo AI-native, un
-agregador junta las ramas y sale a producción; el liderazgo corre por encima como *control bus*.
+agregador junta las ramas y sale a producción; el liderazgo técnico corre por encima como línea de
+control (el *control bus* de EIP; en el sitio se rotula "Liderazgo técnico", decisión de Andrés del
+2026-10-12 porque "control bus" no se entendía).
 No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** numeradas
 (`SHEET 1/6 … 6/6`), cada una con marco doble, marcas de esquina, grilla de puntos y sello.
 
@@ -36,7 +38,7 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | `--amber`       | `#F2A900` | Único acento: sobre del mensaje, llamadas ①–③, fila CONTACT, REV actual, selección de texto. Nunca como color de texto (1,9:1) |
 | `--amber-deep`  | `#8A5A00` | Strings del código (5,7:1)                                             |
 | `--amber-wash`  | `#F8EAC6` | Hover de las ramas en móvil                                            |
-| `--blue`        | `#1F5FBF` | Control bus (línea punteada), llamada ④ y enlaces (5,8:1)              |
+| `--blue`        | `#1F5FBF` | Línea de control del liderazgo técnico (punteada), llamada ④ y enlaces (5,8:1) |
 | `--blue-wash`   | `#E4EAF1` | Hover del conmutador de idioma                                         |
 
 Sin sombras ni radios: la profundidad es grosor de línea (`1px` hairline, `1.5px` trazo, `2px` marco).

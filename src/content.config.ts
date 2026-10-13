@@ -53,7 +53,7 @@ const profile = defineCollection({
     ),
     /**
      * Cuatro capacidades. Las usa la variante "blueprint" como ramas de la ruta
-     * (la cuarta, liderazgo, es el "control bus").
+     * (la cuarta, liderazgo técnico, es la línea de control que corre por encima de la ruta).
      */
     capabilities: z.array(
       z.object({
