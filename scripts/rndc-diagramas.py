@@ -1,0 +1,489 @@
+"""Diagramas C4 del caso de estudio RNDC: un solo modelo, dos salidas.
+
+- `src/assets/work/rndc/*.svg`: los diagramas que muestra la página del proyecto, dibujados con el trazo
+  del plano (papel, tinta, ámbar, azul de dibujo). Son SVG autónomos (se sirven como `<img>`), así que
+  usan una familia de sistema (Arial/Helvetica) en vez de las fuentes del sitio.
+- `public/casos/rndc/*.drawio`: los mismos diagramas en formato draw.io con las formas C4 estándar
+  (paleta azul de la plantilla C4 de diagrams.net), para abrirlos y editarlos.
+
+Uso: `python scripts/rndc-diagramas.py` desde la raíz del repo. Cada diagrama existe en español e inglés.
+"""
+from __future__ import annotations
+
+import html
+import os
+from dataclasses import dataclass, field
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SVG_DIR = os.path.join(ROOT, "src", "assets", "work", "rndc")
+DRAWIO_DIR = os.path.join(ROOT, "public", "casos", "rndc")
+
+# Paleta del plano
+PAPER, INK, GRAPHITE, AMBER, AMBER_WASH, BLUE, HAIR, GRID = "#FAFAF7", "#151515", "#4A4F55", "#F2A900", "#F8EAC6", "#1F5FBF", "#C9CBC6", "#D6D8D4"
+FONT = "Arial, Helvetica, sans-serif"
+
+
+@dataclass
+class Node:
+    id: str
+    kind: str  # person | system | external | container | component | db | queue | boundary | note
+    name: tuple[str, str]
+    type: tuple[str, str]
+    desc: tuple[str, str]
+    x: int
+    y: int
+    w: int = 200
+    h: int = 110
+    parent: str | None = None
+
+
+@dataclass
+class Edge:
+    src: str
+    dst: str
+    label: tuple[str, str]
+    tech: str = ""
+    dashed: bool = False
+    points: list[tuple[int, int]] = field(default_factory=list)
+    number: int | None = None
+    side: str = "auto"  # auto | right | left | top | bottom: por dónde sale del origen
+
+
+@dataclass
+class Diagram:
+    slug: str
+    title: tuple[str, str]
+    width: int
+    height: int
+    nodes: list[Node]
+    edges: list[Edge]
+
+
+L = lambda es, en: (es, en)  # noqa: E731
+
+
+# ---------------------------------------------------------------------------- modelo
+def contexto() -> Diagram:
+    nodes = [
+        Node("analista", "person", L("Analista de despachos", "Dispatch analyst"), L("Persona", "Person"),
+             L("Crea órdenes, remesas y manifiestos; registra cumplidos", "Creates orders, consignment notes and manifests; files proofs of delivery"), 60, 40, 220, 120),
+        Node("generador", "person", L("Generador de carga", "Shipper"), L("Persona · cliente", "Person · customer"),
+             L("Autoriza a la transportadora, consulta remesas y registra el valor del flete", "Authorises the carrier, checks consignment notes and records the freight value"), 500, 40, 220, 120),
+        Node("conductor", "person", L("Conductor / tenedor", "Driver / vehicle holder"), L("Persona", "Person"),
+             L("Acepta y porta el manifiesto electrónico", "Accepts and carries the electronic manifest"), 940, 40, 220, 120),
+        Node("plataforma", "system", L("Plataforma de despachos", "Dispatch platform"), L("Sistema de software", "Software system"),
+             L("Ciclo de vida del despacho orientado a eventos: orden → remesa → manifiesto → cumplido. Valida antes de reportar y concilia fletes.",
+               "Event-driven dispatch lifecycle: order → consignment note → manifest → proof of delivery. Validates before filing and reconciles freight."), 380, 280, 460, 150),
+        Node("rndc", "external", L("RNDC", "RNDC"), L("Sistema externo · Ministerio de Transporte", "External system · Ministry of Transport"),
+             L("Registro Nacional de Despachos de Carga. Servicio web SOAP/XML; recibe, valida y numera cada operación.",
+               "National Cargo Dispatch Registry. SOAP/XML web service; receives, validates and numbers every operation."), 60, 540, 240, 130),
+        Node("erp", "external", L("ERP / TMS legado", "Legacy ERP / TMS"), L("Sistema existente · Oracle", "Existing system · Oracle"),
+             L("Órdenes, clientes, vehículos y terceros. Se mantiene en operación durante la modernización.",
+               "Orders, customers, vehicles and third parties. Stays in operation during the modernisation."), 380, 540, 240, 130),
+        Node("sicetac", "external", L("SICE-TAC", "SICE-TAC"), L("Sistema externo · Ministerio de Transporte", "External system · Ministry of Transport"),
+             L("Costos de referencia del transporte de carga por ruta y configuración.", "Reference freight costs by route and vehicle configuration."), 700, 540, 240, 130),
+        Node("app", "external", L("App RNDC Transportador", "RNDC Carrier app"), L("Sistema externo · Ministerio", "External system · Ministry"),
+             L("Donde el conductor acepta el manifiesto expedido.", "Where the driver accepts the issued manifest."), 960, 540, 220, 130),
+    ]
+    edges = [
+        Edge("analista", "plataforma", L("Registra despachos y consulta estados", "Registers dispatches and checks status"), "HTTPS"),
+        Edge("generador", "plataforma", L("Autoriza, consulta y registra fletes", "Authorises, checks and records freight"), "HTTPS"),
+        Edge("conductor", "app", L("Acepta y porta el manifiesto", "Accepts and carries the manifest"), "App móvil"),
+        Edge("plataforma", "rndc", L("Reporta remesas, manifiestos y cumplidos; recibe ingresoid o error", "Files consignment notes, manifests and proofs; gets ingresoid or error"), "SOAP/XML"),
+        Edge("plataforma", "erp", L("Lee órdenes y maestros; devuelve fletes conciliados", "Reads orders and master data; returns reconciled freight"), "CDC · Debezium"),
+        Edge("plataforma", "sicetac", L("Consulta costos de referencia", "Looks up reference costs"), "HTTP"),
+        Edge("rndc", "app", L("Publica el manifiesto expedido", "Publishes the issued manifest"), "", dashed=True, points=[(300, 605), (960, 605)]),
+    ]
+    return Diagram("c1-contexto", L("Nivel 1 · Contexto", "Level 1 · Context"), 1240, 720, nodes, edges)
+
+
+def contenedores() -> Diagram:
+    B = "plataforma"
+    nodes = [
+        Node("analista", "person", L("Analista de despachos", "Dispatch analyst"), L("Persona", "Person"), L("", ""), 60, 20, 200, 90),
+        Node("generador", "person", L("Generador de carga", "Shipper"), L("Persona", "Person"), L("", ""), 300, 20, 200, 90),
+        Node(B, "boundary", L("Plataforma de despachos", "Dispatch platform"), L("Sistema de software", "Software system"), L("", ""), 40, 150, 1160, 580),
+        Node("web", "container", L("Web de despachos", "Dispatch web app"), L("Contenedor · Angular", "Container · Angular"),
+             L("Órdenes, remesas, manifiestos, cumplidos y estado de cada reporte", "Orders, consignment notes, manifests, proofs and the status of every filing"), 60, 190, 200, 120, B),
+        Node("api", "container", L("API de despachos", "Dispatch API"), L("Contenedor · Quarkus REST", "Container · Quarkus REST"),
+             L("Comandos del ciclo de vida; escribe el evento en la outbox en la misma transacción", "Lifecycle commands; writes the event to the outbox in the same transaction"), 300, 190, 200, 120, B),
+        Node("keycloak", "container", L("Keycloak", "Keycloak"), L("Contenedor · IAM", "Container · IAM"),
+             L("OAuth2/OIDC; reemplazó al LDAP", "OAuth2/OIDC; replaced LDAP"), 1000, 190, 180, 120, B),
+        Node("motor", "container", L("Motor de validación", "Validation engine"), L("Contenedor · Camel", "Container · Camel"),
+             L("Reglas del Ministerio antes de salir: pesos, SOAT/RTM, flete mínimo, ICA, catálogos DANE", "Ministry rules before leaving: weights, insurance/inspection, minimum freight, ICA, DANE catalogues"), 300, 360, 200, 120, B),
+        Node("kafka", "queue", L("Kafka", "Kafka"), L("Contenedor · Confluent", "Container · Confluent"),
+             L("despacho.orden · remesa · manifiesto · cumplido · rndc.resultado", "dispatch.order · consignment · manifest · proof · rndc.result"), 540, 360, 200, 120, B),
+        Node("integrador", "container", L("Integrador RNDC", "RNDC integrator"), L("Contenedor · Camel + CXF", "Container · Camel + CXF"),
+             L("Mapea a XML, llama al servicio SOAP, interpreta ingresoid/errores, reintenta y difiere", "Maps to XML, calls the SOAP service, reads ingresoid/errors, retries and defers"), 780, 360, 200, 120, B),
+        Node("obs", "container", L("Observabilidad", "Observability"), L("Contenedor · OTel · Grafana", "Container · OTel · Grafana"),
+             L("Trazas por despacho, métricas de rechazo por código", "Traces per dispatch, rejection metrics by code"), 1000, 360, 180, 120, B),
+        Node("debezium", "container", L("Debezium", "Debezium"), L("Contenedor · Kafka Connect", "Container · Kafka Connect"),
+             L("CDC desde Oracle: órdenes y maestros del legado", "CDC from Oracle: legacy orders and master data"), 60, 530, 200, 120, B),
+        Node("pg", "db", L("PostgreSQL", "PostgreSQL"), L("Contenedor · base de datos", "Container · database"),
+             L("Despachos, estado de cada reporte, idempotencia, outbox", "Dispatches, filing status, idempotency, outbox"), 300, 530, 200, 120, B),
+        Node("conciliador", "container", L("Conciliador de fletes", "Freight reconciler"), L("Contenedor · Kafka Streams", "Container · Kafka Streams"),
+             L("Flete pactado vs. SICE-TAC vs. factura; alimenta al ERP", "Agreed freight vs. SICE-TAC vs. invoice; feeds the ERP"), 540, 530, 200, 120, B),
+        Node("sim", "container", L("Simulador RNDC", "RNDC simulator"), L("Contenedor · WireMock (pruebas)", "Container · WireMock (tests)"),
+             L("Contratos de ejemplo: ingresoid, errores MAN/REM, latencia", "Sample contracts: ingresoid, MAN/REM errors, latency"), 780, 530, 200, 120, B),
+        Node("oracle", "external", L("Oracle legado", "Legacy Oracle"), L("Sistema existente", "Existing system"), L("", ""), 60, 780, 200, 90),
+        Node("sicetac", "external", L("SICE-TAC", "SICE-TAC"), L("Sistema externo", "External system"), L("", ""), 540, 780, 200, 90),
+        Node("rndc", "external", L("RNDC · servicio web", "RNDC · web service"), L("Sistema externo · SOAP/XML", "External system · SOAP/XML"), L("", ""), 780, 780, 200, 90),
+    ]
+    edges = [
+        Edge("analista", "web", L("Usa", "Uses"), "HTTPS"),
+        Edge("generador", "web", L("Usa", "Uses"), "HTTPS"),
+        Edge("web", "api", L("Llama", "Calls"), "REST/JSON · OIDC"),
+        Edge("api", "keycloak", L("Valida tokens", "Validates tokens"), "OIDC", points=[(500, 230), (1000, 230)]),
+        Edge("api", "pg", L("Lee y escribe; outbox", "Reads and writes; outbox"), "JDBC"),
+        Edge("pg", "kafka", L("Outbox → eventos", "Outbox → events"), "Debezium outbox", points=[(500, 600), (520, 600), (520, 420), (540, 420)]),
+        Edge("kafka", "motor", L("Eventos del despacho", "Dispatch events"), ""),
+        Edge("motor", "kafka", L("Validado o rechazado", "Validated or rejected"), "", points=[(400, 360), (400, 340), (640, 340), (640, 360)]),
+        Edge("kafka", "integrador", L("Remesa · manifiesto · cumplido validados", "Validated consignment · manifest · proof"), ""),
+        Edge("integrador", "kafka", L("rndc.resultado", "rndc.result"), "", points=[(880, 480), (880, 500), (640, 500), (640, 480)]),
+        Edge("integrador", "rndc", L("Reporta y consulta", "Files and queries"), "SOAP/XML · HTTPS"),
+        Edge("integrador", "sim", L("En pruebas y demos", "In tests and demos"), "", dashed=True),
+        Edge("debezium", "oracle", L("Captura cambios", "Captures changes"), "LogMiner"),
+        Edge("debezium", "kafka", L("Órdenes y maestros como eventos", "Orders and master data as events"), "", points=[(260, 590), (280, 590), (280, 500), (520, 500), (520, 440), (540, 440)]),
+        Edge("kafka", "conciliador", L("Remesas y cumplidos", "Consignments and proofs"), ""),
+        Edge("conciliador", "sicetac", L("Costos de referencia", "Reference costs"), "HTTP"),
+        Edge("integrador", "obs", L("Trazas y métricas", "Traces and metrics"), "OTLP", dashed=True),
+    ]
+    return Diagram("c2-contenedores", L("Nivel 2 · Contenedores", "Level 2 · Containers"), 1240, 900, nodes, edges)
+
+
+def componentes() -> Diagram:
+    B = "integrador"
+    nodes = [
+        Node("kafka-in", "queue", L("Kafka", "Kafka"), L("Contenedor", "Container"), L("Eventos validados", "Validated events"), 40, 40, 180, 90),
+        Node(B, "boundary", L("Integrador RNDC", "RNDC integrator"), L("Contenedor · Camel sobre Quarkus", "Container · Camel on Quarkus"), L("", ""), 40, 170, 1160, 560),
+        Node("consumer", "component", L("Consumidor de eventos", "Event consumer"), L("Componente · Camel Kafka", "Component · Camel Kafka"),
+             L("Una ruta por tipo: remesa, manifiesto, cumplido, anulación", "One route per type: consignment, manifest, proof, cancellation"), 60, 210, 210, 110, B),
+        Node("idem", "component", L("Registro de idempotencia y estado", "Idempotency and status register"), L("Componente · PostgreSQL", "Component · PostgreSQL"),
+             L("Consecutivo único por operación; estados: pendiente, enviado, aceptado, rechazado, diferido", "Unique consecutive per operation; states: pending, sent, accepted, rejected, deferred"), 60, 380, 210, 130, B),
+        Node("prevalid", "component", L("Validador previo", "Pre-validator"), L("Componente · reglas", "Component · rules"),
+             L("Peso total ≤ capacidad de la configuración; SOAT/RTM vigentes a la fecha de descargue; flete ≥ mínimo; ICA del municipio; códigos DANE y Sistema Armonizado",
+               "Total weight ≤ configuration capacity; insurance/inspection valid at unloading date; freight ≥ minimum; municipality ICA; DANE and Harmonised System codes"), 310, 210, 250, 150, B),
+        Node("catalogos", "component", L("Catálogos maestros", "Master catalogues"), L("Componente · caché", "Component · cache"),
+             L("Municipios, configuraciones vehiculares, tarifas ICA, naturaleza de carga; se refrescan desde el RNDC", "Municipalities, vehicle configurations, ICA rates, cargo nature; refreshed from the RNDC"), 310, 400, 250, 120, B),
+        Node("mapper", "component", L("Mapeador XML", "XML mapper"), L("Componente · plantillas", "Component · templates"),
+             L("Una plantilla por procesoid; nunca se construye XML a mano en las rutas", "One template per procesoid; routes never build XML by hand"), 600, 210, 230, 110, B),
+        Node("soap", "component", L("Cliente SOAP RNDC", "RNDC SOAP client"), L("Componente · CXF", "Component · CXF"),
+             L("Credenciales por empresa, timeouts, reintentos con backoff y circuit breaker", "Per-company credentials, timeouts, backoff retries and circuit breaker"), 600, 360, 230, 120, B),
+        Node("parser", "component", L("Intérprete de respuestas", "Response interpreter"), L("Componente", "Component"),
+             L("ingresoid → aceptado; ErrorMSG → código (MAN071, REM139…) clasificado en corregible, reintentable o definitivo",
+               "ingresoid → accepted; ErrorMSG → code (MAN071, REM139…) classified as fixable, retryable or final"), 880, 210, 290, 130, B),
+        Node("diferida", "component", L("Cola diferida (contingencia)", "Deferred queue (contingency)"), L("Componente · Kafka", "Component · Kafka"),
+             L("Si el RNDC no responde: reintento programado dentro de la ventana de contingencia; alerta si vence", "If the RNDC is down: scheduled retry within the contingency window; alert if it expires"), 880, 380, 290, 120, B),
+        Node("publisher", "component", L("Publicador de resultados", "Result publisher"), L("Componente · Kafka", "Component · Kafka"),
+             L("rndc.resultado con ingresoid o error; alimenta estado, web y conciliación", "rndc.result with ingresoid or error; feeds status, web and reconciliation"), 600, 540, 230, 120, B),
+        Node("telemetria", "component", L("Telemetría", "Telemetry"), L("Componente · OpenTelemetry", "Component · OpenTelemetry"),
+             L("Traza por despacho; métricas por código de error y por empresa", "Trace per dispatch; metrics by error code and company"), 880, 540, 290, 110, B),
+        Node("rndc", "external", L("RNDC · servicio web", "RNDC · web service"), L("Sistema externo", "External system"), L("", ""), 600, 780, 230, 80),
+        Node("kafka-out", "queue", L("Kafka", "Kafka"), L("Contenedor", "Container"), L("rndc.resultado", "rndc.result"), 300, 780, 180, 80),
+    ]
+    edges = [
+        Edge("kafka-in", "consumer", L("Consume", "Consumes"), ""),
+        Edge("consumer", "idem", L("¿Ya se envió? Marca en curso", "Already sent? Marks in progress"), ""),
+        Edge("consumer", "prevalid", L("Operación a reportar", "Operation to file"), ""),
+        Edge("prevalid", "catalogos", L("Consulta", "Looks up"), ""),
+        Edge("prevalid", "mapper", L("Operación válida", "Valid operation"), ""),
+        Edge("mapper", "soap", L("XML del procesoid", "procesoid XML"), ""),
+        Edge("soap", "rndc", L("AtenderMensajeRNDC", "AtenderMensajeRNDC"), "SOAP/XML"),
+        Edge("soap", "parser", L("Respuesta XML", "XML response"), "", points=[(830, 420), (860, 420), (860, 275), (880, 275)]),
+        Edge("parser", "diferida", L("Reintentable o sin respuesta", "Retryable or no answer"), ""),
+        Edge("diferida", "soap", L("Reintenta", "Retries"), "", dashed=True, points=[(880, 470), (850, 470), (850, 440), (830, 440)]),
+        Edge("parser", "publisher", L("Aceptado o definitivo", "Accepted or final"), "", points=[(1020, 340), (1020, 600), (830, 600)]),
+        Edge("publisher", "idem", L("Actualiza estado", "Updates status"), "", points=[(600, 600), (165, 600), (165, 510)]),
+        Edge("publisher", "kafka-out", L("Publica", "Publishes"), ""),
+        Edge("prevalid", "publisher", L("Rechazo con causa", "Rejection with cause"), "", dashed=True, points=[(435, 360), (435, 580), (600, 580)]),
+        Edge("soap", "telemetria", L("Spans y métricas", "Spans and metrics"), "", dashed=True, points=[(715, 480), (715, 520), (1025, 520), (1025, 540)]),
+    ]
+    return Diagram("c3-componentes", L("Nivel 3 · Componentes del integrador", "Level 3 · Integrator components"), 1240, 900, nodes, edges)
+
+
+def dinamica() -> Diagram:
+    nodes = [
+        Node("analista", "person", L("Analista", "Analyst"), L("Persona", "Person"), L("", ""), 40, 40, 170, 90),
+        Node("web", "container", L("Web de despachos", "Dispatch web app"), L("Angular", "Angular"), L("", ""), 260, 40, 190, 90),
+        Node("api", "container", L("API de despachos", "Dispatch API"), L("Quarkus", "Quarkus"), L("", ""), 500, 40, 190, 90),
+        Node("kafka", "queue", L("Kafka", "Kafka"), L("Confluent", "Confluent"), L("", ""), 740, 40, 190, 90),
+        Node("motor", "container", L("Motor de validación", "Validation engine"), L("Camel", "Camel"), L("", ""), 980, 40, 200, 90),
+        Node("integrador", "container", L("Integrador RNDC", "RNDC integrator"), L("Camel + CXF", "Camel + CXF"), L("", ""), 740, 260, 190, 90),
+        Node("rndc", "external", L("RNDC", "RNDC"), L("Ministerio de Transporte", "Ministry of Transport"), L("", ""), 740, 470, 190, 90),
+        Node("app", "external", L("App RNDC Transportador", "RNDC Carrier app"), L("Conductor", "Driver"), L("", ""), 1000, 470, 190, 90),
+        Node("conciliador", "container", L("Conciliador de fletes", "Freight reconciler"), L("Kafka Streams", "Kafka Streams"), L("", ""), 260, 260, 190, 90),
+        Node("erp", "external", L("ERP legado", "Legacy ERP"), L("Oracle", "Oracle"), L("", ""), 40, 470, 170, 90),
+        Node("nota", "note", L("Plazos que gobiernan el ciclo", "Deadlines that govern the cycle"), L("", ""),
+             L("Cumplido a más tardar 72 h después de terminar el viaje. Con más del 20 % de operaciones pendientes el RNDC bloquea nuevos registros. Contingencia: reporte electrónico dentro de 24 h.",
+               "Proof of delivery no later than 72 h after the trip ends. With more than 20% of operations pending the RNDC blocks new filings. Contingency: electronic filing within 24 h."), 40, 640, 650, 90),
+    ]
+    edges = [
+        Edge("analista", "web", L("Crea la orden y la remesa", "Creates the order and consignment note"), "", number=1),
+        Edge("web", "api", L("POST /remesas", "POST /consignments"), "", number=2),
+        Edge("api", "kafka", L("Outbox → despacho.remesa", "Outbox → dispatch.consignment"), "", number=3),
+        Edge("kafka", "motor", L("Valida reglas del Ministerio", "Validates Ministry rules"), "", number=4),
+        Edge("motor", "integrador", L("Remesa validada", "Validated consignment"), "", number=5, points=[(1080, 130), (1080, 305), (930, 305)]),
+        Edge("integrador", "rndc", L("Registra remesa → ingresoid", "Files consignment → ingresoid"), "SOAP", number=6),
+        Edge("integrador", "rndc", L("Expide el manifiesto con sus remesas → número de manifiesto", "Issues the manifest with its consignments → manifest number"), "SOAP", number=7, points=[(700, 350), (700, 515)]),
+        Edge("rndc", "app", L("Publica el manifiesto; el conductor lo acepta", "Publishes the manifest; the driver accepts it"), "", number=8),
+        Edge("integrador", "rndc", L("Cumplido de remesa y de manifiesto (≤ 72 h)", "Consignment and manifest proof of delivery (≤ 72 h)"), "SOAP", number=9, points=[(970, 350), (970, 515)]),
+        Edge("integrador", "kafka", L("rndc.resultado por cada paso", "rndc.result after each step"), "", number=10, points=[(835, 260), (835, 130)]),
+        Edge("kafka", "conciliador", L("Remesas cumplidas", "Delivered consignments"), "", number=11, points=[(740, 110), (355, 110), (355, 260)]),
+        Edge("conciliador", "erp", L("Flete conciliado contra SICE-TAC y factura", "Freight reconciled against SICE-TAC and invoice"), "", number=12),
+    ]
+    return Diagram("c4-dinamica", L("Dinámica · ciclo de un despacho", "Dynamic · lifecycle of a dispatch"), 1240, 760, nodes, edges)
+
+
+def despliegue() -> Diagram:
+    K, C, O = "k8s", "confluent", "onprem"
+    nodes = [
+        Node("navegador", "external", L("Navegador del analista", "Analyst's browser"), L("Nodo", "Node"), L("", ""), 40, 40, 220, 80),
+        Node(K, "boundary", L("Kubernetes (clúster de la transportadora)", "Kubernetes (carrier's cluster)"), L("Nodo de despliegue", "Deployment node"), L("", ""), 40, 170, 760, 500),
+        Node("ingress", "container", L("Ingress + web", "Ingress + web"), L("nginx", "nginx"), L("TLS, archivos estáticos de Angular", "TLS, Angular static files"), 60, 210, 220, 100, K),
+        Node("api", "container", L("API de despachos", "Dispatch API"), L("Quarkus · 2 réplicas", "Quarkus · 2 replicas"), L("", ""), 310, 210, 220, 100, K),
+        Node("keycloak", "container", L("Keycloak", "Keycloak"), L("IAM", "IAM"), L("", ""), 560, 210, 220, 100, K),
+        Node("motor", "container", L("Motor de validación", "Validation engine"), L("Camel · 2 réplicas", "Camel · 2 replicas"), L("", ""), 60, 350, 220, 100, K),
+        Node("integrador", "container", L("Integrador RNDC", "RNDC integrator"), L("Camel + CXF · 2 réplicas", "Camel + CXF · 2 replicas"), L("Salida a internet por IP fija (allowlist del Ministerio)", "Internet egress through a fixed IP (Ministry allowlist)"), 310, 350, 220, 100, K),
+        Node("conciliador", "container", L("Conciliador", "Reconciler"), L("Kafka Streams", "Kafka Streams"), L("", ""), 560, 350, 220, 100, K),
+        Node("pg", "db", L("PostgreSQL", "PostgreSQL"), L("Operador · primario + réplica", "Operator · primary + replica"), L("", ""), 60, 490, 220, 100, K),
+        Node("obs", "container", L("Observabilidad", "Observability"), L("Prometheus · Grafana · Tempo · Loki", "Prometheus · Grafana · Tempo · Loki"), L("", ""), 310, 490, 220, 100, K),
+        Node("sim", "container", L("Simulador RNDC", "RNDC simulator"), L("WireMock · sólo pruebas", "WireMock · tests only"), L("", ""), 560, 490, 220, 100, K),
+        Node(C, "boundary", L("Clúster Kafka (Confluent)", "Kafka cluster (Confluent)"), L("Nodo de despliegue", "Deployment node"), L("", ""), 840, 170, 360, 300),
+        Node("brokers", "queue", L("3 brokers", "3 brokers"), L("Particiones y réplicas por tema", "Partitions and replicas per topic"), L("", ""), 860, 210, 320, 90, C),
+        Node("connect", "container", L("Kafka Connect", "Kafka Connect"), L("Debezium Oracle · outbox", "Debezium Oracle · outbox"), L("", ""), 860, 320, 150, 110, C),
+        Node("mm2", "container", L("MirrorMaker 2", "MirrorMaker 2"), L("Réplica al clúster de DR", "Replication to the DR cluster"), L("", ""), 1030, 320, 150, 110, C),
+        Node(O, "boundary", L("Centro de datos de la transportadora", "Carrier's data centre"), L("Nodo de despliegue · on-prem", "Deployment node · on-prem"), L("", ""), 840, 500, 360, 170),
+        Node("oracle", "db", L("Oracle legado", "Legacy Oracle"), L("ERP / TMS", "ERP / TMS"), L("", ""), 860, 540, 320, 100, O),
+        Node("rndc", "external", L("RNDC · Ministerio de Transporte", "RNDC · Ministry of Transport"), L("Internet · SOAP/XML", "Internet · SOAP/XML"), L("", ""), 40, 720, 300, 80),
+        Node("sicetac", "external", L("SICE-TAC", "SICE-TAC"), L("Internet · HTTP", "Internet · HTTP"), L("", ""), 380, 720, 300, 80),
+    ]
+    edges = [
+        Edge("navegador", "ingress", L("HTTPS", "HTTPS"), ""),
+        Edge("ingress", "api", L("REST", "REST"), ""),
+        Edge("api", "keycloak", L("OIDC", "OIDC"), ""),
+        Edge("api", "pg", L("JDBC", "JDBC"), "", points=[(420, 310), (420, 330), (300, 330), (300, 540), (280, 540)]),
+        Edge("integrador", "rndc", L("SOAP/XML por IP fija", "SOAP/XML through fixed IP"), "", points=[(420, 450), (420, 470), (290, 470), (290, 700), (190, 700), (190, 720)]),
+        Edge("conciliador", "sicetac", L("HTTP", "HTTP"), "", points=[(670, 450), (670, 700), (530, 700), (530, 720)]),
+        Edge("connect", "oracle", L("LogMiner", "LogMiner"), ""),
+        Edge("brokers", "connect", L("", ""), ""),
+        Edge("brokers", "mm2", L("", ""), ""),
+        Edge("api", "brokers", L("Eventos", "Events"), "", points=[(530, 240), (820, 240), (820, 255), (860, 255)]),
+        Edge("integrador", "brokers", L("Consume y publica", "Consumes and publishes"), "", points=[(530, 380), (820, 380), (820, 270), (860, 270)]),
+    ]
+    return Diagram("c5-despliegue", L("Despliegue", "Deployment"), 1240, 830, nodes, edges)
+
+
+DIAGRAMS = [contexto(), contenedores(), componentes(), dinamica(), despliegue()]
+
+
+# ---------------------------------------------------------------------------- SVG
+def wrap(text: str, max_chars: int) -> list[str]:
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        if len(cur) + len(w) + 1 > max_chars and cur:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = f"{cur} {w}".strip()
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def center(n: Node) -> tuple[float, float]:
+    return n.x + n.w / 2, n.y + n.h / 2
+
+
+def anchor(n: Node, towards: tuple[float, float]) -> tuple[float, float]:
+    """Punto del borde del nodo en la dirección de `towards` (recorte rectangular)."""
+    cx, cy = center(n)
+    tx, ty = towards
+    dx, dy = tx - cx, ty - cy
+    if dx == 0 and dy == 0:
+        return cx, cy
+    sx = (n.w / 2) / abs(dx) if dx else float("inf")
+    sy = (n.h / 2) / abs(dy) if dy else float("inf")
+    s = min(sx, sy)
+    return cx + dx * s, cy + dy * s
+
+
+def svg_text(x: float, y: float, lines: list[str], size: float, weight: str = "normal", color: str = INK, anchor_: str = "middle", italic: bool = False, lh: float | None = None) -> str:
+    lh = lh or size * 1.25
+    out = []
+    for i, line in enumerate(lines):
+        style = f"font-family:{FONT};font-size:{size}px;font-weight:{weight};fill:{color}" + (";font-style:italic" if italic else "")
+        out.append(f'<text x="{x:.1f}" y="{y + i * lh:.1f}" text-anchor="{anchor_}" style="{style}">{html.escape(line)}</text>')
+    return "".join(out)
+
+
+def svg_node(n: Node, lang: int) -> str:
+    name, typ, desc = n.name[lang], n.type[lang], n.desc[lang]
+    x, y, w, h = n.x, n.y, n.w, n.h
+    parts = []
+    if n.kind == "boundary":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="none" stroke="{GRAPHITE}" stroke-width="1.2" stroke-dasharray="6 5"/>')
+        parts.append(svg_text(x + 10, y + h - 22, [name], 13, "bold", GRAPHITE, "start"))
+        parts.append(svg_text(x + 10, y + h - 8, [f"[{typ}]"], 10, "normal", GRAPHITE, "start"))
+        return "".join(parts)
+    if n.kind == "note":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{AMBER_WASH}" stroke="{INK}" stroke-width="1"/>')
+        parts.append(svg_text(x + 12, y + 20, [name], 12, "bold", INK, "start"))
+        parts.append(svg_text(x + 12, y + 38, wrap(desc, int((w - 24) / 5.6)), 10.5, "normal", INK, "start", lh=14))
+        return "".join(parts)
+    stroke_w = 2 if n.kind in ("system",) else 1.5
+    dash = ' stroke-dasharray="7 5"' if n.kind == "external" else ""
+    fill = AMBER if n.kind == "system" else PAPER
+    if n.kind == "db":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{INK}" stroke-width="{stroke_w}"/>')
+        parts.append(f'<path d="M{x} {y + 9} H{x + w}" stroke="{INK}" stroke-width="1.5" fill="none"/>')
+    elif n.kind == "queue":
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{INK}" stroke-width="{stroke_w}"/>')
+        parts.append(f'<path d="M{x + 8} {y} V{y + h} M{x + w - 8} {y} V{y + h}" stroke="{INK}" stroke-width="1" fill="none"/>')
+    elif n.kind == "person":
+        cx = x + w / 2
+        parts.append(f'<rect x="{x}" y="{y + 16}" width="{w}" height="{h - 16}" rx="10" fill="{fill}" stroke="{INK}" stroke-width="{stroke_w}"/>')
+        parts.append(f'<circle cx="{cx}" cy="{y + 16}" r="14" fill="{PAPER}" stroke="{INK}" stroke-width="{stroke_w}"/>')
+        parts.append(f'<circle cx="{cx}" cy="{y + 12}" r="4" fill="{INK}"/><path d="M{cx - 7} {y + 25} q7 -9 14 0" stroke="{INK}" stroke-width="1.5" fill="none"/>')
+    else:
+        parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{INK}" stroke-width="{stroke_w}"{dash}/>')
+    top = y + (34 if n.kind == "person" else 20)
+    cx = x + w / 2
+    name_lines = wrap(name, int((w - 20) / 7.2))
+    parts.append(svg_text(cx, top, name_lines, 13, "bold", INK, lh=16))
+    yy = top + len(name_lines) * 16
+    if typ:
+        parts.append(svg_text(cx, yy, [f"[{typ}]"], 10, "normal", GRAPHITE if n.kind != "system" else INK, italic=True))
+        yy += 15
+    if desc:
+        parts.append(svg_text(cx, yy + 2, wrap(desc, int((w - 20) / 5.4)), 10.5, "normal", INK, lh=13.5))
+    return "".join(parts)
+
+
+def svg_edge(e: Edge, nodes: dict[str, Node], lang: int) -> str:
+    a, b = nodes[e.src], nodes[e.dst]
+    if e.points:
+        p0 = anchor(a, e.points[0])
+        p1 = anchor(b, e.points[-1])
+        pts = [p0, *[(float(px), float(py)) for px, py in e.points], p1]
+    else:
+        p0 = anchor(a, center(b))
+        p1 = anchor(b, center(a))
+        pts = [p0, p1]
+    d = "M" + " L".join(f"{px:.1f} {py:.1f}" for px, py in pts)
+    dash = ' stroke-dasharray="5 4"' if e.dashed else ""
+    out = [f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="1.5" marker-end="url(#arrow)"{dash}/>']
+    # etiqueta en el punto medio del tramo más largo
+    best, best_len = None, -1
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        ln = abs(x2 - x1) + abs(y2 - y1)
+        if ln > best_len:
+            best, best_len = ((x1 + x2) / 2, (y1 + y2) / 2), ln
+    mx, my = best
+    label = e.label[lang]
+    lines = wrap(label, 30) if label else []
+    if e.tech:
+        lines.append(f"[{e.tech}]")
+    if lines:
+        wmax = max(len(s) for s in lines) * 5.6 + 12
+        hgt = len(lines) * 12.5 + 6
+        out.append(f'<rect x="{mx - wmax / 2:.1f}" y="{my - hgt / 2 - 1:.1f}" width="{wmax:.1f}" height="{hgt:.1f}" fill="{PAPER}" fill-opacity="0.92"/>')
+        out.append(svg_text(mx, my - hgt / 2 + 11, lines, 10, "normal", GRAPHITE, lh=12.5))
+    if e.number is not None:
+        nx, ny = pts[0]
+        nx2, ny2 = pts[1]
+        qx, qy = nx + (nx2 - nx) * 0.25, ny + (ny2 - ny) * 0.25
+        out.append(f'<circle cx="{qx:.1f}" cy="{qy:.1f}" r="11" fill="{AMBER}" stroke="{INK}" stroke-width="1.5"/>')
+        out.append(svg_text(qx, qy + 4, [str(e.number)], 11, "bold", INK))
+    return "".join(out)
+
+
+def write_svg(dg: Diagram, lang: int, path: str) -> None:
+    nodes = {n.id: n for n in dg.nodes}
+    body = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {dg.width} {dg.height}" width="{dg.width}" height="{dg.height}" role="img" aria-label="{html.escape(dg.title[lang])}">',
+        f'<title>{html.escape(dg.title[lang])}</title>',
+        f'<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="{INK}" stroke-width="1.5" stroke-linecap="round"/></marker>'
+        f'<pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="{GRID}"/></pattern></defs>',
+        f'<rect width="{dg.width}" height="{dg.height}" fill="{PAPER}"/><rect width="{dg.width}" height="{dg.height}" fill="url(#grid)"/>',
+    ]
+    body += [svg_node(n, lang) for n in dg.nodes if n.kind == "boundary"]
+    body += [svg_edge(e, nodes, lang) for e in dg.edges]
+    body += [svg_node(n, lang) for n in dg.nodes if n.kind != "boundary"]
+    body.append(svg_text(dg.width - 12, dg.height - 10, [dg.title[lang].upper()], 10, "bold", GRAPHITE, "end"))
+    body.append("</svg>\n")
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("".join(body))
+
+
+# ---------------------------------------------------------------------------- draw.io
+C4_STYLE = {
+    "person": "html=1;fontSize=11;dashed=0;whiteSpace=wrap;fillColor=#083F75;strokeColor=#06315C;fontColor=#ffffff;shape=mxgraph.c4.person2;align=center;metaEdit=1;points=[[0.5,0,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0]];resizable=0;",
+    "system": "rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#1061B0;strokeColor=#0D5091;fontColor=#ffffff;align=center;arcSize=10;strokeWidth=1;metaEdit=1;resizable=0;",
+    "external": "rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#8C8496;strokeColor=#736782;fontColor=#ffffff;align=center;arcSize=10;strokeWidth=1;metaEdit=1;resizable=0;",
+    "container": "rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;arcSize=10;strokeColor=#0E7DAD;metaEdit=1;resizable=0;",
+    "component": "rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#63BEF2;fontColor=#ffffff;align=center;arcSize=6;strokeColor=#2086C9;metaEdit=1;resizable=0;",
+    "db": "shape=cylinder3;size=15;whiteSpace=wrap;html=1;boundedLbl=1;rounded=0;labelBackgroundColor=none;fillColor=#23A2D9;fontSize=12;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;",
+    "queue": "shape=mxgraph.c4.container;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#23A2D9;fontColor=#ffffff;align=center;strokeColor=#0E7DAD;metaEdit=1;",
+    "boundary": "rounded=1;fontSize=11;whiteSpace=wrap;html=1;dashed=1;arcSize=20;fillColor=none;strokeColor=#666666;fontColor=#333333;labelBackgroundColor=none;align=left;verticalAlign=bottom;labelBorderColor=none;spacingTop=0;spacing=10;dashPattern=8 4;metaEdit=1;rotatable=0;perimeter=rectanglePerimeter;noLabel=0;labelPadding=0;allowArrows=0;connectable=0;expand=0;recursiveResize=0;editable=1;pointerEvents=0;absoluteArcSize=1;",
+    "note": "shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;size=20;align=left;verticalAlign=top;spacing=8;",
+}
+EDGE_STYLE = "endArrow=blockThin;html=1;fontSize=10;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;edgeStyle=orthogonalEdgeStyle;"
+
+
+def drawio_label(n: Node, lang: int) -> str:
+    name, typ, desc = n.name[lang], n.type[lang], n.desc[lang]
+    if n.kind == "boundary":
+        return f"<b>{html.escape(name)}</b><div>[{html.escape(typ)}]</div>"
+    if n.kind == "note":
+        return f"<b>{html.escape(name)}</b><br>{html.escape(desc)}"
+    label = f"<b>{html.escape(name)}</b><div>[{html.escape(typ)}]</div>"
+    if desc:
+        label += f'<br><div><font style="font-size: 11px">{html.escape(desc)}</font></div>'
+    return label
+
+
+def write_drawio(dg: Diagram, lang: int, path: str) -> None:
+    cells = ['<mxCell id="0"/>', '<mxCell id="1" parent="0"/>']
+    for n in dg.nodes:
+        style = C4_STYLE[n.kind]
+        parent = "1"
+        x, y = n.x, n.y
+        if n.parent:
+            p = next(m for m in dg.nodes if m.id == n.parent)
+            parent = p.id
+            x, y = n.x - p.x, n.y - p.y
+        cells.append(
+            f'<mxCell id="{n.id}" value="{html.escape(drawio_label(n, lang), quote=True)}" style="{style}" vertex="1" parent="{parent}">'
+            f'<mxGeometry x="{x}" y="{y}" width="{n.w}" height="{n.h}" as="geometry"/></mxCell>'
+        )
+    for i, e in enumerate(dg.edges):
+        label = e.label[lang]
+        if e.number is not None:
+            label = f"{e.number}. {label}"
+        value = f'<div style="text-align: center"><b>{html.escape(label)}</b></div>' + (f'<div style="text-align: center">[{html.escape(e.tech)}]</div>' if e.tech else "")
+        style = EDGE_STYLE + ("dashed=1;" if e.dashed else "")
+        pts = "".join(f'<mxPoint x="{px}" y="{py}"/>' for px, py in e.points)
+        geom = f'<mxGeometry relative="1" as="geometry">{("<Array as=\"points\">" + pts + "</Array>") if pts else ""}</mxGeometry>'
+        cells.append(f'<mxCell id="e{i}" value="{html.escape(value, quote=True)}" style="{style}" edge="1" parent="1" source="{e.src}" target="{e.dst}">{geom}</mxCell>')
+    xml = (
+        '<mxfile host="app.diagrams.net" agent="rndc-diagramas.py" version="24.0.0">'
+        f'<diagram id="{dg.slug}" name="{html.escape(dg.title[lang], quote=True)}">'
+        f'<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">'
+        f'<root>{"".join(cells)}</root></mxGraphModel></diagram></mxfile>\n'
+    )
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(xml)
+
+
+def main() -> None:
+    os.makedirs(SVG_DIR, exist_ok=True)
+    os.makedirs(DRAWIO_DIR, exist_ok=True)
+    for dg in DIAGRAMS:
+        for lang, code in ((0, "es"), (1, "en")):
+            write_svg(dg, lang, os.path.join(SVG_DIR, f"{dg.slug}.{code}.svg"))
+            write_drawio(dg, lang, os.path.join(DRAWIO_DIR, f"{dg.slug}.{code}.drawio"))
+        print("ok", dg.slug)
+
+
+if __name__ == "__main__":
+    main()
