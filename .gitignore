@@ -25,3 +25,8 @@ Thumbs.db
 
 # capturas locales de verificación
 /screenshots/
+
+# evidencia local de revisiones de diseño (impeccable)
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/

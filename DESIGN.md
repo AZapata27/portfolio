@@ -105,7 +105,8 @@ components:
 **Norte creativo: "la hoja de dibujo"**. El portafolio es un plano de ingeniería de una sola ruta
 de integración (Enterprise Integration Patterns): el problema del visitante entra por un canal, un
 *content-based router* lo manda a Arquitectura, Integración o Desarrollo AI-native, un agregador
-junta las ramas y sale a producción; el liderazgo corre por encima como *control bus*. Todo lo que
+junta las ramas y sale a producción; el liderazgo técnico corre por encima como línea de control
+(el *control bus* de EIP, rotulado "Liderazgo técnico" en el sitio). Todo lo que
 se agregue debe poder existir en una hoja de dibujo técnico: marcos, reglas, tablas, cotas, llamadas
 numeradas, bloques de título. Nada de tarjetas, sombras, degradados ni radios.
 
@@ -124,7 +125,7 @@ reglas para que un agente pueda añadir una hoja o un componente sin romper el m
   mensaje, llamadas ①–③, fila CONTACT, REV actual, selección de texto, anillo de foco.
   **Ámbar profundo** `#8A5A00` sólo para strings de código (5,7:1). **Ámbar lavado** `#F8EAC6` para
   hover de las ramas en móvil.
-- **Azul de dibujo** `#1F5FBF` para el control bus (línea punteada), la llamada ④ y todos los enlaces
+- **Azul de dibujo** `#1F5FBF` para la línea de control del liderazgo técnico (punteada), la llamada ④ y todos los enlaces
   (5,8:1). **Azul lavado** `#E4EAF1` para el hover del conmutador de idioma.
 - Estrategia: restringida (neutros + un acento + un secundario funcional). No introducir más colores;
   si un estado nuevo necesita énfasis, usar grosor de línea o relleno ámbar.
@@ -144,11 +145,11 @@ reglas para que un agente pueda añadir una hoja o un componente sin romper el m
 
 - Hojas (`components/Sheet.astro`) de ancho máximo 1280 px, apiladas con 24 px de separación sobre
   la mesa, con marco exterior de 2 px, banda, marco interior de 1 px, marcas de esquina, grilla de
-  puntos y sello `SHEET n/6 · TÍTULO · andres-zapata.route` abajo a la derecha. La hoja 1 lleva
+  puntos y sello `SHEET n/6 · TÍTULO` abajo a la derecha (sin nombre de plano; la barra superior dice "Portafolio"). La hoja 1 lleva
   además reglas de columnas (1–6) y zonas (A–D).
 - Escala de espaciado de 4 px (`--s-1` … `--s-8`); gutter `clamp(1rem, 3vw, 2.5rem)`.
 - Diagrama de la ruta: SVG (`RouteDiagram`) desde 960 px; flujo vertical en HTML (`RouteFlow`) por
-  debajo. Tablas semánticas que se apilan con `display: grid` en móvil (`< 768` logros y lista de
+  debajo. Páginas de proyecto en `/proyectos/<slug>/` y `/en/work/<slug>/`, misma barra y pie. Tablas semánticas que se apilan con `display: grid` en móvil (`< 768` logros y lista de
   partes; `< 900` revisiones); el único scroll horizontal permitido es el código de `DETAIL A`.
 - Barra superior fija desde 1024 px; debajo se apila y no se fija.
 
@@ -166,13 +167,31 @@ como chevrones del propio trazo (`stroke-linecap: round`). Iconos EIP y de inter
 
 ## Components
 
-- **Sheet**: `<Sheet id number total title drawingName locale labelledby>`; dentro, un `h2.sheet-title`.
+- **Sheet**: `<Sheet id number total title locale labelledby>`; dentro, un `h2.sheet-title`.
 - **Tablas** (`.tbl`): `caption` arriba en mono/mayúsculas, `thead th` en grafito, celdas con
   hairlines; en móvil cada fila es un grid con `data-label`.
+- **Perfil longitudinal** (hoja 3, `sections/Experience.astro`): línea de tiempo de la trayectoria,
+  sin fechas, de hoy hacia el pasado. Línea de 2 px que nace en el bloque HOY (tinta); estaciones
+  con llamada vertical de 1,5 px y marcador circular de 12 px (papel con borde de tinta; relleno
+  ámbar si es actual). Horizontal desde 960 px (HOY a la izquierda, estaciones alternando arriba y
+  abajo), vertical por debajo (HOY arriba).
+- **Detalles** (hoja 4, `sections/Work.astro`): galería de láminas agrupada por dominio. Título de
+  grupo con nombre en display y cantidad a la derecha, sobre una
+  hairline. Cada lámina es un enlace a la página del proyecto; hover: anillo interior de 1 px en el
+  marco, título subrayado y acción "Ver proyecto" rellena de ámbar. 3 columnas desde 1024 px, 2 desde 640.
+- **Lámina** (`components/Plate.astro`): marco hairline con marcas de esquina de 10 px y grilla de
+  puntos; dentro, la captura real (`astro:assets`, recorte superior 16:10 en la galería) o el esquema;
+  pie en mono sólo en las capturas, `captura de <dominio> · <AAAA-MM>`; sello ámbar con la cifra pegado a la esquina.
+- **Esquema** (`components/Schematic.astro`): SVG de cajas 150×54 en columnas de 196 px, trazo 1,5 px
+  no escalable, chevrones; nodos box / channel / store / bus (azul discontinuo) / prod (tinta) /
+  cloud (discontinuo). Etiquetas en display 15 px mayúsculas y mono 10,5 px.
+- **Página de proyecto** (`ProjectPage.astro`): una hoja con sello `PROYECTO · dominio`; fila mono
+  de regreso, título display, resumen a 62 ch, columnas 7/5 (lámina / cota + tabla mono), notas a
+  66 ch y paginación anterior/siguiente.
 - **Bloque de título** (`TitleBlock`, hoja 1 y hoja 6): tabla mono; fila CONTACT en ámbar con el
   mailto como acción primaria; LinkedIn, GitHub y CV como enlaces azules.
 - **Llamadas** (`.num`): círculo de 2 rem, borde de tinta, relleno ámbar (①–③) o papel con borde y
-  número azul (④, control bus).
+  número azul (④, liderazgo técnico).
 - **Enlaces**: azul de dibujo, subrayado de 1 px con offset 0,18 em; 2 px en hover.
 - **Foco**: contorno ámbar de 2 px con offset 2 px más anillo interior de tinta. **Selección**: ámbar
   sobre tinta. **Scrollbar**: fina, tinta sobre mesa.

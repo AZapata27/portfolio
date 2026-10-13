@@ -9,6 +9,8 @@ type: early
 order: 8
 summary: Cuatro roles que fueron de la mesa de ayuda ITIL a pipelines ETL para big data de telecomunicaciones.
 stack: [Java, C#, PL/SQL, Odoo, ITIL]
+short: "Atento, iKono, Estatal de Seguridad y Emtelco: de la mesa de ayuda ITIL a ETL sobre big data."
+tags: [Java, PL/SQL, Odoo, ITIL]
 ---
 
 - **Emtelco (Tigo-Une), Software Developer, 2020 – 2021.** ETL/ELT para big data de telecomunicaciones (Java, C#, PL/SQL).

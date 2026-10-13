@@ -20,7 +20,6 @@ import Work from './sections/Work.astro';
 import Stack from './sections/Stack.astro';
 import Contact from './sections/Contact.astro';
 import Footer from './sections/Footer.astro';
-import { drawingNameOf } from './labels';
 
 interface Props {
   locale: Locale;
@@ -34,7 +33,6 @@ const [profile, experience, projects, skills] = await Promise.all([
   getProjects(locale),
   getSkills(),
 ]);
-const drawingName = drawingNameOf(profile.shortName);
 const total = 6;
 ---
 
@@ -53,18 +51,18 @@ const total = 6;
   </Fragment>
 
   <EipSprite />
-  <Topbar {profile} {locale} {drawingName} />
+  <Topbar {profile} {locale} />
 
   <main id="main" class="sheets">
-    <Hero {profile} {locale} {drawingName} {total} />
-    <Capabilities {profile} {locale} {drawingName} {total} />
-    <Experience {experience} {locale} {drawingName} {total} />
-    <Work {projects} {locale} {drawingName} {total} />
-    <Stack {skills} {locale} {drawingName} {total} />
-    <Contact {profile} {locale} {drawingName} {total} />
+    <Hero {profile} {locale} {total} />
+    <Capabilities {profile} {locale} {total} />
+    <Experience {experience} {locale} {total} />
+    <Work {projects} {locale} {total} />
+    <Stack {skills} {locale} {total} />
+    <Contact {profile} {locale} {total} />
   </main>
 
-  <Footer {profile} {locale} {drawingName} />
+  <Footer {profile} {locale} />
 </Base>
 
 <style>

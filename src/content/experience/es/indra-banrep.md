@@ -10,6 +10,8 @@ type: employment
 order: 7
 summary: Lideré dos equipos construyendo microservicios Java para el banco central, con 98 % menos de latencia en servicios críticos.
 stack: [Java 8-17, Spring Cloud, WebFlux, Redis, MongoDB, GCP Pub/Sub, Apigee, AWS, DynamoDB, Jenkins, SonarQube]
+short: "Microservicios y liderazgo de dos equipos para el Banco de la República."
+tags: [Java, Spring, Angular, GCP]
 ---
 
 - Lideré 2 equipos de 4 desarrolladores en microservicios Java 8-17 (Spring Cloud, GCP Pub/Sub, Apigee, AWS, DynamoDB).

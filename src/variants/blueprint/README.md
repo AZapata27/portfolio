@@ -8,7 +8,9 @@ el 2026-10-10 (la alternativa "script" se eliminó).
 
 La página **es un plano de ingeniería** de una sola ruta EIP: el problema del visitante entra por un
 canal, un *content-based router* lo manda a Arquitectura, Integración o Desarrollo AI-native, un
-agregador junta las ramas y sale a producción; el liderazgo corre por encima como *control bus*.
+agregador junta las ramas y sale a producción; el liderazgo técnico corre por encima como línea de
+control (el *control bus* de EIP; en el sitio se rotula "Liderazgo técnico", decisión de Andrés del
+2026-10-12 porque "control bus" no se entendía).
 No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** numeradas
 (`SHEET 1/6 … 6/6`), cada una con marco doble, marcas de esquina, grilla de puntos y sello.
 
@@ -16,8 +18,8 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | ---- | --------------- | ---------------------------------------------------------------------------------------- |
 | 1    | `route`         | Nombre, diagrama de la ruta (SVG), `DETAIL A · Route.java`, bloque de título con contacto |
 | 2    | `capabilities`  | NOTES ①–④ (las cuatro capacidades), resumen y tabla de LOGROS (`profile.achievements`)   |
-| 3    | `experience`    | REVISIONS: experiencia como filas `REV / DATE / DESCRIPTION` (la más alta, la actual)     |
-| 4    | `work`          | DETAILS B–H: proyectos (destacados con su cifra como cota; el resto en fila compacta)     |
+| 3    | `experience`    | PERFIL LONGITUDINAL: la trayectoria como línea de tiempo sin fechas (empresa, relación, cargo, una línea, stack superficial); el detalle queda en el CV |
+| 4    | `work`          | galería de láminas (captura real o esquema) agrupada por dominio; cada lámina abre `/proyectos/<slug>/` |
 | 5    | `stack`         | PARTS LIST: `ITEM / GROUP / PARTS` con logos de simple-icons en tinta                     |
 | 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, idiomas, notas generales |
 
@@ -36,7 +38,7 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | `--amber`       | `#F2A900` | Único acento: sobre del mensaje, llamadas ①–③, fila CONTACT, REV actual, selección de texto. Nunca como color de texto (1,9:1) |
 | `--amber-deep`  | `#8A5A00` | Strings del código (5,7:1)                                             |
 | `--amber-wash`  | `#F8EAC6` | Hover de las ramas en móvil                                            |
-| `--blue`        | `#1F5FBF` | Control bus (línea punteada), llamada ④ y enlaces (5,8:1)              |
+| `--blue`        | `#1F5FBF` | Línea de control del liderazgo técnico (punteada), llamada ④ y enlaces (5,8:1) |
 | `--blue-wash`   | `#E4EAF1` | Hover del conmutador de idioma                                         |
 
 Sin sombras ni radios: la profundidad es grosor de línea (`1px` hairline, `1.5px` trazo, `2px` marco).
@@ -57,7 +59,7 @@ Las tres familias se autoalojan con la Fonts API de Astro (`<Font cssVariable=�
 
 Escala de 4 px (`--s-1` … `--s-8`). Cada hoja (`components/Sheet.astro`) tiene marco exterior de
 2 px, banda (8 px; 14–22 px en la hoja 1 para las reglas 1–6 y A–D), marco interior de 1 px,
-marcas de esquina dibujadas con gradientes de fondo y el sello `SHEET n/6 · TÍTULO · andres-zapata.route`
+marcas de esquina dibujadas con gradientes de fondo y el sello `SHEET n/6 · TÍTULO` (sin nombre de plano: decisión de Andrés, 2026-10-12)
 pegado a la esquina inferior derecha. Ancho máximo 1280 px; separación entre hojas 24 px.
 
 ## Diagrama de la ruta
@@ -75,6 +77,48 @@ pegado a la esquina inferior derecha. Ancho máximo 1280 px; separación entre h
 - `DETAIL A` (`components/DetailA.astro`) genera el DSL de Camel a partir de `capabilities`: los ids
   son los `needs("…")`, los dos primeros `parts` de cada rama forman el endpoint y la primera
   parte del control bus el `wireTap`. Así el código y el dibujo no se desincronizan.
+
+## Perfil longitudinal (hoja 3)
+
+La experiencia no se duplica del CV: es una **línea de tiempo sin fechas** con empresa, relación
+(`client`: "Contratista", cliente final), cargo, un resumen de una línea (`short`) y hasta cuatro
+tecnologías (`tags`). El orden es el de `getExperience`: puestos actuales primero (Avianca como
+contratista, luego Quind) y después del más reciente al más antiguo; la línea nace en el bloque HOY
+(tinta, como PROD) y se aleja hacia el pasado. Decisión de Andrés del 2026-10-12: sin fechas y sin
+el nodo del contratista independiente.
+
+- **Escritorio (≥ 960 px)**: horizontal, HOY a la izquierda. Grilla de `max-content` (HOY) más
+  `n + 1` columnas; cada estación ocupa dos columnas y alterna arriba y abajo de la línea, con su
+  línea de llamada vertical y un marcador circular (ámbar si el puesto es actual).
+- **Móvil y tablet (< 960 px)**: vertical, HOY arriba, marcadores sobre una línea a la izquierda.
+- El trabajo como **contratista independiente** (`type: freelance`) no se dibuja: sus proyectos
+  están en la hoja 4.
+
+## Detalles (hoja 4) y páginas de proyecto
+
+Es la hoja con más peso y desde el 2026-10-12 es una **galería de láminas** (decisión de Andrés:
+"mucho texto en cajas"). Los proyectos se agrupan por `domain` (texto exacto, en el orden en que
+aparece cada dominio según `order`); cada grupo lleva el nombre del dominio y la cantidad. Cada proyecto es una lámina (`components/Plate.astro`): la
+captura real del sitio público (`plate` en el contenido, imagen en `src/assets/work/`, optimizada
+por `astro:assets`) o, si no la hay, el esquema de arquitectura (`schematic`), dentro de un marco
+hairline con marcas de esquina y, sólo en las capturas, pie `captura de <dominio> · <AAAA-MM>`. La cifra va como
+sello ámbar pegado a la esquina; debajo, título, cliente · periodo, una línea y la acción "Ver proyecto".
+Toda la lámina es un enlace a la página del proyecto; al pasar el cursor el marco engrosa (anillo
+interior de 1 px), el título se subraya y la acción "Ver proyecto" se rellena de ámbar. Grilla de 3 columnas desde 1024 px, 2 desde 640.
+
+**Página de proyecto** (`ProjectPage.astro`, rutas `src/pages/proyectos/[slug].astro` y
+`src/pages/en/work/[slug].astro`, `projectPath()` en `i18n.ts`): una sola hoja con sello
+`PROYECTO · dominio`. Fila mono con "← Todos los proyectos" y el dominio; título en
+display y resumen a 62 ch; dos columnas 7/5 desde 960 px: la lámina a tamaño completo (captura y, si existe, esquema debajo) y, a la derecha, la cota grande y la tabla mono
+CLIENTE / PERIODO / ROL / DOMINIO / STACK / ENLACES; luego NOTAS (el cuerpo Markdown) a 66 ch y la
+paginación anterior/siguiente. `Seo.astro` recibe `paths` porque el segmento cambia por idioma.
+
+**Esquemas** (`components/Schematic.astro`): SVG calculado a partir de `columns` (nodos de izquierda
+a derecha) y `edges`; cajas de 150×54 en columnas de 196 px, cables ortogonales de 1,5 px con
+chevrón, `vector-effect: non-scaling-stroke`. Tipos: box, channel (extremos redondeados), store
+(tapa), bus (azul discontinuo, como la línea de control), prod (tinta) y cloud (externo, discontinuo).
+Las capturas del Banco de la República no se pudieron tomar (anti-bot con captcha): esos proyectos
+van sólo con esquema.
 
 ## Momento memorable (motion)
 
@@ -106,9 +150,11 @@ semánticas con `caption`, `th scope` y, en móvil, cada fila se apila con `disp
 ## Responsivo
 
 - `< 640`: bloques de título y detalles en una columna; etiqueta `DETAIL x` sobre el título.
-- `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: REVISIONS apilada (a 768 px la tabla
-  de cuatro columnas se apretaba demasiado); detalles y contacto en una columna.
-- `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código.
+- `< 640`: galería de proyectos en una columna; 2 columnas desde 640 y 3 desde 1024. La página de
+  proyecto apila lámina, cota, tabla y notas por debajo de 960 px.
+- `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: contacto en una columna.
+- `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código; la línea de
+  tiempo pasa de horizontal a vertical.
 - `< 1024`: barra superior sin fijar (`AZ` + idioma arriba, navegación debajo). Desde 1024 se fija.
 
 Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
@@ -127,6 +173,11 @@ Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
 ## Para extender
 
 - Nueva hoja: `sections/<Nombre>.astro` envuelta en `<Sheet …>`, incluirla en `Page.astro` y subir
-  `total`. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
+  `total`.
+- Nuevo proyecto: `src/content/projects/{en,es}/<slug>.md` con un `domain` ya existente (o uno nuevo
+  en los dos idiomas), un `order` contiguo a los de su dominio y una lámina: `plate` (captura en
+  `src/assets/work/`, con `source` y `captured`) o `schematic` (columnas y aristas). La página `/proyectos/<slug>/` sale sola.
+- Nuevo puesto en la línea de tiempo: `src/content/experience/{en,es}/<slug>.md` con `short` y
+  `tags` (hasta cuatro); `type: freelance` no se dibuja. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
 - El DSL de `DETAIL A` y el diagrama leen `capabilities` por `id`; si se agrega una capacidad hay que
   decidir en qué rama va (el orden fijo está en `capabilityOrder`).

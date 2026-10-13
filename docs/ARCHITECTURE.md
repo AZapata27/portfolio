@@ -13,7 +13,7 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
   Cada colección localizada tiene carpetas `en/` y `es/`; el idioma se deriva del prefijo del `id`.
   `skills.json` es neutral al idioma (los nombres de grupo se traducen en `src/lib/i18n.ts`).
 - **Acceso** (`src/lib/content.ts`): `getProfile(locale)`, `getExperience(locale)` (actuales primero,
-  luego más recientes), `getProjects(locale)` (destacados primero), `getSkills()`.
+  luego más recientes), `getProjects(locale)` (por `order`), `groupProjects()` (agrupa por `domain`), `getSkills()`.
 - **i18n** (`src/lib/i18n.ts`): lista de idiomas, textos de UI (`t(locale)('clave')`), rutas
   localizadas (`localePath`), formato de fechas (`formatPeriod`, `formatDuration`). El enrutado lo
   hace Astro (`i18n` en `astro.config.ts`): español sin prefijo, inglés bajo `/en/`.
@@ -28,13 +28,18 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
     más Topbar y Footer. `components/`: Sheet, RouteDiagram, RouteFlow, EipSprite, DetailA, TitleBlock.
   - `labels.ts`: vocabulario del plano (SHEET, REV, PARTS LIST…) en en/es.
   - `README.md`: decisiones de diseño; `DESIGN.md` en la raíz las resume en formato de tokens.
-- **Páginas** (`src/pages/`): sólo deciden idioma: `index.astro` (es) y `en/index.astro` (en).
+- **Páginas** (`src/pages/`): sólo deciden idioma: `index.astro` (es) y `en/index.astro` (en), más
+  las páginas de proyecto `proyectos/[slug].astro` y `en/work/[slug].astro` (estáticas, una por
+  entrada de `projects`; `projectPath()` en `i18n.ts` da la ruta por idioma).
 - **Iconos**: `src/components/Icon.astro`. Logos de marcas desde `simple-icons` (en build, sin coste
   en cliente) y un set propio de iconos de interfaz con un único grosor de trazo.
 - **Fuentes**: Astro Fonts API (`fonts` en `astro.config.ts`, proveedor Fontsource). Se descargan
   en build y se sirven desde el propio sitio. Cada variante incluye `<Font cssVariable=… />` sólo
   para las familias que usa.
 - **SEO**: `src/components/Seo.astro`: canonical, `hreflang`, Open Graph, Twitter, JSON-LD `Person`.
+  Acepta `paths` (rutas ya localizadas) para las páginas cuyo segmento cambia por idioma, e `image`.
+- **Imágenes**: capturas de proyectos en `src/assets/work/`, servidas por `astro:assets` (`<Image>`,
+  sharp en build) desde `components/Plate.astro`.
   Sitemap con `@astrojs/sitemap`.
 
 ## Build y despliegue

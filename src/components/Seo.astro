@@ -14,11 +14,14 @@ interface Props {
   path: string;
   profile: Profile;
   image?: string;
+  /** Rutas ya localizadas cuando el segmento cambia por idioma (p. ej. `/proyectos/x/` y `/en/work/x/`). */
+  paths?: Partial<Record<Locale, string>>;
 }
 
-const { locale, title, description, path, profile, image = '/og.png' } = Astro.props;
+const { locale, title, description, path, profile, image = '/og.png', paths = {} } = Astro.props;
 const site = Astro.site ?? new URL('https://www.andres-zapata.dev');
-const canonical = new URL(localePath(locale, path), site);
+const pathFor = (l: Locale) => paths[l] ?? localePath(l, path);
+const canonical = new URL(pathFor(locale), site);
 const ogImage = new URL(image, site);
 
 const person = {
@@ -40,10 +43,10 @@ const person = {
 <link rel="canonical" href={canonical.href} />
 {
   locales.map((l) => (
-    <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site).href} />
+    <link rel="alternate" hreflang={l} href={new URL(pathFor(l), site).href} />
   ))
 }
-<link rel="alternate" hreflang="x-default" href={new URL(localePath(defaultLocale, path), site).href} />
+<link rel="alternate" hreflang="x-default" href={new URL(pathFor(defaultLocale), site).href} />
 <meta property="og:type" content="profile" />
 <meta property="og:site_name" content={profile.shortName} />
 <meta property="og:title" content={title} />

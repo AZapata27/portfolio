@@ -1,0 +1,424 @@
+---
+/**
+ * Página de un proyecto: una sola hoja de dibujo rotulada "Proyecto" con el
+ * título, la lámina a tamaño completo (captura real y, si existe, el esquema de
+ * arquitectura como segunda figura), la cota, el bloque de datos en mono (cliente,
+ * periodo, rol, dominio, stack, enlace), las notas y la navegación entre detalles.
+ * Misma barra superior y pie que la portada; los enlaces vuelven a `/#work`.
+ */
+import { Font } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import { getProfile, slugOf, type Project } from '@/lib/content';
+import { localePath, locales, projectPath, t, type Locale } from '@/lib/i18n';
+import './tokens.css';
+import EipSprite from './components/EipSprite.astro';
+import Topbar from './sections/Topbar.astro';
+import Footer from './sections/Footer.astro';
+import Sheet from './components/Sheet.astro';
+import Plate from './components/Plate.astro';
+import { vocabFor } from './labels';
+import { render } from 'astro:content';
+
+interface Props {
+  locale: Locale;
+  project: Project;
+  /** Posición en la lista ordenada; decide anterior y siguiente. */
+  index: number;
+  prev: Project | null;
+  next: Project | null;
+}
+
+const { locale, project, prev, next } = Astro.props;
+const tr = t(locale);
+const v = vocabFor(locale);
+const profile = await getProfile(locale);
+const { Content } = await render(project);
+const d = project.data;
+const slug = slugOf(project);
+const back = `${localePath(locale, '/')}#work`;
+const paths = Object.fromEntries(locales.map((l) => [l, projectPath(l, slug)])) as Record<Locale, string>;
+const hasCapture = Boolean(d.plate);
+const hasSchematic = Boolean(d.schematic);
+---
+
+<Base
+  {locale}
+  {profile}
+  path="/"
+  {paths}
+  title={`${d.title} · ${profile.shortName}`}
+  description={d.summary}
+  image={d.plate?.src.src}
+  variant="blueprint"
+>
+  <Fragment slot="head">
+    <Font cssVariable="--font-barlow-condensed" preload />
+    <Font cssVariable="--font-barlow" preload />
+    <Font cssVariable="--font-jetbrains-mono" preload />
+  </Fragment>
+
+  <EipSprite />
+  <Topbar {profile} {locale} />
+
+  <main id="main" class="sheets">
+    <Sheet id={`work-${slug}`} label={v.project} title={d.domain} {locale} labelledby="project-title">
+      <nav class="crumbs" aria-label={v.details}>
+        <a class="back" href={back}>
+          <Icon name="arrow-left" size={16} />
+          {tr('work.back')}
+        </a>
+        <span class="domain">{d.domain}</span>
+      </nav>
+
+      <header class="head">
+        <h1 id="project-title">{d.title}</h1>
+        <p class="lead">{d.summary}</p>
+      </header>
+
+      <div class="spec">
+        <div class="figures">
+          {hasCapture && <Plate project={project} {locale} mode="full" show="capture" />}
+          {hasSchematic && <Plate project={project} {locale} mode="full" show="schematic" />}
+        </div>
+
+        <aside class="data">
+          {
+            d.metric && (
+              <p class="cota">
+                <span class="cota-val">{d.metric.value}</span>
+                <span class="cota-lbl">{d.metric.label}</span>
+              </p>
+            )
+          }
+          <table class="tb">
+            <caption class="visually-hidden">{v.titleBlock}</caption>
+            <tbody>
+              <tr>
+                <th scope="row">{v.client}</th>
+                <td>{d.client}</td>
+              </tr>
+              <tr>
+                <th scope="row">{v.period}</th>
+                <td>{d.period}</td>
+              </tr>
+              <tr>
+                <th scope="row">{v.role}</th>
+                <td>{d.role}</td>
+              </tr>
+              <tr>
+                <th scope="row">{v.domain}</th>
+                <td>{d.domain}</td>
+              </tr>
+              <tr>
+                <th scope="row">{v.stack}</th>
+                <td>{d.stack.join(' · ')}</td>
+              </tr>
+              {
+                d.url && (
+                  <tr class="row-link">
+                    <th scope="row">{v.links}</th>
+                    <td>
+                      <a href={d.url} target="_blank" rel="noopener">
+                        {tr('work.site')}
+                        <Icon name="arrow-up-right" size={14} />
+                      </a>
+                    </td>
+                  </tr>
+                )
+              }
+            </tbody>
+          </table>
+        </aside>
+      </div>
+
+      <section class="notes" aria-label={tr('work.notes')}>
+        <h2 class="notes-title">{tr('work.notes')}</h2>
+        <div class="body">
+          <Content />
+        </div>
+      </section>
+
+      <nav class="pager" aria-label={v.details}>
+        {
+          prev ? (
+            <a class="pager-link prev" href={projectPath(locale, slugOf(prev))}>
+              <span class="pager-lbl">
+                <Icon name="arrow-left" size={14} />
+                {tr('work.prev')}
+              </span>
+              <span class="pager-title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next && (
+            <a class="pager-link next" href={projectPath(locale, slugOf(next))}>
+              <span class="pager-lbl">
+                {tr('work.next')}
+                <Icon name="arrow-right" size={14} />
+              </span>
+              <span class="pager-title">{next.data.title}</span>
+            </a>
+          )
+        }
+      </nav>
+    </Sheet>
+  </main>
+
+  <Footer {profile} {locale} />
+</Base>
+
+<style>
+  .sheets {
+    display: grid;
+    gap: var(--s-5);
+    padding: var(--s-4) var(--gutter) 0;
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-4);
+    margin-bottom: var(--s-6);
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    text-decoration: none;
+  }
+
+  .back:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .domain {
+    color: var(--graphite);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+    max-width: 24ch;
+  }
+
+  .lead {
+    margin-top: var(--s-4);
+    max-width: 62ch;
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  .head {
+    padding-bottom: var(--s-5);
+    margin-bottom: var(--s-6);
+    border-bottom: var(--line) solid var(--ink);
+  }
+
+  .spec {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  .figures {
+    display: grid;
+    gap: var(--s-6);
+    min-width: 0;
+  }
+
+  .data {
+    display: grid;
+    gap: var(--s-5);
+    min-width: 0;
+  }
+
+  /* Cota: la cifra del proyecto como línea de dimensión con extremos */
+  .cota {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: var(--s-3);
+    margin: 0;
+  }
+
+  .cota::before,
+  .cota::after {
+    content: '';
+    grid-row: 1;
+    height: 14px;
+    background-image:
+      linear-gradient(var(--ink), var(--ink)),
+      linear-gradient(var(--ink), var(--ink));
+    background-repeat: no-repeat;
+  }
+
+  .cota::before {
+    grid-column: 1;
+    background-size:
+      var(--line) 14px,
+      100% var(--line);
+    background-position:
+      left center,
+      center;
+  }
+
+  .cota::after {
+    grid-column: 3;
+    background-size:
+      var(--line) 14px,
+      100% var(--line);
+    background-position:
+      right center,
+      center;
+  }
+
+  .cota-val {
+    grid-column: 2;
+    grid-row: 1;
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .cota-lbl {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: var(--s-1);
+    text-align: center;
+    font: 400 var(--text-mono-sm) / 1.4 var(--font-mono);
+    color: var(--graphite);
+  }
+
+  /* Bloque de datos: tabla mono como el bloque de título de la hoja 1 */
+  .tb {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--line) solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    line-height: 1.45;
+  }
+
+  .tb th,
+  .tb td {
+    padding: var(--s-3) var(--s-4);
+    border: var(--line-hair) solid var(--ink);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .tb th {
+    width: 7.5rem;
+    font-size: var(--text-mono-sm);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .row-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+  }
+
+  .notes {
+    margin-top: var(--s-7);
+    padding-top: var(--s-5);
+    border-top: var(--line-hair) solid var(--ink);
+  }
+
+  .notes-title {
+    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+    margin-bottom: var(--s-4);
+  }
+
+  .body {
+    max-width: 66ch;
+  }
+
+  .body :global(p) {
+    margin: 0;
+  }
+
+  .body :global(p + p) {
+    margin-top: var(--s-3);
+  }
+
+  /* Paginación entre detalles: dos bloques mono, anterior a la izquierda, siguiente a la derecha */
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+    margin-top: var(--s-7);
+    padding-top: var(--s-4);
+    border-top: var(--line) solid var(--ink);
+  }
+
+  .pager-link {
+    display: grid;
+    gap: var(--s-2);
+    text-decoration: none;
+    color: var(--ink);
+    min-width: 0;
+  }
+
+  .pager-link.next {
+    text-align: right;
+    justify-items: end;
+  }
+
+  .pager-lbl {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .pager-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    font-weight: 700;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .pager-link:hover .pager-title {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.12em;
+  }
+
+  @media (min-width: 960px) {
+    .spec {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--s-7);
+    }
+  }
+</style>

@@ -10,6 +10,8 @@ type: employment
 order: 1
 summary: Microservice and data-streaming architecture for a payments and mobility platform; leading three product workstreams.
 stack: [Spring Boot, Kafka, CQRS, AWS, Quarkus, GraalVM, Java 21, Backstage, SonarQube]
+short: "Architecture and technical leadership for Flypass's payments and mobility platform; AI in the team's workflow."
+tags: [Spring Boot, Kafka, AWS, Claude Code]
 ---
 
 - Design microservice and data-streaming architecture for the payments and mobility platform (Spring Boot, Kafka, CQRS, AWS).

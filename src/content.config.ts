@@ -53,7 +53,7 @@ const profile = defineCollection({
     ),
     /**
      * Cuatro capacidades. Las usa la variante "blueprint" como ramas de la ruta
-     * (la cuarta, liderazgo, es el "control bus").
+     * (la cuarta, liderazgo técnico, es la línea de control que corre por encima de la ruta).
      */
     capabilities: z.array(
       z.object({
@@ -94,28 +94,73 @@ const experience = defineCollection({
     type: z.enum(['employment', 'contract', 'freelance', 'early']),
     summary: z.string(),
     stack: z.array(z.string()).default([]),
+    /** Resumen de una línea para la línea de tiempo (hoja 3). Si falta, se usa `summary`. */
+    short: z.string().optional(),
+    /** Stack superficial para la línea de tiempo: hasta cuatro ítems. Si falta, los primeros de `stack`. */
+    tags: z.array(z.string()).max(4).default([]),
     /** Para desempates al ordenar (menor = primero). */
     order: z.number().int().default(100),
   }),
 });
 
+/**
+ * Esquema de arquitectura dibujado por `Schematic.astro`: columnas de nodos (de
+ * izquierda a derecha) y aristas entre ids. El componente calcula las posiciones.
+ */
+const schematicNode = z.object({
+  id: z.string(),
+  /** Corto (hasta ~20 caracteres): va en display condensada dentro de una caja de 150 px. */
+  label: z.string(),
+  sub: z.string().optional(),
+  /** box: componente · channel: canal/entrada · store: base de datos · bus: línea de control (azul) · prod: bloque de tinta · cloud: sistema externo */
+  kind: z.enum(['box', 'channel', 'store', 'bus', 'prod', 'cloud']).default('box'),
+});
+const schematicEdge = z.object({
+  from: z.string(),
+  to: z.string(),
+  dashed: z.boolean().default(false),
+  label: z.string().optional(),
+});
+
 /** Proyectos / casos destacados: un Markdown por caso y por idioma. */
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
-  schema: z.object({
-    title: z.string(),
-    client: z.string(),
-    period: z.string(),
-    domain: z.string(),
-    role: z.string(),
-    summary: z.string(),
-    stack: z.array(z.string()).default([]),
-    metric: z.object({ value: z.string(), label: z.string() }).optional(),
-    featured: z.boolean().default(false),
-    order: z.number().int().default(100),
-    /** Enlace público si existe (repo, nota de prensa, documentación). */
-    url: z.url().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      client: z.string(),
+      period: z.string(),
+      /** Dominio. La hoja de proyectos agrupa por este texto exacto: usar siempre los mismos nombres. */
+      domain: z.string(),
+      role: z.string(),
+      summary: z.string(),
+      stack: z.array(z.string()).default([]),
+      metric: z.object({ value: z.string(), label: z.string() }).optional(),
+      featured: z.boolean().default(false),
+      order: z.number().int().default(100),
+      /** Enlace público si existe (repo, nota de prensa, documentación). */
+      url: z.url().optional(),
+      /**
+       * Lámina del proyecto: captura real de un sitio público (`src` relativo al
+       * archivo, en `src/assets/work/`). `source` es el dominio capturado y va en el pie.
+       */
+      plate: z
+        .object({
+          src: image(),
+          alt: z.string(),
+          source: z.string(),
+          /** Fecha de la captura (AAAA-MM). */
+          captured: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+        })
+        .optional(),
+      /** Esquema de arquitectura. Si no hay `plate`, es la lámina del índice. */
+      schematic: z
+        .object({
+          columns: z.array(z.array(schematicNode)).min(2),
+          edges: z.array(schematicEdge).default([]),
+        })
+        .optional(),
+    }),
 });
 
 /** Stack técnico agrupado. Independiente del idioma; las etiquetas de grupo viven en `src/lib/i18n.ts`. */

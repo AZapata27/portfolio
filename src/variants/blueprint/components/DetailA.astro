@@ -45,7 +45,7 @@ const lines: Line[] = [
     ? [
         {
           indent: 1,
-          tokens: [code('.wireTap('), str(`controlbus:${slugify(bus.parts[0] ?? bus.name)}`), code(')')],
+          tokens: [code('.wireTap('), str(`${slugify(bus.name)}:${slugify(bus.parts[0] ?? bus.name)}`), code(')')],
           callout: 4,
           bus: true,
         },

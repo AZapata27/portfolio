@@ -13,11 +13,16 @@ const vocab = {
     // Juego de hojas
     sheet: 'Sheet',
     drawing: 'Drawing',
+    portfolio: 'Portfolio',
     route: 'Route',
     notes: 'Capabilities',
     revisions: 'Revisions',
+    profile: 'Longitudinal profile',
+    timeline: 'Career timeline, from today back to the first job',
+    today: 'Today',
     details: 'Details',
     detail: 'Detail',
+    project: 'Project',
     partsList: 'Tech stack',
     titleBlock: 'Title block',
     achievement: 'Achievement',
@@ -33,7 +38,7 @@ const vocab = {
     production: 'production',
     prod: 'PROD',
     routeDiagram:
-      'Integration route: your problem comes in through a channel, a content-based router sends it to architecture, integration or AI-native development, an aggregator joins the branches and production receives the result. Leadership runs alongside as the control bus.',
+      'Integration route: your problem comes in through a channel, a content-based router sends it to architecture, integration or AI-native development, an aggregator joins the branches and production receives the result. Technical leadership runs alongside the whole route as a control line.',
     // Bloque de título
     role: 'Role',
     experience: 'Experience',
@@ -62,11 +67,16 @@ const vocab = {
   es: {
     sheet: 'Hoja',
     drawing: 'Plano',
+    portfolio: 'Portafolio',
     route: 'Ruta',
     notes: 'Capacidades',
     revisions: 'Revisiones',
+    profile: 'Perfil longitudinal',
+    timeline: 'Línea de tiempo de la trayectoria, de hoy al primer empleo',
+    today: 'Hoy',
     details: 'Detalles',
     detail: 'Detalle',
+    project: 'Proyecto',
     partsList: 'Stack tecnológico',
     titleBlock: 'Bloque de título',
     achievement: 'Logro',
@@ -81,7 +91,7 @@ const vocab = {
     production: 'producción',
     prod: 'PROD',
     routeDiagram:
-      'Ruta de integración: tu problema entra por un canal, un enrutador por contenido lo manda a arquitectura, integración o desarrollo AI-native, un agregador junta las ramas y producción recibe el resultado. El liderazgo corre al lado como control bus.',
+      'Ruta de integración: tu problema entra por un canal, un enrutador por contenido lo manda a arquitectura, integración o desarrollo AI-native, un agregador junta las ramas y producción recibe el resultado. El liderazgo técnico corre al lado de toda la ruta como línea de control.',
     role: 'Rol',
     experience: 'Experiencia',
     domains: 'Dominios',
@@ -113,7 +123,7 @@ export function vocabFor(locale: Locale): Vocab {
   return vocab[locale] ?? vocab.en;
 }
 
-/** `Andrés Zapata` da `andres-zapata`; sirve para el nombre del plano y los ids. */
+/** `Andrés Zapata` da `andres-zapata`; sirve para ids de elementos. */
 export function slugify(value: string): string {
   return value
     .normalize('NFD')
@@ -123,15 +133,10 @@ export function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-/** Nombre del plano que aparece en el bloque de título y en el sello de cada hoja. */
-export function drawingNameOf(shortName: string): string {
-  return `${slugify(shortName)}.route`;
-}
-
 /** `7` da `07`: numeración de revisiones e ítems con dos dígitos. */
 export function pad2(n: number): string {
   return String(n).padStart(2, '0');
 }
 
-/** Orden fijo de las capacidades en la ruta: tres ramas y el control bus al final. */
+/** Orden fijo de las capacidades en la ruta: tres ramas y el liderazgo técnico (línea de control) al final. */
 export const capabilityOrder = ['architecture', 'integration', 'ai-native', 'leadership'] as const;

@@ -1,6 +1,6 @@
 ---
 /**
- * Barra superior: monograma, nombre del plano, navegación por hojas y cambio de
+ * Barra superior: monograma, rótulo "Portafolio", navegación por hojas y cambio de
  * idioma. Fija en escritorio; en móvil se apila y no se fija para no robar alto.
  */
 import type { Profile } from '@/lib/content';
@@ -10,10 +10,9 @@ import { vocabFor } from '../labels';
 interface Props {
   profile: Profile;
   locale: Locale;
-  drawingName: string;
 }
 
-const { profile, locale, drawingName } = Astro.props;
+const { profile, locale } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 const other = otherLocale(locale);
@@ -23,20 +22,22 @@ const monogram = profile.shortName
   .join('')
   .slice(0, 2);
 
+/** Rutas absolutas a la portada: la barra también vive en las páginas de proyecto. */
+const home = localePath(locale, '/');
 const items = [
-  { href: '#route', label: tr('nav.route') },
-  { href: '#capabilities', label: v.notes },
-  { href: '#experience', label: tr('nav.experience') },
-  { href: '#work', label: tr('nav.work') },
-  { href: '#stack', label: tr('nav.stack') },
-  { href: '#contact', label: tr('nav.contact') },
+  { href: `${home}#route`, label: tr('nav.route') },
+  { href: `${home}#capabilities`, label: v.notes },
+  { href: `${home}#experience`, label: tr('nav.experience') },
+  { href: `${home}#work`, label: tr('nav.work') },
+  { href: `${home}#stack`, label: tr('nav.stack') },
+  { href: `${home}#contact`, label: tr('nav.contact') },
 ];
 ---
 
 <header class="topbar">
-  <a class="brand" href="#route">
+  <a class="brand" href={`${home}#route`}>
     <span class="brand-mark" aria-hidden="true">{monogram}</span>
-    <span class="brand-name">{drawingName}</span>
+    <span class="brand-name">{v.portfolio}</span>
   </a>
   <nav aria-label={v.primaryNav}>
     <ul role="list">

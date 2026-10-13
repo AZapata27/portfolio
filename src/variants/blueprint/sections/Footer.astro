@@ -1,6 +1,6 @@
 ---
 /**
- * Pie: nombre del plano y año, crédito con enlace al código fuente y cambio de idioma.
+ * Pie: nombre y año, crédito con enlace al código fuente y cambio de idioma.
  */
 import type { Profile } from '@/lib/content';
 import { localePath, otherLocale, t, type Locale } from '@/lib/i18n';
@@ -8,10 +8,9 @@ import { localePath, otherLocale, t, type Locale } from '@/lib/i18n';
 interface Props {
   profile: Profile;
   locale: Locale;
-  drawingName: string;
 }
 
-const { profile, locale, drawingName } = Astro.props;
+const { profile, locale } = Astro.props;
 const tr = t(locale);
 const other = otherLocale(locale);
 const github = profile.links.find((l) => l.icon === 'github')?.url.replace(/\/$/, '');
@@ -21,8 +20,6 @@ const year = new Date().getFullYear();
 
 <footer class="foot">
   <p class="mono">
-    <span>{drawingName}</span>
-    <span aria-hidden="true"> · </span>
     <span>{profile.name} · {year}</span>
   </p>
   <p>

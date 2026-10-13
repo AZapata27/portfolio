@@ -10,6 +10,8 @@ type: contract
 order: 2
 summary: Integrating the airline's payments core with Latin American payment gateways and methods on the Red Hat stack.
 stack: [Quarkus, Apache Camel, Red Hat, Kafka, DEUNA, Wompi]
+short: "The airline's payments core wired to Latin American gateways with Camel on Quarkus."
+tags: [Quarkus, Apache Camel, Kafka]
 ---
 
 - Integrate Avianca's payments core with Latin American payment gateways and methods such as DEUNA and Wompi.

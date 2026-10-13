@@ -1,7 +1,7 @@
 ---
 /**
  * Hoja de dibujo: marco doble (2 px + 1 px), marcas de esquina, grilla de puntos y
- * sello con el número de hoja. La hoja 1 (`hero`) añade las reglas de columnas
+ * sello con el número y el título de la hoja. La hoja 1 (`hero`) añade las reglas de columnas
  * (1–6) arriba y abajo y las de zonas (A–D) a los lados.
  */
 import type { Locale } from '@/lib/i18n';
@@ -9,11 +9,12 @@ import { vocabFor } from '../labels';
 
 interface Props {
   id: string;
-  number: number;
-  total: number;
+  number?: number;
+  total?: number;
+  /** Sello alternativo a "Hoja n/total", p. ej. "Proyecto" en la página de un proyecto. */
+  label?: string;
   /** Rótulo del sello, p. ej. "Revisions". */
   title: string;
-  drawingName: string;
   locale: Locale;
   /** Id del encabezado que da nombre a la hoja (aria-labelledby). */
   labelledby: string;
@@ -21,8 +22,8 @@ interface Props {
   hero?: boolean;
 }
 
-const { id, number, total, title, drawingName, locale, labelledby, hero = false } = Astro.props;
-const v = vocabFor(locale);
+const { id, number, total, label, title, locale, labelledby, hero = false } = Astro.props;
+const stamp = label ?? `${vocabFor(locale).sheet} ${number}/${total}`;
 const cols = [1, 2, 3, 4, 5, 6];
 const zones = ['A', 'B', 'C', 'D'];
 ---
@@ -57,9 +58,8 @@ const zones = ['A', 'B', 'C', 'D'];
   <div class="sheet-inner">
     <slot />
     <p class="stamp">
-      <span class="stamp-sheet">{v.sheet} {number}/{total}</span>
+      <span class="stamp-sheet">{stamp}</span>
       <span class="stamp-title">{title}</span>
-      <span class="stamp-drawing">{drawingName}</span>
     </p>
   </div>
 </section>
@@ -208,14 +208,4 @@ const zones = ['A', 'B', 'C', 'D'];
     font-weight: 700;
   }
 
-  .stamp-drawing {
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  @media (max-width: 479px) {
-    .stamp-drawing {
-      display: none;
-    }
-  }
 </style>

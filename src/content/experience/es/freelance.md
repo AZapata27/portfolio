@@ -9,6 +9,8 @@ type: freelance
 order: 5
 summary: Integraciones con el RNDC para empresas de carga, ciclo de vida del despacho orientado a eventos y modernización de legado sin reescrituras big-bang.
 stack: [Kafka, Debezium, Confluent, Keycloak, OAuth2, MirrorMaker 2, OpenTelemetry, Prometheus, Grafana, Oracle, Java]
+short: "Integraciones con el RNDC, Kafka y modernización de legado para transportadores y banca."
+tags: [Kafka, Debezium, Keycloak, Oracle]
 ---
 
 - Integración con el RNDC (Ministerio de Transporte) para empresas de carga como Grupo Nutresa y Rápido Ochoa: remesas terrestres, manifiestos electrónicos de carga y cumplidos, con validación previa de datos y trazabilidad de cada reporte.

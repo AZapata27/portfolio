@@ -28,13 +28,21 @@ export async function getExperience(locale: Locale): Promise<Experience[]> {
   });
 }
 
-/** Proyectos del idioma: destacados primero, luego por `order`. */
+/** Proyectos del idioma por `order`. Los proyectos del mismo `domain` deben ir contiguos: la hoja los agrupa. */
 export async function getProjects(locale: Locale): Promise<Project[]> {
   const entries = await getCollection('projects', ({ id }) => localeOf(id) === locale);
-  return entries.sort((a, b) => {
-    if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
-    return a.data.order - b.data.order;
-  });
+  return entries.sort((a, b) => a.data.order - b.data.order);
+}
+
+/** Proyectos agrupados por `domain`, en el orden en que aparece cada dominio. */
+export function groupProjects(projects: Project[]): { domain: string; items: Project[] }[] {
+  const groups: { domain: string; items: Project[] }[] = [];
+  for (const p of projects) {
+    const g = groups.find((x) => x.domain === p.data.domain);
+    if (g) g.items.push(p);
+    else groups.push({ domain: p.data.domain, items: [p] });
+  }
+  return groups;
 }
 
 export async function getSkills(): Promise<SkillGroup[]> {

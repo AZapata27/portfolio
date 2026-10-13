@@ -1,233 +1,171 @@
 ---
 /**
- * Hoja 4 · Detalles. Cada proyecto es un detalle numerado (B en adelante; A es
- * el código de la hoja 1). Los destacados llevan su cifra como cota; los demás van
- * en una fila más compacta debajo.
+ * Hoja 4 · Detalles. La hoja con más peso del plano, como galería de láminas:
+ * cada proyecto es una lámina (captura real o esquema de arquitectura) con
+ * título, cliente y una línea, agrupada por dominio. Sin numeración ni pies:
+ * toda la lámina es el enlace y el feedback es el hover. El texto
+ * largo vive en la página de detalle (`/proyectos/<slug>/`), a la que lleva toda
+ * la lámina. Los proyectos con cifra la llevan como sello en la esquina.
  */
-import { render } from 'astro:content';
 import type { Project } from '@/lib/content';
-import { slugOf } from '@/lib/content';
-import { t, type Locale } from '@/lib/i18n';
+import { groupProjects, slugOf } from '@/lib/content';
+import { projectPath, t, type Locale } from '@/lib/i18n';
 import Icon from '@/components/Icon.astro';
 import Sheet from '../components/Sheet.astro';
-import { vocabFor } from '../labels';
+import Plate from '../components/Plate.astro';
+import { slugify } from '../labels';
 
 interface Props {
   projects: Project[];
   locale: Locale;
-  drawingName: string;
   total: number;
 }
 
-const { projects, locale, drawingName, total } = Astro.props;
+const { projects, locale, total } = Astro.props;
 const tr = t(locale);
-const v = vocabFor(locale);
 
-const items = await Promise.all(
-  projects.map(async (p, i) => ({
-    p,
-    Content: (await render(p)).Content,
-    letter: String.fromCharCode('B'.charCodeAt(0) + i),
-  })),
-);
-const featured = items.filter((it) => it.p.data.featured);
-const minor = items.filter((it) => !it.p.data.featured);
+const groups = groupProjects(projects).map((g) => ({
+  domain: g.domain,
+  id: `work-${slugify(g.domain)}`,
+  items: g.items,
+}));
 ---
 
-<Sheet id="work" number={4} {total} title={v.details} {drawingName} {locale} labelledby="work-title">
-  <h2 id="work-title" class="sheet-title">{tr('section.work')}</h2>
-
-  <div class="details">
-    {
-      featured.map(({ p, Content, letter }) => (
-        <article class="detail" id={`work-${slugOf(p)}`} aria-labelledby={`work-${slugOf(p)}-title`}>
-          <div class="detail-head">
-            <span class="tag">
-              {v.detail} {letter}
-            </span>
-            <h3 id={`work-${slugOf(p)}-title`}>{p.data.title}</h3>
-          </div>
-          {p.data.metric && (
-            <p class="cota">
-              <span class="cota-val">{p.data.metric.value}</span>
-              <span class="cota-lbl">{p.data.metric.label}</span>
-            </p>
-          )}
-          <dl class="meta">
-            <div>
-              <dt>{v.client}</dt>
-              <dd>{p.data.client}</dd>
-            </div>
-            <div>
-              <dt>{v.period}</dt>
-              <dd>{p.data.period}</dd>
-            </div>
-            <div>
-              <dt>{v.domain}</dt>
-              <dd>{p.data.domain}</dd>
-            </div>
-            <div>
-              <dt>{v.role}</dt>
-              <dd>{p.data.role}</dd>
-            </div>
-          </dl>
-          <p class="sum">{p.data.summary}</p>
-          <div class="body">
-            <Content />
-          </div>
-          <p class="stack">{p.data.stack.join(' · ')}</p>
-          {p.data.url && (
-            <a class="ext" href={p.data.url} target="_blank" rel="noopener">
-              {v.openLink}
-              <Icon name="arrow-up-right" size={16} />
-            </a>
-          )}
-        </article>
-      ))
-    }
-  </div>
+<Sheet id="work" number={4} {total} title={tr('section.work')} {locale} labelledby="work-title">
+  <h2 id="work-title" class="sheet-title">
+    {tr('section.work')}
+    <span class="count">{projects.length} {tr('work.count')}</span>
+  </h2>
 
   {
-    minor.length > 0 && (
-      <div class="details details--minor">
-        {minor.map(({ p, Content, letter }) => (
-          <article class="detail detail--minor" id={`work-${slugOf(p)}`} aria-labelledby={`work-${slugOf(p)}-title`}>
-            <div class="detail-head">
-              <span class="tag">
-                {v.detail} {letter}
-              </span>
-              <h3 id={`work-${slugOf(p)}-title`}>{p.data.title}</h3>
-            </div>
-            <dl class="meta">
-              <div>
-                <dt>{v.client}</dt>
-                <dd>{p.data.client}</dd>
-              </div>
-              <div>
-                <dt>{v.period}</dt>
-                <dd>{p.data.period}</dd>
-              </div>
-            </dl>
-            <p class="sum">{p.data.summary}</p>
-            <div class="body">
-              <Content />
-            </div>
-            <p class="stack">{p.data.stack.join(' · ')}</p>
-            {p.data.url && (
-              <a class="ext" href={p.data.url} target="_blank" rel="noopener">
-                {v.openLink}
-                <Icon name="arrow-up-right" size={16} />
+    groups.map((g) => (
+      <section class="group" aria-labelledby={g.id}>
+        <h3 class="group-title" id={g.id}>
+          <span class="group-name">{g.domain}</span>
+          <span class="group-count" aria-hidden="true">
+            {g.items.length}
+          </span>
+        </h3>
+
+        <ul class="gallery" role="list">
+          {g.items.map((p) => (
+            <li>
+              <a class="card" href={projectPath(locale, slugOf(p))} id={`work-${slugOf(p)}`}>
+                <div class="card-plate">
+                  <Plate project={p} {locale} mode="thumb" />
+                  {p.data.metric && <span class="seal">{p.data.metric.value}</span>}
+                </div>
+                <div class="card-body">
+                  <h4>{p.data.title}</h4>
+                  <p class="meta">
+                    {p.data.client} · {p.data.period}
+                  </p>
+                  <p class="sum">{p.data.summary}</p>
+                  <span class="open">
+                    {tr('work.open')}
+                    <Icon name="arrow-right" size={16} />
+                  </span>
+                </div>
               </a>
-            )}
-          </article>
-        ))}
-      </div>
-    )
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
   }
 </Sheet>
 
 <style>
-  .details {
-    display: grid;
-    gap: var(--s-5);
+  .sheet-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-5);
   }
 
-  .details--minor {
-    margin-top: var(--s-6);
-  }
-
-  .detail {
-    display: grid;
-    gap: var(--s-4);
-    align-content: start;
-    padding: var(--s-5);
-    border: var(--line) solid var(--ink);
-    background: var(--paper);
-    min-width: 0;
-  }
-
-  .detail--minor {
-    padding: var(--s-4) var(--s-5);
-    border-width: var(--line-hair);
-  }
-
-  .detail-head {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--s-4);
-    align-items: start;
-  }
-
-  .tag {
-    padding: 6px 8px;
-    border: var(--line) solid var(--ink);
-    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+  .count {
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
     letter-spacing: var(--track-label);
     text-transform: uppercase;
-    white-space: nowrap;
+    color: var(--graphite);
   }
 
-  h3 {
+  .group + .group {
+    margin-top: var(--s-7);
+  }
+
+  /* Título de grupo: nombre del dominio en display, cantidad a la derecha */
+  .group-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-4);
+    padding-bottom: var(--s-2);
+    margin-bottom: var(--s-5);
+    border-bottom: var(--line-hair) solid var(--ink);
+  }
+
+  .group-name {
     font-family: var(--font-display);
     font-size: var(--text-h3);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.01em;
     text-transform: uppercase;
-    padding-top: 0.15rem;
   }
 
-  .detail--minor h3 {
-    font-size: var(--text-h4);
-    line-height: 1.05;
+  .group-count {
+    margin-left: auto;
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    color: var(--graphite);
   }
 
-  /* Cota: la cifra del proyecto como línea de dimensión con extremos */
-  .cota {
+  .gallery {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-items: center;
-    column-gap: var(--s-3);
-    margin: var(--s-2) 0 0;
+    gap: var(--s-6) var(--s-5);
   }
 
-  .cota::before,
-  .cota::after {
-    content: '';
-    grid-row: 1;
-    height: 14px;
-    background-image:
-      linear-gradient(var(--ink), var(--ink)),
-      linear-gradient(var(--ink), var(--ink));
-    background-repeat: no-repeat;
+  /* Toda la lámina es el enlace: sin subrayado, el énfasis es el trazo */
+  .card {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    height: 100%;
+    color: var(--ink);
+    text-decoration: none;
   }
 
-  .cota::before {
-    grid-column: 1;
-    background-size:
-      var(--line) 14px,
-      100% var(--line);
-    background-position:
-      left center,
-      center;
+  .card-plate {
+    position: relative;
   }
 
-  .cota::after {
-    grid-column: 3;
-    background-size:
-      var(--line) 14px,
-      100% var(--line);
-    background-position:
-      right center,
-      center;
+  .card-plate :global(.plate-frame) {
+    transition: box-shadow var(--d-fast) var(--ease-out);
   }
 
-  .cota-val {
-    grid-column: 2;
-    grid-row: 1;
+  /* Hover: el marco engrosa a 2 px, el título se subraya y la acción se rellena de ámbar */
+  .card:hover .card-plate :global(.plate-frame),
+  .card:focus-visible .card-plate :global(.plate-frame) {
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .card:hover h4 {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.12em;
+  }
+
+  /* Sello con la cifra: ámbar sobre la esquina de la lámina, como una etiqueta pegada */
+  .seal {
+    position: absolute;
+    right: -1px;
+    top: -1px;
+    padding: 6px 10px;
+    border: var(--line) solid var(--ink);
+    background: var(--amber);
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-size: var(--text-lg);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.01em;
@@ -235,92 +173,78 @@ const minor = items.filter((it) => !it.p.data.featured);
     white-space: nowrap;
   }
 
-  .cota-lbl {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-top: var(--s-1);
-    text-align: center;
-    font: 400 var(--text-mono-sm) / 1.4 var(--font-mono);
-    color: var(--graphite);
+  .card-body {
+    display: grid;
+    gap: var(--s-2);
+    min-width: 0;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    text-wrap: balance;
   }
 
   .meta {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-2) var(--s-4);
-    margin: 0;
     font: 400 var(--text-mono-sm) / 1.4 var(--font-mono);
-  }
-
-  .meta dt {
-    font-weight: 500;
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
     color: var(--graphite);
-  }
-
-  .meta dd {
-    margin: 0;
-    color: var(--ink);
   }
 
   .sum {
-    font-weight: 500;
-    max-width: 62ch;
-  }
-
-  .body {
-    max-width: 66ch;
     font-size: var(--text-sm);
-  }
-
-  .body :global(p) {
-    margin: 0;
-  }
-
-  .body :global(p + p) {
-    margin-top: var(--s-2);
-  }
-
-  .stack {
-    padding-top: var(--s-3);
-    border-top: var(--line-hair) solid var(--hair);
-    font: 400 var(--text-mono-sm) / 1.5 var(--font-mono);
     color: var(--graphite);
+    max-width: 48ch;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .ext {
+  .open {
     display: inline-flex;
     align-items: center;
     gap: var(--s-1);
     justify-self: start;
+    margin-top: var(--s-1);
+    padding: 6px 8px;
+    border: var(--line-hair) solid var(--ink);
     font: 500 var(--text-mono-sm) / 1 var(--font-mono);
     letter-spacing: var(--track-label);
     text-transform: uppercase;
+    color: var(--ink);
+    transition: background-color var(--d-fast) var(--ease-out);
   }
 
-  @media (max-width: 639px) {
-    .detail-head {
-      grid-template-columns: 1fr;
-      gap: var(--s-3);
-    }
+  .open :global(svg) {
+    transition: transform var(--d-fast) var(--ease-out);
+  }
 
-    .tag {
-      justify-self: start;
-    }
+  .card:hover .open {
+    background: var(--amber);
+  }
 
-    h3 {
-      font-size: var(--text-h4);
-      line-height: 1.05;
+  .card:hover .open :global(svg) {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card:hover .open :global(svg) {
+      transform: none;
     }
   }
 
-  @media (min-width: 900px) {
-    .details {
+  @media (min-width: 640px) {
+    .gallery {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
 
-    .details--minor {
+  @media (min-width: 1024px) {
+    .gallery {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
