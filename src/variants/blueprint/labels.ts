@@ -13,6 +13,7 @@ const vocab = {
     // Juego de hojas
     sheet: 'Sheet',
     drawing: 'Drawing',
+    portfolio: 'Portfolio',
     route: 'Route',
     notes: 'Capabilities',
     revisions: 'Revisions',
@@ -65,6 +66,7 @@ const vocab = {
   es: {
     sheet: 'Hoja',
     drawing: 'Plano',
+    portfolio: 'Portafolio',
     route: 'Ruta',
     notes: 'Capacidades',
     revisions: 'Revisiones',
@@ -119,7 +121,7 @@ export function vocabFor(locale: Locale): Vocab {
   return vocab[locale] ?? vocab.en;
 }
 
-/** `Andrés Zapata` da `andres-zapata`; sirve para el nombre del plano y los ids. */
+/** `Andrés Zapata` da `andres-zapata`; sirve para ids de elementos. */
 export function slugify(value: string): string {
   return value
     .normalize('NFD')
@@ -129,10 +131,6 @@ export function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-/** Nombre del plano que aparece en el bloque de título y en el sello de cada hoja. */
-export function drawingNameOf(shortName: string): string {
-  return `${slugify(shortName)}.route`;
-}
 
 /** `7` da `07`: numeración de revisiones e ítems con dos dígitos. */
 export function pad2(n: number): string {

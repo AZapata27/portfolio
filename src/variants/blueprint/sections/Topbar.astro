@@ -1,6 +1,6 @@
 ---
 /**
- * Barra superior: monograma, nombre del plano, navegación por hojas y cambio de
+ * Barra superior: monograma, rótulo "Portafolio", navegación por hojas y cambio de
  * idioma. Fija en escritorio; en móvil se apila y no se fija para no robar alto.
  */
 import type { Profile } from '@/lib/content';
@@ -10,10 +10,9 @@ import { vocabFor } from '../labels';
 interface Props {
   profile: Profile;
   locale: Locale;
-  drawingName: string;
 }
 
-const { profile, locale, drawingName } = Astro.props;
+const { profile, locale } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 const other = otherLocale(locale);
@@ -36,7 +35,7 @@ const items = [
 <header class="topbar">
   <a class="brand" href="#route">
     <span class="brand-mark" aria-hidden="true">{monogram}</span>
-    <span class="brand-name">{drawingName}</span>
+    <span class="brand-name">{v.portfolio}</span>
   </a>
   <nav aria-label={v.primaryNav}>
     <ul role="list">

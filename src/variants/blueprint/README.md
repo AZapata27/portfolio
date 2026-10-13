@@ -57,7 +57,7 @@ Las tres familias se autoalojan con la Fonts API de Astro (`<Font cssVariable=�
 
 Escala de 4 px (`--s-1` … `--s-8`). Cada hoja (`components/Sheet.astro`) tiene marco exterior de
 2 px, banda (8 px; 14–22 px en la hoja 1 para las reglas 1–6 y A–D), marco interior de 1 px,
-marcas de esquina dibujadas con gradientes de fondo y el sello `SHEET n/6 · TÍTULO · andres-zapata.route`
+marcas de esquina dibujadas con gradientes de fondo y el sello `SHEET n/6 · TÍTULO` (sin nombre de plano: decisión de Andrés, 2026-10-12)
 pegado a la esquina inferior derecha. Ancho máximo 1280 px; separación entre hojas 24 px.
 
 ## Diagrama de la ruta

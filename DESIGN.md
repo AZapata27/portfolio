@@ -144,7 +144,7 @@ reglas para que un agente pueda añadir una hoja o un componente sin romper el m
 
 - Hojas (`components/Sheet.astro`) de ancho máximo 1280 px, apiladas con 24 px de separación sobre
   la mesa, con marco exterior de 2 px, banda, marco interior de 1 px, marcas de esquina, grilla de
-  puntos y sello `SHEET n/6 · TÍTULO · andres-zapata.route` abajo a la derecha. La hoja 1 lleva
+  puntos y sello `SHEET n/6 · TÍTULO` abajo a la derecha (sin nombre de plano; la barra superior dice "Portafolio"). La hoja 1 lleva
   además reglas de columnas (1–6) y zonas (A–D).
 - Escala de espaciado de 4 px (`--s-1` … `--s-8`); gutter `clamp(1rem, 3vw, 2.5rem)`.
 - Diagrama de la ruta: SVG (`RouteDiagram`) desde 960 px; flujo vertical en HTML (`RouteFlow`) por
@@ -166,7 +166,7 @@ como chevrones del propio trazo (`stroke-linecap: round`). Iconos EIP y de inter
 
 ## Components
 
-- **Sheet**: `<Sheet id number total title drawingName locale labelledby>`; dentro, un `h2.sheet-title`.
+- **Sheet**: `<Sheet id number total title locale labelledby>`; dentro, un `h2.sheet-title`.
 - **Tablas** (`.tbl`): `caption` arriba en mono/mayúsculas, `thead th` en grafito, celdas con
   hairlines; en móvil cada fila es un grid con `data-label`.
 - **Perfil longitudinal** (hoja 3, `sections/Experience.astro`): línea de tiempo de la trayectoria,

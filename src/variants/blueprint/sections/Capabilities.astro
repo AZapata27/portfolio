@@ -12,18 +12,17 @@ import { capabilityOrder, vocabFor } from '../labels';
 interface Props {
   profile: Profile;
   locale: Locale;
-  drawingName: string;
   total: number;
 }
 
-const { profile, locale, drawingName, total } = Astro.props;
+const { profile, locale, total } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 const byId = new Map(profile.capabilities.map((c) => [c.id, c]));
 const notes = capabilityOrder.map((id) => byId.get(id)).filter((c): c is NonNullable<typeof c> => Boolean(c));
 ---
 
-<Sheet id="capabilities" number={2} {total} title={v.notes} {drawingName} {locale} labelledby="capabilities-title">
+<Sheet id="capabilities" number={2} {total} title={v.notes} {locale} labelledby="capabilities-title">
   <h2 id="capabilities-title" class="sheet-title">{v.notes}</h2>
   <p class="summary">{profile.summary}</p>
 

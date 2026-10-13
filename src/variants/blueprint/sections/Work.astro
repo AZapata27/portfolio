@@ -16,11 +16,10 @@ import { slugify, vocabFor } from '../labels';
 interface Props {
   projects: Project[];
   locale: Locale;
-  drawingName: string;
   total: number;
 }
 
-const { projects, locale, drawingName, total } = Astro.props;
+const { projects, locale, total } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 
@@ -41,7 +40,7 @@ const groups = await Promise.all(
 );
 ---
 
-<Sheet id="work" number={4} {total} title={v.details} {drawingName} {locale} labelledby="work-title">
+<Sheet id="work" number={4} {total} title={v.details} {locale} labelledby="work-title">
   <h2 id="work-title" class="sheet-title">{tr('section.work')}</h2>
 
   {

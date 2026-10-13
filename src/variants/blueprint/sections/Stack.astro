@@ -12,16 +12,15 @@ import { pad2, vocabFor } from '../labels';
 interface Props {
   skills: SkillGroup[];
   locale: Locale;
-  drawingName: string;
   total: number;
 }
 
-const { skills, locale, drawingName, total } = Astro.props;
+const { skills, locale, total } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 ---
 
-<Sheet id="stack" number={5} {total} title={v.partsList} {drawingName} {locale} labelledby="stack-title">
+<Sheet id="stack" number={5} {total} title={v.partsList} {locale} labelledby="stack-title">
   <h2 id="stack-title" class="sheet-title">{tr('section.stack')}</h2>
 
   <table class="tbl parts">
