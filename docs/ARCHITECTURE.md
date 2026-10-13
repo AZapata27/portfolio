@@ -65,5 +65,7 @@ la otra. Así se hizo el 2026-10-10 entre `blueprint` (elegida) y `script`.
   mercado principal son en español; el inglés vive en `/en/` con `hreflang` y `x-default` al español.
 - **Variantes como carpetas, no como ramas.** Una sola rama y una sola URL de vista previa permitieron
   comparar en igualdad de condiciones; la descartada se borró con un commit.
-- **Sin JavaScript en cliente por defecto.** Las variantes pueden añadir `<script>` pequeños para
+- **Analítica**: `@vercel/analytics` y `@vercel/speed-insights` montados una vez en `Base.astro`
+  (componentes Astro oficiales). Sin cookies ni datos personales; límites y lectura en `docs/ANALITICA.md`.
+- **Sin JavaScript en cliente por defecto.** La única excepción es el script de analítica. Las variantes pueden añadir `<script>` pequeños para
   motion o navegación; siempre con fallback sin JS.

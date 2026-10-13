@@ -5,6 +5,8 @@
  * La identidad visual NO vive aquí; vive en `src/variants/<variante>/`.
  */
 import '@/styles/global.css';
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import Seo from '@/components/Seo.astro';
 import { t, type Locale } from '@/lib/i18n';
 import type { Profile } from '@/lib/content';
@@ -38,6 +40,9 @@ const tr = t(locale);
     <meta name="color-scheme" content="light" />
     <Seo {locale} {title} {description} {path} {profile} {image} {paths} />
     <slot name="head" />
+    {/* Analítica sin cookies de Vercel (vistas de página) y Speed Insights (experiencia real); ver docs/ANALITICA.md */}
+    <Analytics />
+    <SpeedInsights />
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#main">{tr('skip')}</a>
