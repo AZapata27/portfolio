@@ -123,26 +123,18 @@ const caption = kind === 'capture' && plate ? `${tr('work.captureOf')} ${plate.s
     inset: 0;
     display: grid;
     place-items: center;
-    padding: 6%;
+    padding: 3% 4%;
   }
 
   .plate--thumb .plate-schematic :global(svg) {
+    width: 100%;
+    height: auto;
     max-height: 100%;
-    width: auto;
-    max-width: 100%;
   }
 
-  /* Lámina completa: margen de hoja alrededor del esquema; la captura a sangre. En pantallas angostas el
-     esquema conserva un ancho mínimo legible y se desplaza en horizontal (misma excepción que DETAIL A). */
+  /* Lámina completa: margen de hoja alrededor del esquema; la captura a sangre. El esquema escala al ancho. */
   .plate--full .plate-schematic {
-    padding: clamp(0.75rem, 3vw, 2rem);
-    overflow-x: auto;
-  }
-
-  @media (max-width: 639px) {
-    .plate--full .plate-schematic :global(svg) {
-      min-width: 520px;
-    }
+    padding: clamp(0.5rem, 2vw, 2rem);
   }
 
   .plate--full.plate--capture .plate-frame {

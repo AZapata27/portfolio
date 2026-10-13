@@ -70,7 +70,7 @@ function wire(e: Edge) {
   const x1 = a.cx + NODE_W / 2;
   const x2 = b.cx - NODE_W / 2;
   const mx = (x1 + x2) / 2;
-  return { d: `M${x1} ${a.cy} H${mx} V${b.cy} H${x2}`, tip: { x: x2, y: b.cy, dir: 'right' }, lx: mx, ly: Math.min(a.cy, b.cy) - 6 };
+  return { d: `M${x1} ${a.cy} H${mx} V${b.cy} H${x2}`, tip: { x: x2, y: b.cy, dir: 'right' }, lx: mx, ly: Math.min(a.cy, b.cy) - NODE_H / 2 - 5 };
 }
 
 function chevron(tip: { x: number; y: number; dir: string }) {
@@ -119,7 +119,7 @@ const wires = edges.map((e) => ({ e, w: wire(e) })).filter((x) => x.w);
             <rect x={x} y={y} width={NODE_W} height={NODE_H} />
           )}
           {kind === 'store' && <path class="lid" d={`M${x} ${y + 9} H${x + NODE_W}`} />}
-          <text class="label" x={n.cx} y={hasSub ? n.cy - 2 : n.cy + 5} text-anchor="middle">
+          <text class="label" x={n.cx} y={hasSub && !compact ? n.cy - 2 : n.cy + 6} text-anchor="middle">
             {n.label}
           </text>
           {hasSub && (
@@ -214,11 +214,13 @@ const wires = edges.map((e) => ({ e, w: wire(e) })).filter((x) => x.w);
     fill: var(--hair);
   }
 
+  /* Miniaturas: el SVG se ve a menos de la mitad; sube el cuerpo del rótulo y se omite el subtítulo */
   .compact .node .label {
-    font-size: 16px;
+    font-size: 19px;
   }
 
-  .compact .node .sub {
-    font-size: 11px;
+  .compact .node .sub,
+  .compact .wire-label {
+    display: none;
   }
 </style>

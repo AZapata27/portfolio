@@ -8,6 +8,7 @@ summary: "Arquitectura de microservicios y streaming de datos para peajes y parq
 stack: [Spring Boot, Kafka, CQRS, Quarkus, GraalVM, Java 21, AWS]
 featured: false
 order: 4
+url: https://www.flypass.com.co/
 plate:
   src: ../../../assets/work/flypass-platform.png
   alt: "Portada del sitio de Flypass, pagos electrónicos de peajes y parqueaderos"
