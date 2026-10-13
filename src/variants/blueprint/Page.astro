@@ -47,7 +47,8 @@ const total = 6;
   <Fragment slot="head">
     <Font cssVariable="--font-barlow-condensed" preload />
     <Font cssVariable="--font-barlow" preload />
-    <Font cssVariable="--font-jetbrains-mono" preload />
+    {/* La mono no se precarga: rótulos y tablas pueden esperar al swap sin tocar el LCP */}
+    <Font cssVariable="--font-jetbrains-mono" />
   </Fragment>
 
   <EipSprite />

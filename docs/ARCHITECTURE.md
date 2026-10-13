@@ -50,6 +50,25 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
   Vercel) exportando `export const prerender = false`; para eso ya está el adaptador.
 - Variables de entorno: ninguna hoy. `.env.example` reserva `ANTHROPIC_API_KEY` para el roadmap.
 
+## Rendimiento y SEO técnico
+
+Línea base medida con Lighthouse 12 el 2026-10-13 sobre producción (móvil simulado, CPU ×4):
+portada 72 → tras los ajustes de abajo 87 en local sin compresión (el bloqueo del hilo principal pasó de
+1.000 ms a 60 ms); escritorio 99; página de proyecto en móvil 97; accesibilidad, buenas prácticas y SEO 100.
+Reglas que mantienen esos números:
+
+- **Fuentes**: sólo los pesos y estilos que se usan (`fonts` en `astro.config.ts`: Barlow Condensed 700/800,
+  Barlow 400/500/600 sin itálica, JetBrains Mono 400/500/700). Se precargan display y cuerpo; la mono no.
+  Cada archivo extra es una precarga más y un relayout de toda la página cuando llega.
+- **CSS en línea** (`build.inlineStylesheets: 'always'`): sin hoja externa bloqueante antes del primer render.
+- **Sin `text-wrap: pretty` global**: en una página de ~1.500 elementos encarece cada relayout; `balance` sólo en
+  encabezados.
+- **Sitemap**: `lastmod` real por URL (último commit que tocó su contenido; en un clon superficial, la fecha del
+  commit desplegado) y alternates es/en también en las páginas de proyecto. JSON-LD `Person` en todas las
+  páginas y `BreadcrumbList` en las de proyecto.
+- Para volver a medir: `npx lighthouse@12 https://www.andres-zapata.dev/ --output=json` (con Playwright, `CHROME_PATH`
+  apuntando a su Chromium); los números de un servidor local sin compresión no son comparables en LCP.
+
 ## Probar una alternativa visual
 
 Si algún día se quiere ensayar otro mundo visual sin tocar el contenido: crear

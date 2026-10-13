@@ -42,10 +42,6 @@ h4 {
   overflow-wrap: anywhere;
 }
 
-p {
-  text-wrap: pretty;
-}
-
 ul[role='list'],
 ol[role='list'] {
   list-style: none;

@@ -130,8 +130,14 @@ const items = [
   }
 
   @media (max-width: 1023px) {
+    /* Oculto a la vista pero no para lectores de pantalla: el enlace conserva su nombre */
     .brand-name {
-      display: none;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .lang {
