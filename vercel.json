@@ -1,4 +1,29 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "astro"
+  "framework": "astro",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/en/",
+      "permanent": false,
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^en.*"
+        }
+      ],
+      "missing": [
+        {
+          "type": "query",
+          "key": "lang"
+        },
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawl|[Ss]pider|[Ss]lurp|facebookexternalhit|LinkedInBot|Twitterbot|WhatsApp|Lighthouse).*"
+        }
+      ]
+    }
+  ]
 }
