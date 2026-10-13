@@ -1,0 +1,17 @@
+---
+/** Página de detalle de un proyecto en español: `/proyectos/<slug>/`. La versión en inglés vive en `en/work/[slug].astro`. */
+import { getProjects, slugOf } from '@/lib/content';
+import ProjectPage from '@/variants/blueprint/ProjectPage.astro';
+
+export async function getStaticPaths() {
+  const projects = await getProjects('es');
+  return projects.map((project, index) => ({
+    params: { slug: slugOf(project) },
+    props: { project, index, prev: projects[index - 1] ?? null, next: projects[index + 1] ?? null },
+  }));
+}
+
+const { project, index, prev, next } = Astro.props;
+---
+
+<ProjectPage locale="es" {project} {index} {prev} {next} />

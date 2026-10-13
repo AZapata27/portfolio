@@ -43,6 +43,15 @@ export const ui = {
     'type.contract': 'Contractor',
     'type.freelance': 'Freelance',
     'type.early': 'Early career',
+    'work.back': 'All projects',
+    'work.prev': 'Previous',
+    'work.next': 'Next',
+    'work.open': 'View project',
+    'work.notes': 'Notes',
+    'work.site': 'Visit the site',
+    'work.captureOf': 'Capture of',
+    'work.schematic': 'Architecture sketch',
+    'work.count': 'projects',
     'meta.title': 'Andrés Zapata · Software architect',
     'meta.description':
       'Software architect with 10+ years in fintech, banking, transport and logistics. Enterprise integration, event streaming with Kafka and AI-native development on Java and Node.js.',
@@ -82,6 +91,15 @@ export const ui = {
     'type.contract': 'Contratista',
     'type.freelance': 'Freelance',
     'type.early': 'Primeros años',
+    'work.back': 'Todos los proyectos',
+    'work.prev': 'Anterior',
+    'work.next': 'Siguiente',
+    'work.open': 'Ver proyecto',
+    'work.notes': 'Notas',
+    'work.site': 'Ver el sitio',
+    'work.captureOf': 'Captura de',
+    'work.schematic': 'Esquema de arquitectura',
+    'work.count': 'proyectos',
     'meta.title': 'Andrés Zapata · Arquitecto de software',
     'meta.description':
       'Arquitecto de software con más de 10 años en fintech, banca, transporte y logística. Integración empresarial, event streaming con Kafka y desarrollo AI-native sobre Java y Node.js.',
@@ -112,6 +130,14 @@ export function localePath(locale: Locale, path = '/'): string {
   const prefix = locale === defaultLocale ? '' : `/${locale}`;
   const url = `${prefix}/${clean}`.replace(/\/+/g, '/');
   return url.endsWith('/') ? url : `${url}/`;
+}
+
+/** Segmento de la ruta de proyectos por idioma: `/proyectos/<slug>/` y `/en/work/<slug>/`. */
+export const projectSegment: Record<Locale, string> = { es: 'proyectos', en: 'work' };
+
+/** Ruta de la página de detalle de un proyecto en un idioma. */
+export function projectPath(locale: Locale, slug: string): string {
+  return localePath(locale, `${projectSegment[locale]}/${slug}`);
 }
 
 /** Idioma alterno para el conmutador. */

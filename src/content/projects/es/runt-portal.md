@@ -10,6 +10,11 @@ metric: { value: "Millones", label: "de ciudadanos consultan el portal" }
 featured: true
 order: 2
 url: https://www.runt.gov.co/
+plate:
+  src: ../../../assets/work/runt-portal.png
+  alt: "Módulo de consulta de automotores por placa del portal ciudadano del RUNT"
+  source: runt.gov.co
+  captured: "2026-10"
 ---
 
 Cada módulo es un micro-frontend construido con Webpack Module Federation, desplegado en Azure e integrado de forma independiente al portal principal: se publica sin tocar el resto del sitio.

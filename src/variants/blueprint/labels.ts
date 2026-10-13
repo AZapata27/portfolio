@@ -22,6 +22,7 @@ const vocab = {
     today: 'Today',
     details: 'Details',
     detail: 'Detail',
+    project: 'Project',
     partsList: 'Tech stack',
     titleBlock: 'Title block',
     achievement: 'Achievement',
@@ -75,6 +76,7 @@ const vocab = {
     today: 'Hoy',
     details: 'Detalles',
     detail: 'Detalle',
+    project: 'Proyecto',
     partsList: 'Stack tecnológico',
     titleBlock: 'Bloque de título',
     achievement: 'Logro',
@@ -130,7 +132,6 @@ export function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
-
 
 /** `7` da `07`: numeración de revisiones e ítems con dos dígitos. */
 export function pad2(n: number): string {

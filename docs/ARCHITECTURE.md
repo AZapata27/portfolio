@@ -28,13 +28,18 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
     más Topbar y Footer. `components/`: Sheet, RouteDiagram, RouteFlow, EipSprite, DetailA, TitleBlock.
   - `labels.ts`: vocabulario del plano (SHEET, REV, PARTS LIST…) en en/es.
   - `README.md`: decisiones de diseño; `DESIGN.md` en la raíz las resume en formato de tokens.
-- **Páginas** (`src/pages/`): sólo deciden idioma: `index.astro` (es) y `en/index.astro` (en).
+- **Páginas** (`src/pages/`): sólo deciden idioma: `index.astro` (es) y `en/index.astro` (en), más
+  las páginas de proyecto `proyectos/[slug].astro` y `en/work/[slug].astro` (estáticas, una por
+  entrada de `projects`; `projectPath()` en `i18n.ts` da la ruta por idioma).
 - **Iconos**: `src/components/Icon.astro`. Logos de marcas desde `simple-icons` (en build, sin coste
   en cliente) y un set propio de iconos de interfaz con un único grosor de trazo.
 - **Fuentes**: Astro Fonts API (`fonts` en `astro.config.ts`, proveedor Fontsource). Se descargan
   en build y se sirven desde el propio sitio. Cada variante incluye `<Font cssVariable=… />` sólo
   para las familias que usa.
 - **SEO**: `src/components/Seo.astro`: canonical, `hreflang`, Open Graph, Twitter, JSON-LD `Person`.
+  Acepta `paths` (rutas ya localizadas) para las páginas cuyo segmento cambia por idioma, e `image`.
+- **Imágenes**: capturas de proyectos en `src/assets/work/`, servidas por `astro:assets` (`<Image>`,
+  sharp en build) desde `components/Plate.astro`.
   Sitemap con `@astrojs/sitemap`.
 
 ## Build y despliegue

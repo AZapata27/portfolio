@@ -41,7 +41,7 @@ const shortOf = (e: Experience) => e.data.short ?? e.data.summary;
 const tagsOf = (e: Experience) => (e.data.tags.length ? e.data.tags : e.data.stack.slice(0, 4));
 ---
 
-<Sheet id="experience" number={3} {total} title={v.profile} {locale} labelledby="experience-title">
+<Sheet id="experience" number={3} {total} title={tr('section.experience')} {locale} labelledby="experience-title">
   <h2 id="experience-title" class="sheet-title">{tr('section.experience')}</h2>
 
   <ol class="line" role="list" aria-label={v.timeline} data-today={v.today} style={`--cols: ${cols}`}>

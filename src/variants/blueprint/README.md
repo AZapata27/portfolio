@@ -19,7 +19,7 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | 1    | `route`         | Nombre, diagrama de la ruta (SVG), `DETAIL A · Route.java`, bloque de título con contacto |
 | 2    | `capabilities`  | NOTES ①–④ (las cuatro capacidades), resumen y tabla de LOGROS (`profile.achievements`)   |
 | 3    | `experience`    | PERFIL LONGITUDINAL: la trayectoria como línea de tiempo sin fechas (empresa, relación, cargo, una línea, stack superficial); el detalle queda en el CV |
-| 4    | `work`          | DETAILS B–Q: los proyectos tangibles agrupados por dominio; los que tienen cifra la llevan como cota |
+| 4    | `work`          | galería de láminas (captura real o esquema) agrupada por dominio; cada lámina abre `/proyectos/<slug>/` |
 | 5    | `stack`         | PARTS LIST: `ITEM / GROUP / PARTS` con logos de simple-icons en tinta                     |
 | 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, idiomas, notas generales |
 
@@ -94,13 +94,31 @@ el nodo del contratista independiente.
 - El trabajo como **contratista independiente** (`type: freelance`) no se dibuja: sus proyectos
   están en la hoja 4.
 
-## Detalles (hoja 4)
+## Detalles (hoja 4) y páginas de proyecto
 
-Es la hoja con más peso. Los proyectos se agrupan por `domain` (texto exacto, en el orden en que
-aparece cada dominio según `order`); cada grupo lleva el rango de detalles (`DETALLES B–E`), el
-nombre del dominio y la cantidad. Las tarjetas son todas iguales (`auto-fill` de 272 px, cuatro en
-la hoja completa); las que tienen `metric` llevan la cifra como cota y marco de 1,5 px, el resto
-marco hairline. Letras continuas B, C, D… a través de los grupos.
+Es la hoja con más peso y desde el 2026-10-12 es una **galería de láminas** (decisión de Andrés:
+"mucho texto en cajas"). Los proyectos se agrupan por `domain` (texto exacto, en el orden en que
+aparece cada dominio según `order`); cada grupo lleva el nombre del dominio y la cantidad. Cada proyecto es una lámina (`components/Plate.astro`): la
+captura real del sitio público (`plate` en el contenido, imagen en `src/assets/work/`, optimizada
+por `astro:assets`) o, si no la hay, el esquema de arquitectura (`schematic`), dentro de un marco
+hairline con marcas de esquina y, sólo en las capturas, pie `captura de <dominio> · <AAAA-MM>`. La cifra va como
+sello ámbar pegado a la esquina; debajo, título, cliente · periodo, una línea y la acción "Ver proyecto".
+Toda la lámina es un enlace a la página del proyecto; al pasar el cursor el marco engrosa (anillo
+interior de 1 px), el título se subraya y la acción "Ver proyecto" se rellena de ámbar. Grilla de 3 columnas desde 1024 px, 2 desde 640.
+
+**Página de proyecto** (`ProjectPage.astro`, rutas `src/pages/proyectos/[slug].astro` y
+`src/pages/en/work/[slug].astro`, `projectPath()` en `i18n.ts`): una sola hoja con sello
+`PROYECTO · dominio`. Fila mono con "← Todos los proyectos" y el dominio; título en
+display y resumen a 62 ch; dos columnas 7/5 desde 960 px: la lámina a tamaño completo (captura y, si existe, esquema debajo) y, a la derecha, la cota grande y la tabla mono
+CLIENTE / PERIODO / ROL / DOMINIO / STACK / ENLACES; luego NOTAS (el cuerpo Markdown) a 66 ch y la
+paginación anterior/siguiente. `Seo.astro` recibe `paths` porque el segmento cambia por idioma.
+
+**Esquemas** (`components/Schematic.astro`): SVG calculado a partir de `columns` (nodos de izquierda
+a derecha) y `edges`; cajas de 150×54 en columnas de 196 px, cables ortogonales de 1,5 px con
+chevrón, `vector-effect: non-scaling-stroke`. Tipos: box, channel (extremos redondeados), store
+(tapa), bus (azul discontinuo, como la línea de control), prod (tinta) y cloud (externo, discontinuo).
+Las capturas del Banco de la República no se pudieron tomar (anti-bot con captcha): esos proyectos
+van sólo con esquema.
 
 ## Momento memorable (motion)
 
@@ -132,7 +150,8 @@ semánticas con `caption`, `th scope` y, en móvil, cada fila se apila con `disp
 ## Responsivo
 
 - `< 640`: bloques de título y detalles en una columna; etiqueta `DETAIL x` sobre el título.
-- `< 640`: detalles (proyectos) en una columna; desde 640, tantas columnas de 272 px como quepan.
+- `< 640`: galería de proyectos en una columna; 2 columnas desde 640 y 3 desde 1024. La página de
+  proyecto apila lámina, cota, tabla y notas por debajo de 960 px.
 - `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: contacto en una columna.
 - `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código; la línea de
   tiempo pasa de horizontal a vertical.
@@ -156,7 +175,8 @@ Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
 - Nueva hoja: `sections/<Nombre>.astro` envuelta en `<Sheet …>`, incluirla en `Page.astro` y subir
   `total`.
 - Nuevo proyecto: `src/content/projects/{en,es}/<slug>.md` con un `domain` ya existente (o uno nuevo
-  en los dos idiomas) y un `order` contiguo a los de su dominio; la letra del detalle sale sola.
+  en los dos idiomas), un `order` contiguo a los de su dominio y una lámina: `plate` (captura en
+  `src/assets/work/`, con `source` y `captured`) o `schematic` (columnas y aristas). La página `/proyectos/<slug>/` sale sola.
 - Nuevo puesto en la línea de tiempo: `src/content/experience/{en,es}/<slug>.md` con `short` y
   `tags` (hasta cuatro); `type: freelance` no se dibuja. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
 - El DSL de `DETAIL A` y el diagrama leen `capabilities` por `id`; si se agrega una capacidad hay que

@@ -61,6 +61,29 @@ url: https://…        # opcional, enlace público
 ---
 Uno o dos párrafos de contexto. Sin datos confidenciales del cliente.
 
+Lámina y esquema (opcionales, pero todo proyecto debería tener al menos uno):
+
+```yaml
+plate:                                   # captura real de un sitio público
+  src: ../../../assets/work/<slug>.png   # relativo al archivo; la imagen vive en src/assets/work/
+  alt: "Qué se ve en la captura"
+  source: runt.gov.co                    # dominio capturado, va en el pie de la lámina
+  captured: "2026-10"                   # AAAA-MM
+schematic:                               # esquema de arquitectura dibujado por Schematic.astro
+  columns:                               # columnas de izquierda a derecha; cada nodo: id, label (corto), sub, kind
+    -
+      - { id: ops, label: "Operadores", sub: "pasos por peaje", kind: channel }
+    -
+      - { id: core, label: "IP/REV core", sub: "Java 17" }
+  edges:
+    - { from: ops, to: core, label: "pasos" }      # dashed: true para líneas discontinuas
+```
+
+`kind`: `box` (por defecto), `channel`, `store`, `bus` (azul), `prod` (tinta), `cloud` (externo).
+Las capturas se toman con Playwright a 1280×800 (`npx playwright screenshot --viewport-size=1280,800 <url> src/assets/work/<slug>.png`)
+y sólo de sitios públicos; nunca de sistemas internos. Cada proyecto tiene página propia en
+`/proyectos/<slug>/` y `/en/work/<slug>/` (el cuerpo Markdown son sus "Notas").
+
 Dominios en uso (mismo nombre en todos los proyectos del grupo): `Transporte y movilidad` /
 `Transport and mobility`, `Plataforma e IA` / `Platform and AI`, `Banca` / `Banking`,
 `Integración empresarial` / `Enterprise integration`, `Sector público` / `Public sector`,

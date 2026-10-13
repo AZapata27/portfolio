@@ -1,0 +1,224 @@
+---
+/**
+ * Esquema de arquitectura de un proyecto, dibujado con el mismo trazo que la ruta:
+ * columnas de nodos de izquierda a derecha y cables ortogonales con punta de
+ * chevrón. Las posiciones salen de los datos (`schematic` en el contenido), así
+ * que un proyecto nuevo sólo describe sus columnas y aristas.
+ *
+ * Tipos de nodo: box (componente), channel (canal o entrada, con extremos
+ * redondeados), store (base de datos, con línea de tapa), bus (línea de control:
+ * azul discontinuo), prod (bloque de tinta) y cloud (sistema externo: discontinuo).
+ */
+interface Node {
+  id: string;
+  label: string;
+  sub?: string;
+  kind?: 'box' | 'channel' | 'store' | 'bus' | 'prod' | 'cloud';
+}
+interface Edge {
+  from: string;
+  to: string;
+  dashed?: boolean;
+  label?: string;
+}
+interface Props {
+  columns: Node[][];
+  edges?: Edge[];
+  /** Texto accesible del dibujo. */
+  title: string;
+  /** Versión compacta para la galería: menos padding, sin etiquetas de arista. */
+  compact?: boolean;
+  class?: string;
+}
+
+const { columns, edges = [], title, compact = false, class: className } = Astro.props;
+
+const COL_W = 196;
+const NODE_W = 150;
+const NODE_H = 54;
+const ROW_H = 80;
+const PAD = 14;
+const maxRows = Math.max(...columns.map((c) => c.length));
+const W = PAD * 2 + columns.length * COL_W;
+const H = PAD * 2 + maxRows * ROW_H;
+
+type Placed = Node & { cx: number; cy: number; col: number };
+const placed = new Map<string, Placed>();
+columns.forEach((col, c) => {
+  const offset = ((maxRows - col.length) * ROW_H) / 2;
+  col.forEach((n, r) => {
+    placed.set(n.id, {
+      ...n,
+      col: c,
+      cx: PAD + c * COL_W + COL_W / 2,
+      cy: PAD + offset + r * ROW_H + ROW_H / 2,
+    });
+  });
+});
+
+/** Cable ortogonal entre dos nodos: sale por la derecha y entra por la izquierda (o vertical si comparten columna). */
+function wire(e: Edge) {
+  const a = placed.get(e.from);
+  const b = placed.get(e.to);
+  if (!a || !b) return null;
+  if (a.col === b.col) {
+    const down = b.cy > a.cy;
+    const y1 = a.cy + (down ? NODE_H / 2 : -NODE_H / 2);
+    const y2 = b.cy + (down ? -NODE_H / 2 : NODE_H / 2);
+    return { d: `M${a.cx} ${y1} V${y2}`, tip: { x: b.cx, y: y2, dir: down ? 'down' : 'up' }, lx: a.cx + 8, ly: (y1 + y2) / 2 };
+  }
+  const x1 = a.cx + NODE_W / 2;
+  const x2 = b.cx - NODE_W / 2;
+  const mx = (x1 + x2) / 2;
+  return { d: `M${x1} ${a.cy} H${mx} V${b.cy} H${x2}`, tip: { x: x2, y: b.cy, dir: 'right' }, lx: mx, ly: Math.min(a.cy, b.cy) - 6 };
+}
+
+function chevron(tip: { x: number; y: number; dir: string }) {
+  const s = 6;
+  if (tip.dir === 'right') return `M${tip.x - s} ${tip.y - s} L${tip.x} ${tip.y} L${tip.x - s} ${tip.y + s}`;
+  if (tip.dir === 'down') return `M${tip.x - s} ${tip.y - s} L${tip.x} ${tip.y} L${tip.x + s} ${tip.y - s}`;
+  return `M${tip.x - s} ${tip.y + s} L${tip.x} ${tip.y} L${tip.x + s} ${tip.y + s}`;
+}
+
+const wires = edges.map((e) => ({ e, w: wire(e) })).filter((x) => x.w);
+---
+
+<svg
+  class:list={['schematic', { compact }, className]}
+  viewBox={`0 0 ${W} ${H}`}
+  width={W}
+  height={H}
+  role="img"
+  aria-label={title}
+>
+  <title>{title}</title>
+  {
+    wires.map(({ e, w }) => (
+      <g class:list={['wire', { dashed: e.dashed }]}>
+        <path d={w!.d} />
+        <path class="tip" d={chevron(w!.tip)} />
+        {e.label && !compact && (
+          <text class="wire-label" x={w!.lx} y={w!.ly} text-anchor="middle">
+            {e.label}
+          </text>
+        )}
+      </g>
+    ))
+  }
+  {
+    [...placed.values()].map((n) => {
+      const kind = n.kind ?? 'box';
+      const x = n.cx - NODE_W / 2;
+      const y = n.cy - NODE_H / 2;
+      const hasSub = Boolean(n.sub);
+      return (
+        <g class:list={['node', `node--${kind}`]}>
+          {kind === 'channel' ? (
+            <rect x={x} y={y} width={NODE_W} height={NODE_H} rx={NODE_H / 2} />
+          ) : (
+            <rect x={x} y={y} width={NODE_W} height={NODE_H} />
+          )}
+          {kind === 'store' && <path class="lid" d={`M${x} ${y + 9} H${x + NODE_W}`} />}
+          <text class="label" x={n.cx} y={hasSub ? n.cy - 2 : n.cy + 5} text-anchor="middle">
+            {n.label}
+          </text>
+          {hasSub && (
+            <text class="sub" x={n.cx} y={n.cy + 15} text-anchor="middle">
+              {n.sub}
+            </text>
+          )}
+        </g>
+      );
+    })
+  }
+</svg>
+
+<style>
+  .schematic {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    font-family: var(--font-display);
+    color: var(--ink);
+  }
+
+  .wire path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: var(--line);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .wire.dashed path:not(.tip) {
+    stroke-dasharray: 4 5;
+  }
+
+  .wire-label {
+    font: 500 10.5px / 1 var(--font-mono);
+    fill: var(--graphite);
+    letter-spacing: 0.04em;
+  }
+
+  .node rect,
+  .node .lid {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: var(--line);
+    vector-effect: non-scaling-stroke;
+  }
+
+  .node .lid {
+    fill: none;
+  }
+
+  .node .label {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    fill: var(--ink);
+  }
+
+  .node .sub {
+    font: 400 10.5px / 1 var(--font-mono);
+    fill: var(--graphite);
+  }
+
+  .node--cloud rect {
+    stroke-dasharray: 5 4;
+  }
+
+  .node--bus rect {
+    stroke: var(--blue);
+    stroke-dasharray: 5 4;
+  }
+
+  .node--bus .label,
+  .node--bus .sub {
+    fill: var(--blue);
+  }
+
+  .node--prod rect {
+    fill: var(--ink);
+  }
+
+  .node--prod .label {
+    fill: var(--paper);
+  }
+
+  .node--prod .sub {
+    fill: var(--hair);
+  }
+
+  .compact .node .label {
+    font-size: 16px;
+  }
+
+  .compact .node .sub {
+    font-size: 11px;
+  }
+</style>

@@ -8,6 +8,11 @@ summary: "Microservice and data-streaming architecture for electronic toll and p
 stack: [Spring Boot, Kafka, CQRS, Quarkus, GraalVM, Java 21, AWS]
 featured: false
 order: 4
+plate:
+  src: ../../../assets/work/flypass-platform.png
+  alt: "Home page of Flypass, electronic toll and parking payments"
+  source: flypass.com.co
+  captured: "2026-10"
 ---
 
 Solution design, ADRs, code reviews and quality gates (JaCoCo, SonarQube) across three product workstreams, plus the migration of legacy components to Quarkus with GraalVM, Java 21 and Virtual Threads.

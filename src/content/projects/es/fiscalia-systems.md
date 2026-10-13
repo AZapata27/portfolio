@@ -8,6 +8,26 @@ summary: "Extradición y Captura, Protección de Víctimas y Testigos, y Acusado
 stack: [Node.js, TypeScript, NestJS, React, Oracle PL/SQL, OpenShift, GitHub Actions]
 featured: false
 order: 15
+schematic:
+  columns:
+    -
+      - { id: ext, label: "Extradición y Captura", sub: "asuntos internacionales" }
+      - { id: vict, label: "Víctimas y Testigos", sub: "protección" }
+      - { id: acus, label: "Acusadores Privados", sub: "penal acusatorio" }
+    -
+      - { id: stack, label: "NestJS + React", sub: "un solo stack" }
+      - { id: ora, label: "Oracle", sub: "PL/SQL", kind: store }
+    -
+      - { id: ci, label: "GitHub Actions", sub: "un solo pipeline" }
+    -
+      - { id: os, label: "OpenShift", sub: "despliegue", kind: prod }
+  edges:
+    - { from: ext, to: stack }
+    - { from: vict, to: stack }
+    - { from: acus, to: stack }
+    - { from: stack, to: ora }
+    - { from: stack, to: ci }
+    - { from: ci, to: os }
 ---
 
 Tres sistemas con peso legal, cada uno con su propio flujo y modelo de datos, entregados con un solo stack y un solo pipeline de despliegue.

@@ -149,7 +149,7 @@ reglas para que un agente pueda añadir una hoja o un componente sin romper el m
   además reglas de columnas (1–6) y zonas (A–D).
 - Escala de espaciado de 4 px (`--s-1` … `--s-8`); gutter `clamp(1rem, 3vw, 2.5rem)`.
 - Diagrama de la ruta: SVG (`RouteDiagram`) desde 960 px; flujo vertical en HTML (`RouteFlow`) por
-  debajo. Tablas semánticas que se apilan con `display: grid` en móvil (`< 768` logros y lista de
+  debajo. Páginas de proyecto en `/proyectos/<slug>/` y `/en/work/<slug>/`, misma barra y pie. Tablas semánticas que se apilan con `display: grid` en móvil (`< 768` logros y lista de
   partes; `< 900` revisiones); el único scroll horizontal permitido es el código de `DETAIL A`.
 - Barra superior fija desde 1024 px; debajo se apila y no se fija.
 
@@ -175,10 +175,19 @@ como chevrones del propio trazo (`stroke-linecap: round`). Iconos EIP y de inter
   con llamada vertical de 1,5 px y marcador circular de 12 px (papel con borde de tinta; relleno
   ámbar si es actual). Horizontal desde 960 px (HOY a la izquierda, estaciones alternando arriba y
   abajo), vertical por debajo (HOY arriba).
-- **Detalles** (hoja 4, `sections/Work.astro`): proyectos agrupados por dominio. Título de grupo con
-  rango `DETALLES B–E` en mono, nombre en display y cantidad a la derecha, sobre una hairline.
-  Tarjetas iguales de 272 px mínimo (`auto-fill`); con cota y marco de 1,5 px si tienen cifra,
-  hairline si no.
+- **Detalles** (hoja 4, `sections/Work.astro`): galería de láminas agrupada por dominio. Título de
+  grupo con nombre en display y cantidad a la derecha, sobre una
+  hairline. Cada lámina es un enlace a la página del proyecto; hover: anillo interior de 1 px en el
+  marco, título subrayado y acción "Ver proyecto" rellena de ámbar. 3 columnas desde 1024 px, 2 desde 640.
+- **Lámina** (`components/Plate.astro`): marco hairline con marcas de esquina de 10 px y grilla de
+  puntos; dentro, la captura real (`astro:assets`, recorte superior 16:10 en la galería) o el esquema;
+  pie en mono sólo en las capturas, `captura de <dominio> · <AAAA-MM>`; sello ámbar con la cifra pegado a la esquina.
+- **Esquema** (`components/Schematic.astro`): SVG de cajas 150×54 en columnas de 196 px, trazo 1,5 px
+  no escalable, chevrones; nodos box / channel / store / bus (azul discontinuo) / prod (tinta) /
+  cloud (discontinuo). Etiquetas en display 15 px mayúsculas y mono 10,5 px.
+- **Página de proyecto** (`ProjectPage.astro`): una hoja con sello `PROYECTO · dominio`; fila mono
+  de regreso, título display, resumen a 62 ch, columnas 7/5 (lámina / cota + tabla mono), notas a
+  66 ch y paginación anterior/siguiente.
 - **Bloque de título** (`TitleBlock`, hoja 1 y hoja 6): tabla mono; fila CONTACT en ámbar con el
   mailto como acción primaria; LinkedIn, GitHub y CV como enlaces azules.
 - **Llamadas** (`.num`): círculo de 2 rem, borde de tinta, relleno ámbar (①–③) o papel con borde y

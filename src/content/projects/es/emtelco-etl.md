@@ -8,6 +8,11 @@ summary: "Consolidación de los procesos ETL, de pronóstico (e-forecasting) y a
 stack: [Spark, Java, PL/SQL, Maven, JUnit]
 featured: false
 order: 16
+plate:
+  src: ../../../assets/work/emtelco-etl.png
+  alt: "Página del producto e-forecasting de Emtelco, pronóstico de demanda sobre analítica"
+  source: emtelco.com.co
+  captured: "2026-10"
 ---
 
 Migración de la compilación de Ant a Maven, pruebas unitarias con JUnit en los procesos migrados, optimización de joins y shuffles en Spark y una estrategia de ramas con Git para el equipo.

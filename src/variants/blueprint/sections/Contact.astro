@@ -22,7 +22,7 @@ const v = vocabFor(locale);
 const display = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 ---
 
-<Sheet id="contact" number={total} {total} title={v.titleBlock} {locale} labelledby="contact-title">
+<Sheet id="contact" number={total} {total} title={tr('section.contact')} {locale} labelledby="contact-title">
   <h2 id="contact-title" class="sheet-title">{tr('section.contact')}</h2>
 
   <div class="layout">

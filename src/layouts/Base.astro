@@ -18,9 +18,13 @@ interface Props {
   /** Atributo `data-variant` en <html>, para que los tokens de la variante apliquen. */
   variant?: string;
   bodyClass?: string;
+  /** Imagen Open Graph de la página (por defecto `/og.png`). */
+  image?: string;
+  /** Rutas localizadas cuando el segmento cambia por idioma (ver `Seo.astro`). */
+  paths?: Partial<Record<Locale, string>>;
 }
 
-const { locale, title, description, path, profile, variant, bodyClass } = Astro.props;
+const { locale, title, description, path, profile, variant, bodyClass, image, paths } = Astro.props;
 const tr = t(locale);
 ---
 
@@ -32,7 +36,7 @@ const tr = t(locale);
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="color-scheme" content="light" />
-    <Seo {locale} {title} {description} {path} {profile} />
+    <Seo {locale} {title} {description} {path} {profile} {image} {paths} />
     <slot name="head" />
   </head>
   <body class={bodyClass}>
