@@ -3,7 +3,7 @@
  * Pie: nombre y año, crédito con enlace al código fuente y cambio de idioma.
  */
 import type { Profile } from '@/lib/content';
-import { localePath, otherLocale, t, type Locale } from '@/lib/i18n';
+import { homePath, otherLocale, t, type Locale } from '@/lib/i18n';
 
 interface Props {
   profile: Profile;
@@ -25,7 +25,7 @@ const year = new Date().getFullYear();
   <p>
     {repo ? <a href={repo} target="_blank" rel="noopener">{tr('footer.built')}</a> : tr('footer.built')}
   </p>
-  <a class="lang" href={localePath(other, '/')} hreflang={other} lang={other}>
+  <a class="lang" href={homePath(other)} hreflang={other} lang={other}>
     {tr('lang.switch')}
   </a>
 </footer>
