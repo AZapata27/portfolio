@@ -28,13 +28,17 @@ type: employment      # employment | contract | freelance | early
 order: 1              # desempate al ordenar (menor primero)
 summary: Una línea que resume el puesto.
 stack: [Spring Boot, Kafka, AWS]
+short: Resumen de una línea para la línea de tiempo (opcional; si falta se usa summary).
+tags: [Spring Boot, Kafka, AWS, Claude Code]   # stack superficial, máximo 4 (si falta, los primeros de stack)
 ---
 - Logro uno, con cifra si la hay.
 - Logro dos.
 ```
 
-El cuerpo es Markdown: una lista de logros. Para los primeros años (`type: early`) un solo archivo
-agrupa varios roles cortos.
+El cuerpo es Markdown: una lista de logros. Hoy el sitio no lo muestra (la hoja de trayectoria es
+una línea de tiempo y el detalle vive en el CV), pero se mantiene como fuente para futuras
+funcionalidades (p. ej. "Preguntale a mi CV"). Para los primeros años (`type: early`) un solo
+archivo agrupa varios roles cortos. `type: freelance` se dibuja como vía paralela, no como estación.
 
 ## Proyectos (`src/content/projects/{en,es}/<slug>.md`)
 
@@ -43,16 +47,22 @@ agrupa varios roles cortos.
 title: IP/REV, interoperabilidad de peajes electrónicos
 client: Ministerio de Transporte (con OLJ Solutions)
 period: 2023 – 2024
-domain: Transporte / Pagos
+domain: Transporte y movilidad   # la hoja agrupa por este texto exacto
 role: Senior software developer
 summary: Una o dos líneas.
 stack: [Java, Kafka]
 metric: { value: "−98 %", label: "de latencia" }   # opcional
-featured: true        # los destacados van primero
-order: 1
+featured: true        # reservado; hoy la cota la decide `metric`
+order: 1              # los del mismo domain deben ir contiguos
 url: https://…        # opcional, enlace público
 ---
 Uno o dos párrafos de contexto. Sin datos confidenciales del cliente.
+
+Dominios en uso (mismo nombre en todos los proyectos del grupo): `Transporte y movilidad` /
+`Transport and mobility`, `Plataforma e IA` / `Platform and AI`, `Banca` / `Banking`,
+`Integración empresarial` / `Enterprise integration`, `Sector público` / `Public sector`,
+`Datos y telecomunicaciones` / `Data and telecommunications`. Las letras de los detalles (B, C, D…)
+se asignan solas por `order`.
 ```
 
 ## Stack (`src/content/skills.json`)

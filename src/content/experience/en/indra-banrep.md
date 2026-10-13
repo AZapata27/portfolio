@@ -10,6 +10,8 @@ type: employment
 order: 7
 summary: Led two teams building Java microservices for Colombia's central bank, cutting latency by 98% in mission-critical services.
 stack: [Java 8-17, Spring Cloud, WebFlux, Redis, MongoDB, GCP Pub/Sub, Apigee, AWS, DynamoDB, Jenkins, SonarQube]
+short: "Microservices and leadership of two teams for Colombia's central bank."
+tags: [Java, Spring, Angular, GCP]
 ---
 
 - Led two teams of four developers building Java 8-17 microservices (Spring Cloud, GCP Pub/Sub, Apigee, AWS, DynamoDB).

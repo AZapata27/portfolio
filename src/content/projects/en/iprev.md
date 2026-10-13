@@ -1,14 +1,14 @@
 ---
-title: IP/REV, nationwide electronic toll collection interoperability
-client: Colombia's Ministry of Transport (with OLJ Solutions)
-period: 2023 – 2024
-domain: Transportation / Payments
-role: Senior software developer on the core team
-summary: The platform that lets any toll operator charge any TAG provider's customers across the country, built on an event-driven, highly concurrent, high-throughput transaction architecture.
-stack: [Java, Spring WebFlux, Quarkus, Kafka, Node.js, Angular, React, AWS]
-metric: { value: "Nationwide", label: "toll operators and TAG providers interoperating" }
+title: "IP/REV, nationwide electronic toll interoperability"
+client: "Colombia's Ministry of Transport (with OLJ Solutions)"
+period: "2023 – 2024"
+domain: "Transport and mobility"
+role: "Senior developer on the core team"
+summary: "The official system for paying tolls on national roads with a single TAG: it connects toll operators with the intermediaries that issue TAGs and keeps vehicle lists and toll passes in sync."
+stack: [Java 17, Spring Boot, ActiveMQ Artemis, Docker, AWS]
+metric: { value: "One TAG", label: "for every national road" }
 featured: true
 order: 1
 ---
 
-IP/REV (Electronic Vehicle Toll Collection Interoperability) is the national scheme that makes electronic toll payment work across operators. I was a member of the team that built it: reactive, event-driven microservices designed for high concurrency and transaction throughput, with TDD and code reviews as the working norm.
+Microservices for exchanging vehicle lists and toll passes between operators and intermediaries. I tuned message traffic on ActiveMQ Artemis (prefetch, consumer concurrency and batched toll passes) to cut network load and latency, and proposed improvements to the event-driven design such as centralizing validations with Jakarta Bean Validation.

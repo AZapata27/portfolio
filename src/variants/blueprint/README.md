@@ -16,8 +16,8 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | ---- | --------------- | ---------------------------------------------------------------------------------------- |
 | 1    | `route`         | Nombre, diagrama de la ruta (SVG), `DETAIL A · Route.java`, bloque de título con contacto |
 | 2    | `capabilities`  | NOTES ①–④ (las cuatro capacidades), resumen y tabla de LOGROS (`profile.achievements`)   |
-| 3    | `experience`    | REVISIONS: experiencia como filas `REV / DATE / DESCRIPTION` (la más alta, la actual)     |
-| 4    | `work`          | DETAILS B–H: proyectos (destacados con su cifra como cota; el resto en fila compacta)     |
+| 3    | `experience`    | PERFIL LONGITUDINAL: la trayectoria como línea de tiempo (empresa, cargo, una línea, stack superficial); el detalle queda en el CV |
+| 4    | `work`          | DETAILS B–Q: los proyectos tangibles agrupados por dominio; los que tienen cifra la llevan como cota |
 | 5    | `stack`         | PARTS LIST: `ITEM / GROUP / PARTS` con logos de simple-icons en tinta                     |
 | 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, idiomas, notas generales |
 
@@ -76,6 +76,30 @@ pegado a la esquina inferior derecha. Ancho máximo 1280 px; separación entre h
   son los `needs("…")`, los dos primeros `parts` de cada rama forman el endpoint y la primera
   parte del control bus el `wireTap`. Así el código y el dibujo no se desincronizan.
 
+## Perfil longitudinal (hoja 3)
+
+La experiencia no se duplica del CV: es una **línea de tiempo** con empresa, cargo, un resumen de
+una línea (`short`) y hasta cuatro tecnologías (`tags`).
+
+- **Escritorio (≥ 960 px)**: horizontal, del primer empleo (izquierda) a hoy (derecha). Grilla de
+  `n + 1` columnas; cada estación ocupa dos columnas y alterna arriba y abajo de la línea, con su
+  línea de llamada vertical y un marcador circular (ámbar si el puesto es actual). La línea termina
+  en el bloque HOY (tinta, como PROD).
+- **Móvil y tablet (< 960 px)**: vertical con `flex-direction: column-reverse`: HOY arriba, el
+  pasado hacia abajo, marcadores sobre una línea a la izquierda.
+- El trabajo como **contratista independiente** (`type: freelance`) corre en paralelo a todo lo
+  demás, así que no es una estación: es una vía discontinua azul (como el control bus) que arranca
+  en la primera estación posterior a su inicio y llega hasta hoy. En móvil es una caja con borde
+  discontinuo azul en su lugar cronológico.
+
+## Detalles (hoja 4)
+
+Es la hoja con más peso. Los proyectos se agrupan por `domain` (texto exacto, en el orden en que
+aparece cada dominio según `order`); cada grupo lleva el rango de detalles (`DETALLES B–E`), el
+nombre del dominio y la cantidad. Las tarjetas son todas iguales (`auto-fill` de 272 px, cuatro en
+la hoja completa); las que tienen `metric` llevan la cifra como cota y marco de 1,5 px, el resto
+marco hairline. Letras continuas B, C, D… a través de los grupos.
+
 ## Momento memorable (motion)
 
 Al cargar, en escritorio y sólo con `prefers-reduced-motion: no-preference`:
@@ -106,9 +130,10 @@ semánticas con `caption`, `th scope` y, en móvil, cada fila se apila con `disp
 ## Responsivo
 
 - `< 640`: bloques de título y detalles en una columna; etiqueta `DETAIL x` sobre el título.
-- `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: REVISIONS apilada (a 768 px la tabla
-  de cuatro columnas se apretaba demasiado); detalles y contacto en una columna.
-- `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código.
+- `< 640`: detalles (proyectos) en una columna; desde 640, tantas columnas de 272 px como quepan.
+- `< 768`: LOGROS y PARTS LIST apiladas. `< 900`: contacto en una columna.
+- `< 960`: ruta vertical en vez del SVG; el bloque de título pasa antes del código; la línea de
+  tiempo pasa de horizontal a vertical.
 - `< 1024`: barra superior sin fijar (`AZ` + idioma arriba, navegación debajo). Desde 1024 se fija.
 
 Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
@@ -127,6 +152,10 @@ Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
 ## Para extender
 
 - Nueva hoja: `sections/<Nombre>.astro` envuelta en `<Sheet …>`, incluirla en `Page.astro` y subir
-  `total`. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
+  `total`.
+- Nuevo proyecto: `src/content/projects/{en,es}/<slug>.md` con un `domain` ya existente (o uno nuevo
+  en los dos idiomas) y un `order` contiguo a los de su dominio; la letra del detalle sale sola.
+- Nuevo puesto en la línea de tiempo: `src/content/experience/{en,es}/<slug>.md` con `short` y
+  `tags` (hasta cuatro); `type: freelance` lo dibuja como vía paralela. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
 - El DSL de `DETAIL A` y el diagrama leen `capabilities` por `id`; si se agrega una capacidad hay que
   decidir en qué rama va (el orden fijo está en `capabilityOrder`).

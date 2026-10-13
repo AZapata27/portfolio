@@ -1,0 +1,13 @@
+---
+title: "ETL y pronóstico de demanda sobre big data"
+client: "Emtelco (Tigo-Une)"
+period: "2020 – 2021"
+domain: "Datos y telecomunicaciones"
+role: "Desarrollador de software"
+summary: "Consolidación de los procesos ETL, de pronóstico (e-forecasting) y analíticos de la plataforma de big data de telecomunicaciones sobre Spark."
+stack: [Spark, Java, PL/SQL, Maven, JUnit]
+featured: false
+order: 16
+---
+
+Migración de la compilación de Ant a Maven, pruebas unitarias con JUnit en los procesos migrados, optimización de joins y shuffles en Spark y una estrategia de ramas con Git para el equipo.

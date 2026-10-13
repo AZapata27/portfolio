@@ -94,6 +94,10 @@ const experience = defineCollection({
     type: z.enum(['employment', 'contract', 'freelance', 'early']),
     summary: z.string(),
     stack: z.array(z.string()).default([]),
+    /** Resumen de una línea para la línea de tiempo (hoja 3). Si falta, se usa `summary`. */
+    short: z.string().optional(),
+    /** Stack superficial para la línea de tiempo: hasta cuatro ítems. Si falta, los primeros de `stack`. */
+    tags: z.array(z.string()).max(4).default([]),
     /** Para desempates al ordenar (menor = primero). */
     order: z.number().int().default(100),
   }),
@@ -106,6 +110,7 @@ const projects = defineCollection({
     title: z.string(),
     client: z.string(),
     period: z.string(),
+    /** Dominio. La hoja de proyectos agrupa por este texto exacto: usar siempre los mismos nombres. */
     domain: z.string(),
     role: z.string(),
     summary: z.string(),

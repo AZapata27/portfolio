@@ -10,6 +10,8 @@ type: contract
 order: 3
 summary: Diseño y desarrollo de tres sistemas misionales para la Fiscalía.
 stack: [Node.js, TypeScript, NestJS, React, Oracle PL/SQL, OpenShift, GitHub Actions]
+short: "Tres sistemas misionales full stack, desplegados en OpenShift."
+tags: [NestJS, React, Oracle, OpenShift]
 ---
 
 - Diseño y desarrollo de 3 sistemas misionales: Extradición y Captura, Protección de Víctimas y Testigos, y Acusadores Privados.

@@ -45,8 +45,10 @@ logística; conocimiento de RNDC, IP/REV, RUNT, peajes electrónicos y facturaci
 ## Capabilities
 
 Una sola página por idioma con: identidad y propuesta, capacidades (arquitectura, integración,
-AI-native, liderazgo), experiencia cronológica, proyectos destacados, stack, formación e idiomas,
-contacto, descarga del CV (PDF en el idioma de la página) y cambio de idioma. Hoy no hay blog, formularios ni
+AI-native, liderazgo) con la tabla de logros, la trayectoria como línea de tiempo (empresa, cargo,
+una línea y stack superficial; el detalle queda en el CV), los proyectos tangibles agrupados por
+dominio (la sección con más peso), stack, idiomas, contacto, descarga del CV (PDF en el idioma de
+la página) y cambio de idioma. Hoy no hay blog, formularios ni
 analítica.
 
 ## Constraints

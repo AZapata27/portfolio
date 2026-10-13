@@ -1,16 +1,17 @@
 ---
 /**
- * Hoja 4 · Detalles. Cada proyecto es un detalle numerado (B en adelante; A es
- * el código de la hoja 1). Los destacados llevan su cifra como cota; los demás van
- * en una fila más compacta debajo.
+ * Hoja 4 · Detalles. Es la hoja con más peso del plano: cada proyecto tangible
+ * es un detalle numerado (B en adelante; A es el código de la hoja 1), agrupado
+ * por dominio (`domain`) en el orden en que aparece cada dominio. Los proyectos
+ * con `metric` llevan su cifra como cota y un marco más grueso.
  */
 import { render } from 'astro:content';
 import type { Project } from '@/lib/content';
-import { slugOf } from '@/lib/content';
+import { groupProjects, slugOf } from '@/lib/content';
 import { t, type Locale } from '@/lib/i18n';
 import Icon from '@/components/Icon.astro';
 import Sheet from '../components/Sheet.astro';
-import { vocabFor } from '../labels';
+import { slugify, vocabFor } from '../labels';
 
 interface Props {
   projects: Project[];
@@ -23,117 +24,133 @@ const { projects, locale, drawingName, total } = Astro.props;
 const tr = t(locale);
 const v = vocabFor(locale);
 
-const items = await Promise.all(
-  projects.map(async (p, i) => ({
-    p,
-    Content: (await render(p)).Content,
-    letter: String.fromCharCode('B'.charCodeAt(0) + i),
-  })),
+const letterOf = new Map(projects.map((p, i) => [p.id, String.fromCharCode('B'.charCodeAt(0) + i)]));
+const groups = await Promise.all(
+  groupProjects(projects).map(async (g) => {
+    const first = letterOf.get(g.items[0]!.id);
+    const last = letterOf.get(g.items[g.items.length - 1]!.id);
+    return {
+      domain: g.domain,
+      id: `work-${slugify(g.domain)}`,
+      range: g.items.length === 1 ? first : `${first}–${last}`,
+      items: await Promise.all(
+        g.items.map(async (p) => ({ p, Content: (await render(p)).Content, letter: letterOf.get(p.id) })),
+      ),
+    };
+  }),
 );
-const featured = items.filter((it) => it.p.data.featured);
-const minor = items.filter((it) => !it.p.data.featured);
 ---
 
 <Sheet id="work" number={4} {total} title={v.details} {drawingName} {locale} labelledby="work-title">
   <h2 id="work-title" class="sheet-title">{tr('section.work')}</h2>
 
-  <div class="details">
-    {
-      featured.map(({ p, Content, letter }) => (
-        <article class="detail" id={`work-${slugOf(p)}`} aria-labelledby={`work-${slugOf(p)}-title`}>
-          <div class="detail-head">
-            <span class="tag">
-              {v.detail} {letter}
-            </span>
-            <h3 id={`work-${slugOf(p)}-title`}>{p.data.title}</h3>
-          </div>
-          {p.data.metric && (
-            <p class="cota">
-              <span class="cota-val">{p.data.metric.value}</span>
-              <span class="cota-lbl">{p.data.metric.label}</span>
-            </p>
-          )}
-          <dl class="meta">
-            <div>
-              <dt>{v.client}</dt>
-              <dd>{p.data.client}</dd>
-            </div>
-            <div>
-              <dt>{v.period}</dt>
-              <dd>{p.data.period}</dd>
-            </div>
-            <div>
-              <dt>{v.domain}</dt>
-              <dd>{p.data.domain}</dd>
-            </div>
-            <div>
-              <dt>{v.role}</dt>
-              <dd>{p.data.role}</dd>
-            </div>
-          </dl>
-          <p class="sum">{p.data.summary}</p>
-          <div class="body">
-            <Content />
-          </div>
-          <p class="stack">{p.data.stack.join(' · ')}</p>
-          {p.data.url && (
-            <a class="ext" href={p.data.url} target="_blank" rel="noopener">
-              {v.openLink}
-              <Icon name="arrow-up-right" size={16} />
-            </a>
-          )}
-        </article>
-      ))
-    }
-  </div>
-
   {
-    minor.length > 0 && (
-      <div class="details details--minor">
-        {minor.map(({ p, Content, letter }) => (
-          <article class="detail detail--minor" id={`work-${slugOf(p)}`} aria-labelledby={`work-${slugOf(p)}-title`}>
-            <div class="detail-head">
-              <span class="tag">
-                {v.detail} {letter}
-              </span>
-              <h3 id={`work-${slugOf(p)}-title`}>{p.data.title}</h3>
-            </div>
-            <dl class="meta">
-              <div>
-                <dt>{v.client}</dt>
-                <dd>{p.data.client}</dd>
+    groups.map((g) => (
+      <section class="group" aria-labelledby={g.id}>
+        <h3 class="group-title" id={g.id}>
+          <span class="group-range">
+            {v.details} {g.range}
+          </span>
+          <span class="group-name">{g.domain}</span>
+          <span class="group-count" aria-hidden="true">
+            {g.items.length}
+          </span>
+        </h3>
+
+        <div class="details">
+          {g.items.map(({ p, Content, letter }) => (
+            <article
+              class:list={['detail', { 'detail--featured': Boolean(p.data.metric) }]}
+              id={`work-${slugOf(p)}`}
+              aria-labelledby={`work-${slugOf(p)}-title`}
+            >
+              <div class="detail-head">
+                <span class="tag">
+                  {v.detail} {letter}
+                </span>
+                <h4 id={`work-${slugOf(p)}-title`}>{p.data.title}</h4>
               </div>
-              <div>
-                <dt>{v.period}</dt>
-                <dd>{p.data.period}</dd>
+              {p.data.metric && (
+                <p class="cota">
+                  <span class="cota-val">{p.data.metric.value}</span>
+                  <span class="cota-lbl">{p.data.metric.label}</span>
+                </p>
+              )}
+              <dl class="meta">
+                <div>
+                  <dt>{v.client}</dt>
+                  <dd>{p.data.client}</dd>
+                </div>
+                <div>
+                  <dt>{v.period}</dt>
+                  <dd>{p.data.period}</dd>
+                </div>
+                <div>
+                  <dt>{v.role}</dt>
+                  <dd>{p.data.role}</dd>
+                </div>
+              </dl>
+              <p class="sum">{p.data.summary}</p>
+              <div class="body">
+                <Content />
               </div>
-            </dl>
-            <p class="sum">{p.data.summary}</p>
-            <div class="body">
-              <Content />
-            </div>
-            <p class="stack">{p.data.stack.join(' · ')}</p>
-            {p.data.url && (
-              <a class="ext" href={p.data.url} target="_blank" rel="noopener">
-                {v.openLink}
-                <Icon name="arrow-up-right" size={16} />
-              </a>
-            )}
-          </article>
-        ))}
-      </div>
-    )
+              <p class="stack">{p.data.stack.join(' · ')}</p>
+              {p.data.url && (
+                <a class="ext" href={p.data.url} target="_blank" rel="noopener">
+                  {v.openLink}
+                  <Icon name="arrow-up-right" size={16} />
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
   }
 </Sheet>
 
 <style>
-  .details {
-    display: grid;
-    gap: var(--s-5);
+  .group + .group {
+    margin-top: var(--s-7);
   }
 
-  .details--minor {
-    margin-top: var(--s-6);
+  /* Título de grupo: rango de detalles en mono, nombre del dominio en display, cantidad a la derecha */
+  .group-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-4);
+    padding-bottom: var(--s-2);
+    margin-bottom: var(--s-4);
+    border-bottom: var(--line-hair) solid var(--ink);
+  }
+
+  .group-range {
+    font: 700 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .group-name {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .group-count {
+    margin-left: auto;
+    font: 500 var(--text-mono-sm) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    color: var(--graphite);
+  }
+
+  .details {
+    display: grid;
+    gap: var(--s-4);
   }
 
   .detail {
@@ -141,21 +158,20 @@ const minor = items.filter((it) => !it.p.data.featured);
     gap: var(--s-4);
     align-content: start;
     padding: var(--s-5);
-    border: var(--line) solid var(--ink);
+    border: var(--line-hair) solid var(--ink);
     background: var(--paper);
     min-width: 0;
   }
 
-  .detail--minor {
-    padding: var(--s-4) var(--s-5);
-    border-width: var(--line-hair);
+  .detail--featured {
+    border-width: var(--line);
   }
 
+  /* Etiqueta DETALLE x sobre el título: las tarjetas son angostas y el título necesita todo el ancho */
   .detail-head {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--s-4);
-    align-items: start;
+    gap: var(--s-3);
+    justify-items: start;
   }
 
   .tag {
@@ -167,19 +183,13 @@ const minor = items.filter((it) => !it.p.data.featured);
     white-space: nowrap;
   }
 
-  h3 {
+  h4 {
     font-family: var(--font-display);
-    font-size: var(--text-h3);
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-    padding-top: 0.15rem;
-  }
-
-  .detail--minor h3 {
     font-size: var(--text-h4);
+    font-weight: 700;
     line-height: 1.05;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
   }
 
   /* Cota: la cifra del proyecto como línea de dimensión con extremos */
@@ -189,7 +199,7 @@ const minor = items.filter((it) => !it.p.data.featured);
     grid-template-rows: auto auto;
     align-items: center;
     column-gap: var(--s-3);
-    margin: var(--s-2) 0 0;
+    margin: 0;
   }
 
   .cota::before,
@@ -227,7 +237,7 @@ const minor = items.filter((it) => !it.p.data.featured);
     grid-column: 2;
     grid-row: 1;
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.01em;
@@ -246,8 +256,7 @@ const minor = items.filter((it) => !it.p.data.featured);
 
   .meta {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-2) var(--s-4);
+    gap: var(--s-2);
     margin: 0;
     font: 400 var(--text-mono-sm) / 1.4 var(--font-mono);
   }
@@ -265,6 +274,7 @@ const minor = items.filter((it) => !it.p.data.featured);
   }
 
   .sum {
+    font-size: var(--text-sm);
     font-weight: 500;
     max-width: 62ch;
   }
@@ -272,6 +282,7 @@ const minor = items.filter((it) => !it.p.data.featured);
   .body {
     max-width: 66ch;
     font-size: var(--text-sm);
+    color: var(--graphite);
   }
 
   .body :global(p) {
@@ -283,6 +294,7 @@ const minor = items.filter((it) => !it.p.data.featured);
   }
 
   .stack {
+    margin-top: auto;
     padding-top: var(--s-3);
     border-top: var(--line-hair) solid var(--hair);
     font: 400 var(--text-mono-sm) / 1.5 var(--font-mono);
@@ -300,28 +312,15 @@ const minor = items.filter((it) => !it.p.data.featured);
   }
 
   @media (max-width: 639px) {
-    .detail-head {
-      grid-template-columns: 1fr;
-      gap: var(--s-3);
-    }
-
-    .tag {
-      justify-self: start;
-    }
-
-    h3 {
-      font-size: var(--text-h4);
-      line-height: 1.05;
+    .detail {
+      padding: var(--s-4);
     }
   }
 
-  @media (min-width: 900px) {
+  /* Tantas columnas como quepan de 272 px: cuatro en la hoja completa, así un grupo de cuatro va en una fila */
+  @media (min-width: 640px) {
     .details {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .details--minor {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
     }
   }
 </style>

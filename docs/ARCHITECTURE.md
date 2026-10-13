@@ -13,7 +13,7 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
   Cada colección localizada tiene carpetas `en/` y `es/`; el idioma se deriva del prefijo del `id`.
   `skills.json` es neutral al idioma (los nombres de grupo se traducen en `src/lib/i18n.ts`).
 - **Acceso** (`src/lib/content.ts`): `getProfile(locale)`, `getExperience(locale)` (actuales primero,
-  luego más recientes), `getProjects(locale)` (destacados primero), `getSkills()`.
+  luego más recientes), `getProjects(locale)` (por `order`), `groupProjects()` (agrupa por `domain`), `getSkills()`.
 - **i18n** (`src/lib/i18n.ts`): lista de idiomas, textos de UI (`t(locale)('clave')`), rutas
   localizadas (`localePath`), formato de fechas (`formatPeriod`, `formatDuration`). El enrutado lo
   hace Astro (`i18n` en `astro.config.ts`): español sin prefijo, inglés bajo `/en/`.

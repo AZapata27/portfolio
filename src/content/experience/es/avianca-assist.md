@@ -10,6 +10,8 @@ type: contract
 order: 2
 summary: Integración del core de pagos de la aerolínea con pasarelas y medios de pago de Latam sobre el stack de Red Hat.
 stack: [Quarkus, Apache Camel, Red Hat, Kafka, DEUNA, Wompi]
+short: "Core de pagos de la aerolínea conectado a pasarelas de Latam con Camel sobre Quarkus."
+tags: [Quarkus, Apache Camel, Kafka]
 ---
 
 - Integración del core de pagos de Avianca con pasarelas y medios de pago de Latam como DEUNA y Wompi.

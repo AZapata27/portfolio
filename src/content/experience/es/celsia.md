@@ -10,6 +10,8 @@ type: contract
 order: 4
 summary: Lideré la migración del bus de integración de IBM App Connect a Kubernetes on-premise con Quarkus, Camel y Kafka.
 stack: [Quarkus, Apache Camel, Kafka, Kubernetes, Grafana, Loki, Tempo]
+short: "Migración del bus de integración de IBM App Connect a Kubernetes."
+tags: [Quarkus, Apache Camel, Kafka, Kubernetes]
 ---
 
 - Lideré la migración del bus de integración de IBM App Connect a Kubernetes on-premise con Quarkus, Apache Camel y Kafka.
