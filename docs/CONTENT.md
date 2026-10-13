@@ -56,6 +56,7 @@ summary: Una o dos líneas.
 stack: [Java, Kafka]
 metric: { value: "−98 %", label: "de latencia" }   # opcional
 featured: true        # reservado; hoy la cota la decide `metric`
+study: false          # true si el cuerpo es un caso de estudio largo (encabezados, figuras, código, tablas)
 order: 1              # los del mismo domain deben ir contiguos
 url: https://…        # opcional, enlace público
 ---
@@ -83,6 +84,12 @@ schematic:                               # esquema de arquitectura dibujado por 
 Las capturas se toman con Playwright a 1280×800 (`npx playwright screenshot --viewport-size=1280,800 <url> src/assets/work/<slug>.png`)
 y sólo de sitios públicos; nunca de sistemas internos. Cada proyecto tiene página propia en
 `/proyectos/<slug>/` y `/en/work/<slug>/` (el cuerpo Markdown son sus "Notas").
+
+**Casos de estudio** (`study: true`): el cuerpo Markdown admite `##`/`###`, listas, tablas, bloques de código,
+citas e imágenes relativas (`![alt](../../../assets/work/<slug>/figura.svg)`); la página los titula "Caso de
+estudio" y los maqueta a todo el ancho. Los diagramas C4 del caso RNDC se generan con
+`python scripts/rndc-diagramas.py` (SVG para el sitio en `src/assets/work/rndc/` y `.drawio` editables en
+`public/casos/rndc/`, ambos en es y en).
 
 Dominios en uso (mismo nombre en todos los proyectos del grupo): `Transporte y movilidad` /
 `Transport and mobility`, `Plataforma e IA` / `Platform and AI`, `Banca` / `Banking`,

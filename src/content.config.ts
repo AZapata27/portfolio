@@ -140,6 +140,8 @@ const projects = defineCollection({
       order: z.number().int().default(100),
       /** Enlace público si existe (repo, nota de prensa, documentación). */
       url: z.url().optional(),
+      /** El cuerpo es un caso de estudio largo (con encabezados, figuras y código): la página lo titula así. */
+      study: z.boolean().default(false),
       /**
        * Lámina del proyecto: captura real de un sitio público (`src` relativo al
        * archivo, en `src/assets/work/`). `source` es el dominio capturado y va en el pie.

@@ -41,7 +41,9 @@ src/content/*  ──►  src/lib/content.ts  ──►  src/variants/<v>/Page.a
 - **SEO**: `src/components/Seo.astro`: canonical, `hreflang`, Open Graph, Twitter, JSON-LD `Person`.
   Acepta `paths` (rutas ya localizadas) para las páginas cuyo segmento cambia por idioma, e `image`.
 - **Imágenes**: capturas de proyectos en `src/assets/work/`, servidas por `astro:assets` (`<Image>`,
-  sharp en build) desde `components/Plate.astro`.
+  sharp en build) desde `components/Plate.astro`. Los diagramas de los casos de estudio son SVG
+  generados por `scripts/` (p. ej. `scripts/rndc-diagramas.py`: un modelo, salida SVG para el sitio y
+  `.drawio` para editar en `public/casos/`).
   Sitemap con `@astrojs/sitemap`.
 
 ## Build y despliegue

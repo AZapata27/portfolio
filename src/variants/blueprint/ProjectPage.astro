@@ -145,8 +145,8 @@ const hasSchematic = Boolean(d.schematic);
         </aside>
       </div>
 
-      <section class="notes" aria-label={tr('work.notes')}>
-        <h2 class="notes-title">{tr('work.notes')}</h2>
+      <section class:list={['notes', { study: d.study }]} aria-label={d.study ? tr('work.study') : tr('work.notes')}>
+        <h2 class="notes-title">{d.study ? tr('work.study') : tr('work.notes')}</h2>
         <div class="body">
           <Content />
         </div>
@@ -187,6 +187,8 @@ const hasSchematic = Boolean(d.schematic);
 <style>
   .sheets {
     display: grid;
+    /* minmax(0, 1fr): un bloque de código con líneas largas (caso de estudio) no ensancha la hoja; se desplaza dentro */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-5);
     padding: var(--s-4) var(--gutter) 0;
   }
@@ -385,6 +387,160 @@ const hasSchematic = Boolean(d.schematic);
 
   .body :global(p + p) {
     margin-top: var(--s-3);
+  }
+
+  /* Caso de estudio: Markdown largo con encabezados, figuras, código y tablas en el lenguaje del plano */
+  .study .body {
+    max-width: none;
+  }
+
+  .study .body :global(h2) {
+    margin: var(--s-7) 0 var(--s-4);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    padding-bottom: var(--s-2);
+    border-bottom: var(--line-hair) solid var(--ink);
+  }
+
+  .study .body :global(h3) {
+    margin: var(--s-5) 0 var(--s-3);
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .study .body :global(p),
+  .study .body :global(ul),
+  .study .body :global(ol),
+  .study .body :global(blockquote) {
+    max-width: 70ch;
+  }
+
+  .study .body :global(p + p),
+  .study .body :global(ul),
+  .study .body :global(ol) {
+    margin-top: var(--s-3);
+  }
+
+  .study .body :global(ul),
+  .study .body :global(ol) {
+    padding-left: 1.2em;
+  }
+
+  .study .body :global(ul) {
+    list-style: square;
+  }
+
+  .study .body :global(li + li) {
+    margin-top: var(--s-1);
+  }
+
+  .study .body :global(li::marker) {
+    color: var(--ink);
+  }
+
+  .study .body :global(strong) {
+    font-weight: 600;
+  }
+
+  /* Figuras: el marco de lámina alrededor de cada diagrama; el pie es el texto alternativo en mono */
+  .study .body :global(p:has(> img)) {
+    max-width: none;
+    margin: var(--s-5) 0;
+  }
+
+  .study .body :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--line-hair) solid var(--ink);
+    background: var(--paper);
+  }
+
+  .study .body :global(pre) {
+    margin: var(--s-4) 0;
+    padding: var(--s-4);
+    border: var(--line-hair) solid var(--ink);
+    background: var(--paper);
+    font: 400 var(--text-mono) / 1.5 var(--font-mono);
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .study .body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
+
+  .study .body :global(:not(pre) > code) {
+    padding: 1px 4px;
+    border: var(--line-hair) solid var(--hair);
+    background: var(--paper);
+  }
+
+  .study .body :global(table) {
+    width: 100%;
+    margin: var(--s-4) 0;
+    border-collapse: collapse;
+    border: var(--line) solid var(--ink);
+    font-size: var(--text-sm);
+  }
+
+  /* En pantallas angostas la tabla se desplaza dentro de su marco en vez de ensanchar la hoja */
+  @media (max-width: 720px) {
+    .study .body :global(table) {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      border: 0;
+    }
+
+    .study .body :global(table > *) {
+      border: var(--line) solid var(--ink);
+    }
+
+    .study .body :global(th),
+    .study .body :global(td) {
+      min-width: 9rem;
+    }
+  }
+
+  .study .body :global(th),
+  .study .body :global(td) {
+    padding: var(--s-2) var(--s-3);
+    border: var(--line-hair) solid var(--ink);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .study .body :global(th) {
+    font: 500 var(--text-mono-sm) / 1.4 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  .study .body :global(blockquote) {
+    margin: var(--s-4) 0;
+    padding: var(--s-3) var(--s-4);
+    background: var(--amber-wash);
+    border: var(--line-hair) solid var(--ink);
+  }
+
+  .study .body :global(hr) {
+    margin: var(--s-6) 0;
+    border: 0;
+    border-top: var(--line-hair) solid var(--ink);
+  }
+
+  .study .body :global(a) {
+    overflow-wrap: anywhere;
   }
 
   /* Paginación entre detalles: dos bloques mono, anterior a la izquierda, siguiente a la derecha */
