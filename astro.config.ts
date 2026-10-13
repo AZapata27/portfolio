@@ -23,13 +23,13 @@ import sitemap from '@astrojs/sitemap';
 const projectSegment = { es: 'proyectos', en: 'work' } as const;
 
 /** Fecha ISO del último commit que tocó las rutas dadas; `undefined` si git no está disponible. */
-function lastCommitDate(paths: string[]): Date | undefined {
+function lastCommitDate(paths: string[]): string | undefined {
   try {
     const out = execSync(`git log -1 --format=%cI -- ${paths.map((p) => JSON.stringify(p)).join(' ')}`, {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
-    return out ? new Date(out) : undefined;
+    return out ? new Date(out).toISOString() : undefined;
   } catch {
     return undefined;
   }
@@ -43,7 +43,7 @@ const shallow = (() => {
     return true;
   }
 })();
-const deployDate = lastCommitDate([]) ?? new Date();
+const deployDate = lastCommitDate([]) ?? new Date().toISOString();
 
 /** `https://…/proyectos/iprev/` da `{ locale: 'es', slug: 'iprev' }`; otras URL dan `undefined`. */
 function projectOf(url: string): { locale: keyof typeof projectSegment; slug: string } | undefined {

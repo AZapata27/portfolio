@@ -48,7 +48,7 @@ Una sola página por idioma con: identidad y propuesta, capacidades (arquitectur
 AI-native, liderazgo) con la tabla de logros, la trayectoria como línea de tiempo (empresa, cargo,
 una línea y stack superficial; el detalle queda en el CV), los proyectos tangibles como galería de láminas agrupada por
 dominio (la sección con más peso), con una página por proyecto (`/proyectos/<slug>/`) que lleva la
-captura real del sitio público o un esquema de arquitectura, stack, idiomas, contacto, descarga del CV (PDF en el idioma de
+captura real del sitio público o un esquema de arquitectura, stack, idiomas, contacto, hoja de vida en HTML (`/cv/`, imprimible, sin teléfono) y descarga del CV (PDF en el idioma de
 la página) y cambio de idioma. Hoy no hay blog ni formularios. Analítica: Vercel Web Analytics y Speed Insights
 (plan Hobby, sin cookies; ver `docs/ANALITICA.md`).
 
