@@ -169,11 +169,11 @@ como chevrones del propio trazo (`stroke-linecap: round`). Iconos EIP y de inter
 - **Sheet**: `<Sheet id number total title drawingName locale labelledby>`; dentro, un `h2.sheet-title`.
 - **Tablas** (`.tbl`): `caption` arriba en mono/mayúsculas, `thead th` en grafito, celdas con
   hairlines; en móvil cada fila es un grid con `data-label`.
-- **Perfil longitudinal** (hoja 3, `sections/Experience.astro`): línea de tiempo de la trayectoria.
-  Línea de 2 px; estaciones con llamada vertical de 1,5 px y marcador circular de 12 px (papel con
-  borde de tinta; relleno ámbar si es actual); bloque HOY en tinta. Horizontal desde 960 px
-  (estaciones alternando arriba y abajo), vertical por debajo (lo más reciente arriba). La vía
-  paralela del contratista independiente va en azul discontinuo, como el control bus.
+- **Perfil longitudinal** (hoja 3, `sections/Experience.astro`): línea de tiempo de la trayectoria,
+  sin fechas, de hoy hacia el pasado. Línea de 2 px que nace en el bloque HOY (tinta); estaciones
+  con llamada vertical de 1,5 px y marcador circular de 12 px (papel con borde de tinta; relleno
+  ámbar si es actual). Horizontal desde 960 px (HOY a la izquierda, estaciones alternando arriba y
+  abajo), vertical por debajo (HOY arriba).
 - **Detalles** (hoja 4, `sections/Work.astro`): proyectos agrupados por dominio. Título de grupo con
   rango `DETALLES B–E` en mono, nombre en display y cantidad a la derecha, sobre una hairline.
   Tarjetas iguales de 272 px mínimo (`auto-fill`); con cota y marco de 1,5 px si tienen cifra,

@@ -16,7 +16,7 @@ No hay tarjetas ni grilla de skills: hay un **juego de seis hojas de dibujo** nu
 | ---- | --------------- | ---------------------------------------------------------------------------------------- |
 | 1    | `route`         | Nombre, diagrama de la ruta (SVG), `DETAIL A · Route.java`, bloque de título con contacto |
 | 2    | `capabilities`  | NOTES ①–④ (las cuatro capacidades), resumen y tabla de LOGROS (`profile.achievements`)   |
-| 3    | `experience`    | PERFIL LONGITUDINAL: la trayectoria como línea de tiempo (empresa, cargo, una línea, stack superficial); el detalle queda en el CV |
+| 3    | `experience`    | PERFIL LONGITUDINAL: la trayectoria como línea de tiempo sin fechas (empresa, relación, cargo, una línea, stack superficial); el detalle queda en el CV |
 | 4    | `work`          | DETAILS B–Q: los proyectos tangibles agrupados por dominio; los que tienen cifra la llevan como cota |
 | 5    | `stack`         | PARTS LIST: `ITEM / GROUP / PARTS` con logos de simple-icons en tinta                     |
 | 6    | `contact`       | TITLE BLOCK: mailto en ámbar, LinkedIn, GitHub, CV, ubicación, disponibilidad, idiomas, notas generales |
@@ -78,19 +78,19 @@ pegado a la esquina inferior derecha. Ancho máximo 1280 px; separación entre h
 
 ## Perfil longitudinal (hoja 3)
 
-La experiencia no se duplica del CV: es una **línea de tiempo** con empresa, cargo, un resumen de
-una línea (`short`) y hasta cuatro tecnologías (`tags`).
+La experiencia no se duplica del CV: es una **línea de tiempo sin fechas** con empresa, relación
+(`client`: "Contratista", cliente final), cargo, un resumen de una línea (`short`) y hasta cuatro
+tecnologías (`tags`). El orden es el de `getExperience`: puestos actuales primero (Avianca como
+contratista, luego Quind) y después del más reciente al más antiguo; la línea nace en el bloque HOY
+(tinta, como PROD) y se aleja hacia el pasado. Decisión de Andrés del 2026-10-12: sin fechas y sin
+el nodo del contratista independiente.
 
-- **Escritorio (≥ 960 px)**: horizontal, del primer empleo (izquierda) a hoy (derecha). Grilla de
+- **Escritorio (≥ 960 px)**: horizontal, HOY a la izquierda. Grilla de `max-content` (HOY) más
   `n + 1` columnas; cada estación ocupa dos columnas y alterna arriba y abajo de la línea, con su
-  línea de llamada vertical y un marcador circular (ámbar si el puesto es actual). La línea termina
-  en el bloque HOY (tinta, como PROD).
-- **Móvil y tablet (< 960 px)**: vertical con `flex-direction: column-reverse`: HOY arriba, el
-  pasado hacia abajo, marcadores sobre una línea a la izquierda.
-- El trabajo como **contratista independiente** (`type: freelance`) corre en paralelo a todo lo
-  demás, así que no es una estación: es una vía discontinua azul (como el control bus) que arranca
-  en la primera estación posterior a su inicio y llega hasta hoy. En móvil es una caja con borde
-  discontinuo azul en su lugar cronológico.
+  línea de llamada vertical y un marcador circular (ámbar si el puesto es actual).
+- **Móvil y tablet (< 960 px)**: vertical, HOY arriba, marcadores sobre una línea a la izquierda.
+- El trabajo como **contratista independiente** (`type: freelance`) no se dibuja: sus proyectos
+  están en la hoja 4.
 
 ## Detalles (hoja 4)
 
@@ -156,6 +156,6 @@ Probado a 390, 768 y 1440 px (capturas en `screenshots/`).
 - Nuevo proyecto: `src/content/projects/{en,es}/<slug>.md` con un `domain` ya existente (o uno nuevo
   en los dos idiomas) y un `order` contiguo a los de su dominio; la letra del detalle sale sola.
 - Nuevo puesto en la línea de tiempo: `src/content/experience/{en,es}/<slug>.md` con `short` y
-  `tags` (hasta cuatro); `type: freelance` lo dibuja como vía paralela. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
+  `tags` (hasta cuatro); `type: freelance` no se dibuja. Nueva etiqueta de interfaz del mundo "plano": `labels.ts` (en y es).
 - El DSL de `DETAIL A` y el diagrama leen `capabilities` por `id`; si se agrega una capacidad hay que
   decidir en qué rama va (el orden fijo está en `capabilityOrder`).

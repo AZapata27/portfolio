@@ -38,7 +38,10 @@ tags: [Spring Boot, Kafka, AWS, Claude Code]   # stack superficial, máximo 4 (s
 El cuerpo es Markdown: una lista de logros. Hoy el sitio no lo muestra (la hoja de trayectoria es
 una línea de tiempo y el detalle vive en el CV), pero se mantiene como fuente para futuras
 funcionalidades (p. ej. "Preguntale a mi CV"). Para los primeros años (`type: early`) un solo
-archivo agrupa varios roles cortos. `type: freelance` se dibuja como vía paralela, no como estación.
+archivo agrupa varios roles cortos. `type: freelance` no aparece en la línea de tiempo (sus proyectos
+van en `projects`). La línea de tiempo no muestra fechas: `start`/`end` sólo deciden el orden
+(actuales primero, luego del más reciente al más antiguo) y `client` se muestra bajo la empresa
+(p. ej. "Contratista").
 
 ## Proyectos (`src/content/projects/{en,es}/<slug>.md`)
 
